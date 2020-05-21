@@ -4,16 +4,21 @@
 \alias{computePhysChem}
 \title{Computation of the Physicochemical Features of RNA or Protein Sequences}
 \usage{
-computePhysChem(seqs, seqType = c("RNA", "Pro"), Fourier.len = 10,
+computePhysChem(
+  seqs,
+  seqType = c("RNA", "Pro"),
+  Fourier.len = 10,
   physchemRNA = c("hydrogenBonding", "vanderWaal"),
-  physchemPro = c("polarity.Grantham", "polarity.Zimmerman",
-  "bulkiness.Zimmerman", "isoelectricPoint.Zimmerman", "hphob.BullBreese",
-  "hphob.KyteDoolittle", "hphob.Eisenberg", "hphob.HoppWoods"),
-  parallel.cores = 2, as.list = TRUE)
+  physchemPro = c("polarity.Grantham", "polarity.Zimmerman", "bulkiness.Zimmerman",
+    "isoelectricPoint.Zimmerman", "hphob.BullBreese", "hphob.KyteDoolittle",
+    "hphob.Eisenberg", "hphob.HoppWoods"),
+  as.list = TRUE,
+  parallel.cores = 2,
+  cl = NULL
+)
 }
 \arguments{
-\item{seqs}{sequences loaded by function \code{\link[seqinr]{read.fasta}} of package
-"seqinr" (\code{\link[seqinr]{seqinr-package}}). Or a list of RNA/protein sequences.
+\item{seqs}{sequences loaded by function \code{\link[seqinr]{read.fasta}} from \code{\link[seqinr]{seqinr-package}}. Or a list of RNA/protein sequences.
 RNA sequences will be converted into lower case letters, but
 protein sequences will be converted into upper case letters.
 Each sequence should be a vector of single characters.}
@@ -22,7 +27,7 @@ Each sequence should be a vector of single characters.}
 If the input is DNA sequence and \code{seqType = "RNA"}, the DNA sequence will be converted to RNA sequence automatically.
 Default: \code{"RNA"}.}
 
-\item{Fourier.len}{postive integer specifying the Fourier series length that will be used as features.
+\item{Fourier.len}{positive integer specifying the Fourier series length that will be used as features.
 The \code{Fourier.len} should be >= the length of the input sequence. Default: \code{10}.}
 
 \item{physchemRNA}{strings specifying the physicochemical properties that are computed in RNA sequences. Ignored if \code{seqType = "Pro"}.
@@ -35,10 +40,12 @@ Options: \code{"polarity.Grantham"}, \code{"polarity.Zimmerman"}, \code{"bulkine
 \code{"hphob.HoppWoods"}.
 Multiple elements can be selected at the same time. See details below. (Ref: [3-9])}
 
-\item{parallel.cores}{an integer that indicates the number of cores for parallel computation. Default: \code{2}.
-Set \code{parallel.cores = -1} to run with all the cores.}
+\item{as.list}{logical. The result will be returned as a list or a data frame.}
 
-\item{as.list}{logical. The result will be returned as a list or data frame.}
+\item{parallel.cores}{an integer that indicates the number of cores for parallel computation. Default: \code{2}.
+Set \code{parallel.cores = -1} to run with all the cores. \code{parallel.cores} should be == -1 or >= 1.}
+
+\item{cl}{parallel cores to be passed to this function.}
 }
 \value{
 This function returns a data frame if \code{as.list = FALSE} or returns a list if \code{as.list = TRUE}.
@@ -75,7 +82,7 @@ In "catRAPID", \code{Fourier.len = 50}; in "lncPro", \code{Fourier.len} is set a
 }
 \section{References}{
 
-[1] Han S, Liang Y, Li Y, \emph{et al}.
+[1] Han S, Liang Y, Ma Q, \emph{et al}.
 ncProR: an integrated R package for effective ncRNA-protein interaction prediction.
 (\emph{Submitted})
 
@@ -123,9 +130,11 @@ data(demoPositiveSeq)
 seqsRNA <- demoPositiveSeq$RNA.positive
 seqsPro <- demoPositiveSeq$Pro.positive
 
+# Return a data frame:
 physChemRNA <- computePhysChem(seqs = seqsRNA, seqType = "RNA",
                                Fourier.len = 10, as.list = FALSE)
 
+# Return a list:
 physChemPro <- computePhysChem(seqs = seqsPro, seqType = "Pro", Fourier.len = 8,
                                physchemPro = c("polarity.Grantham",
                                                "polarity.Zimmerman",

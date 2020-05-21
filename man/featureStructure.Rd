@@ -4,16 +4,21 @@
 \alias{featureStructure}
 \title{Extraction of the Secondary Structural Features of RNA and Protein Sequences}
 \usage{
-featureStructure(seqRNA, seqPro, label = NULL, parallel.cores = 2, ...)
+featureStructure(
+  seqRNA,
+  seqPro,
+  label = NULL,
+  parallel.cores = 2,
+  cl = NULL,
+  ...
+)
 }
 \arguments{
-\item{seqRNA}{RNA sequences loaded by function \code{\link[seqinr]{read.fasta}} of package
-"seqinr" (\code{\link[seqinr]{seqinr-package}}). Or a list of RNA sequences.
+\item{seqRNA}{RNA sequences loaded by function \code{\link[seqinr]{read.fasta}} from \code{\link[seqinr]{seqinr-package}}. Or a list of RNA sequences.
 RNA sequences will be converted into lower case letters.
 Each sequence should be a vector of single characters.}
 
-\item{seqPro}{protein sequences loaded by function \code{\link[seqinr]{read.fasta}} of package
-"seqinr" (\code{\link[seqinr]{seqinr-package}}). Or a list of protein sequences.
+\item{seqPro}{protein sequences loaded by function \code{\link[seqinr]{read.fasta}} from \code{\link[seqinr]{seqinr-package}}. Or a list of protein sequences.
 Protein sequences will be converted into upper case letters.
 Each sequence should be a vector of single characters.}
 
@@ -21,10 +26,12 @@ Each sequence should be a vector of single characters.}
 "Interact", "NonInteract". Default: \code{NULL}}
 
 \item{parallel.cores}{an integer that indicates the number of cores for parallel computation.
-Default: \code{2}. Set \code{parallel.cores = -1} to run with all the cores.}
+Default: \code{2}. Set \code{parallel.cores = -1} to run with all the cores. \code{parallel.cores} should be == -1 or >= 1.}
+
+\item{cl}{parallel cores to be passed to this function.}
 
 \item{...}{arguments (\code{structureRNA.num}, \code{structurePro}, \code{Fourier.len},
-\code{workDir.Pro}, \code{path.RNAsubopt}, \code{path.Predator}, \code{path.stride}, and \code{verbose})
+\code{workDir.Pro}, \code{path.RNAsubopt}, \code{path.Predator} and \code{path.stride}
 passed to function \code{\link{computeStructure}}. See example below.}
 }
 \value{
@@ -34,13 +41,14 @@ This function returns a data frame.
 Basically a wrapper for \code{\link{computeStructure}} function.
 This function can extract secondary structure features of RNA and protein sequences at the same time
 and format the results as the dataset that can be used to build classifier.
+ViennaRNA package and Predator is required.
 }
 \details{
 see \code{\link{computeStructure}}.
 }
 \section{References}{
 
-[1] Han S, Liang Y, Li Y, \emph{et al}.
+[1] Han S, Liang Y, Ma Q, \emph{et al}.
 ncProR: an integrated R package for effective ncRNA-protein interaction prediction.
 (\emph{Submitted})
 
@@ -77,8 +85,11 @@ seqsPro <- demoNegativeSeq$Pro.negative
 
 # Use your own paths of the program Predator and file "stride.dat". For example:
 
-path.stride = "/mnt/external_drive_1/hansy/R_tmp/LncProInter/Predator/stride.dat"
-path.Predator = "/mnt/external_drive_1/hansy/R_tmp/LncProInter/Predator/predator"
+path.Predator <- "/mnt/external_drive_1/hansy/predator/predator"
+path.stride <- "/mnt/external_drive_1/hansy/predator/stride.dat"
+
+# Pass "structureRNA.num", "structurePro", "Fourier.len", "workDir.Pro",
+# "path.RNAsubopt", "path.Predator" and "path.stride" using "..." argument:
 
 dataset <- featureStructure(seqRNA = seqsRNA, seqPro = seqsPro, label = "Non.Interact",
                             parallel.cores = 2, structureRNA.num = 6,

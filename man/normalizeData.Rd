@@ -4,15 +4,19 @@
 \alias{normalizeData}
 \title{Normalize Data}
 \usage{
-normalizeData(dataset, direction = c("row", "column"),
-  returnNorm = TRUE, ignoreColumn = NULL)
+normalizeData(
+  dataset,
+  direction = c("row", "column"),
+  returnNorm = TRUE,
+  ignoreColumn = NULL
+)
 }
 \arguments{
-\item{dataset}{input dataset. As a dataframe.}
+\item{dataset}{input dataset. As a data frame.}
 
-\item{direction}{\code{"row"} or {"column"} to indicate the normalization direction. (see details)}
+\item{direction}{\code{"row"} or {"column"} to indicate the normalization direction (see details).}
 
-\item{returnNorm}{logical. Used for \code{direction = "column"}. The function will return nomalized
+\item{returnNorm}{logical. Used for \code{direction = "column"}. The function will return normalized
 data that can be used to process new dataset (test sets, for example).
 Ignored when \code{direction = "row"}.}
 

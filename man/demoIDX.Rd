@@ -3,7 +3,9 @@
 \name{demoIDX}
 \alias{demoIDX}
 \title{A demo of sequence indices}
-\format{A data frame containing the names of RNA and protein sequences.}
+\format{
+A data frame containing the names of RNA and protein sequences.
+}
 \usage{
 data(demoIDX)
 }

@@ -4,12 +4,18 @@
 \alias{runPredator}
 \title{Run Predator in R}
 \usage{
-runPredator(seqs, path.Predator, path.stride, workDir = getwd(),
-  verbose = FALSE, parallel.cores = 2)
+runPredator(
+  seqs,
+  path.Predator,
+  path.stride,
+  workDir = getwd(),
+  verbose = FALSE,
+  parallel.cores = 2,
+  cl = NULL
+)
 }
 \arguments{
-\item{seqs}{RNA sequences loaded by function \code{\link[seqinr]{read.fasta}} of package
-"seqinr" (\code{\link[seqinr]{seqinr-package}}). Or a list of RNA/protein sequences.
+\item{seqs}{RNA sequences loaded by function \code{\link[seqinr]{read.fasta}} from \code{\link[seqinr]{seqinr-package}}. Or a list of RNA/protein sequences.
 RNA sequences will be converted into lower case letters.
 Each sequence should be a vector of single characters. (Non-AA letters will be ignored.)}
 
@@ -21,10 +27,12 @@ Each sequence should be a vector of single characters. (Non-AA letters will be i
 The temp files will be deleted automatically when
 the calculation is completed. The directory does not exist will be created automatically.}
 
-\item{verbose}{logical. Should the relevant information be printed during the calculation? (Only available on UNIX/Linux.)}
+\item{verbose}{logical. Should the relevant information be printed during the calculation? (Only available on Linux OS.)}
 
 \item{parallel.cores}{an integer that indicates the number of cores for parallel computation. Default: \code{2}.
-Set \code{parallel.cores = -1} to run with all the cores.}
+Set \code{parallel.cores = -1} to run with all the cores. \code{parallel.cores} should be == -1 or >= 1.}
+
+\item{cl}{parallel cores to be passed to this function.}
 }
 \value{
 This function returns a data frame of the raw outputs of Predator.
@@ -33,13 +41,14 @@ This function returns a data frame of the raw outputs of Predator.
 This function can run and capture the result of Predator in R
 by invoking the OS command.
 The results can be formatted and used as the features of tool "lncPro".
-Predator is required (NOTE: Predator does not support 64-bit MS Windows OS. Linux OS is recommended).
+Predator is required (\url{https://bioweb.pasteur.fr/packages/pack@predator@2.1.2}).
+NOTE: Predator does not support 64-bit MS Windows OS. Linux OS is recommended).
 }
 \details{
-This function depends on the program Predator.
-Program Predator is only available on UNIX/Linux and 32-bit Windows OS.
+This function depends on the program Predator (\url{https://bioweb.pasteur.fr/packages/pack@predator@2.1.2}).
+Program Predator is only available on Linux and 32-bit Windows OS.
 
-This function can print the related information when the OS is UNIX/Linux,
+This function can print the related information when the OS is Linux,
 such as:
 
 \code{"25 of 100, length: 50 aa"},
@@ -59,12 +68,12 @@ Protein Eng. 1996; 9:133-42
 data(demoPositiveSeq)
 seqsPro <- demoPositiveSeq$Pro.positive
 
-path.predator = "/mnt/external_drive_1/hansy/R_tmp/LncProInter/Predator/predator"
-path.stride = "/mnt/external_drive_1/hansy/R_tmp/LncProInter/Predator/stride.dat"
+path.Predator <- "/mnt/external_drive_1/hansy/predator/predator"
+path.stride <- "/mnt/external_drive_1/hansy/predator/stride.dat"
 
-Predator.res <- runPredator(seqs = Pro.positive, path.Predator = path.Predator,
+Predator.res <- runPredator(seqs = seqsPro, path.Predator = path.Predator,
                             path.stride = path.stride, workDir = "tmp",
-                            as.string = TRUE, parallel.cores = 4)
+                            verbose = TRUE, parallel.cores = 4)
 }
 }
 \seealso{

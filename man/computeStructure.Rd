@@ -4,16 +4,24 @@
 \alias{computeStructure}
 \title{Computation of the Secondary Structural Features of RNA or Protein Sequences}
 \usage{
-computeStructure(seqs, seqType = c("RNA", "Pro"), structureRNA.num = 6,
+computeStructure(
+  seqs,
+  seqType = c("RNA", "Pro"),
+  structureRNA.num = 6,
   structurePro = c("ChouFasman", "DeleageRoux", "Levitt"),
-  Fourier.len = 10, workDir.Pro = getwd(), as.list = TRUE,
-  path.RNAsubopt = "RNAsubopt", path.Predator = "Predator/predator",
-  path.stride = "Predator/stride.dat", verbose = FALSE,
-  parallel.cores = 2)
+  Fourier.len = 10,
+  workDir.Pro = getwd(),
+  as.list = TRUE,
+  path.RNAsubopt = "RNAsubopt",
+  path.Predator = "Predator/predator",
+  path.stride = "Predator/stride.dat",
+  verbose = FALSE,
+  parallel.cores = 2,
+  cl = NULL
+)
 }
 \arguments{
-\item{seqs}{sequences loaded by function \code{\link[seqinr]{read.fasta}} of package
-"seqinr" (\code{\link[seqinr]{seqinr-package}}). Or a list of RNA/protein sequences.
+\item{seqs}{sequences loaded by function \code{\link[seqinr]{read.fasta}} from \code{\link[seqinr]{seqinr-package}}. Or a list of RNA/protein sequences.
 RNA sequences will be converted into lower case letters, but
 protein sequences will be converted into upper case letters, and non-AA letters will be ignored.
 Each sequence should be a vector of single characters.}
@@ -29,7 +37,7 @@ Ignored if \code{seqType = "RNA"}.
 Options: \code{"ChouFasman"}, \code{"DeleageRoux"}, and \code{"Levitt"}. See details below.(Ref: [2-4])
 Multiple elements can be selected at the same time.}
 
-\item{Fourier.len}{postive integer specifying the Fourier series length that will be used as features.
+\item{Fourier.len}{positive integer specifying the Fourier series length that will be used as features.
 The \code{Fourier.len} should be >= the length of the input sequence. Default: \code{10}.}
 
 \item{workDir.Pro}{string specifying the directory for temporary files.
@@ -44,17 +52,19 @@ the calculation is completed.}
 
 \item{path.stride}{string specifying the location of file "stride.dat" required by program Predator.}
 
-\item{verbose}{logical. Should the relevant information be printed during the calculation? (Only available on UNIX/Linux.)}
+\item{verbose}{logical. Should the relevant information be printed during the calculation? (Only available on Linux.)}
 
 \item{parallel.cores}{an integer that indicates the number of cores for parallel computation. Default: \code{2}.
-Set \code{parallel.cores = -1} to run with all the cores.}
+Set \code{parallel.cores = -1} to run with all the cores. \code{parallel.cores} should be == -1 or >= 1.}
+
+\item{cl}{parallel cores to be passed to this function.}
 }
 \value{
 This function returns a data frame if \code{as.list = FALSE} or returns a list if \code{as.list = TRUE}.
 }
 \description{
 The function \code{computeStructure} computes the secondary structural features of RNA
-or protein sequences.
+or protein sequences. ViennaRNA package and Predator is required.
 }
 \details{
 The secondary structures of RNA and protein are computed by RNAsubopt and Predator, respectively.
@@ -65,10 +75,21 @@ And the protein secondary features are encoded using three amino acid scales:
 \item Levitt normalised frequency (Ref: [4])
 }
 The feature encoding strategy is based on lncPro (Ref: [7]).
+
+This function depends on the program "RNAsubopt" of software "ViennaRNA"
+(\url{http://www.tbi.univie.ac.at/RNA/index.html}) and "Predator"
+(\url{https://bioweb.pasteur.fr/packages/pack@predator@2.1.2}).
+
+Parameter \code{path.RNAsubopt} can be simply defined as \code{"RNAsubopt"} as
+default when the OS is UNIX/Linux. However, for some OS, such as Windows, users may
+need to specify the \code{path.RNAsubopt} if the path of "RNAsubopt" haven't been
+added in environment variables (e.g. \code{path.RNAsubopt = '"C:/Program Files/ViennaRNA/RNAsubopt.exe"'}).
+
+Program "Predator" is only available on UNIX/Linux and 32-bit Windows OS.
 }
 \section{References}{
 
-[1] Han S, Liang Y, Li Y, \emph{et al}.
+[1] Han S, Liang Y, Ma Q, \emph{et al}.
 ncProR: an integrated R package for effective ncRNA-protein interaction prediction.
 (\emph{Submitted})
 
@@ -103,18 +124,21 @@ data(demoNegativeSeq)
 seqsRNA <- demoNegativeSeq$RNA.negative
 seqsPro <- demoNegativeSeq$Pro.negative
 
-StructureRNA <- computeStructure(seqsRNA, seqType = "RNA", structureRNA.num = 8,
-                                 Fourier.len = 12, as.list = FALSE,
+# You need to use your own paths:
+
+path.Predator <- "/mnt/external_drive_1/hansy/predator/predator"
+path.stride <- "/mnt/external_drive_1/hansy/predator/stride.dat"
+
+structureRNA <- computeStructure(seqsRNA, seqType = "RNA", structureRNA.num = 6,
+                                 Fourier.len = 10, as.list = FALSE,
                                  path.RNAsubopt = "RNAsubopt", parallel.cores = 2)
 
-StructurePro <- computeStructure(seqsPro, seqType = "Pro",
+structurePro <- computeStructure(seqsPro, seqType = "Pro",
                                  structurePro = c("ChouFasman", "DeleageRoux",
                                                   "Levitt"),
                                  Fourier.len = 10, workDir.Pro = getwd(),
-                                 as.list = TRUE,
-                                 path.Predator = "Predator/predator",
-                                 path.stride = "Predator/stride.dat",
-                                 parallel.cores = 2)
+                                 as.list = TRUE, path.Predator = path.Predator,
+                                 path.stride = path.stride, parallel.cores = 2)
 }
 }
 \seealso{

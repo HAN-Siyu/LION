@@ -7,10 +7,9 @@
 formatSeq(idx, seqs)
 }
 \arguments{
-\item{idx}{specifiying the sequence indices.}
+\item{idx}{specifying the sequence indices.}
 
-\item{seqs}{sequences loaded by function \code{\link[seqinr]{read.fasta}} of package
-"seqinr" (\code{\link[seqinr]{seqinr-package}}). Or a list of sequences.}
+\item{seqs}{sequences loaded by function \code{\link[seqinr]{read.fasta}} from \code{\link[seqinr]{seqinr-package}}. Or a list of sequences.}
 }
 \value{
 This function returns a list.

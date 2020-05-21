@@ -4,18 +4,25 @@
 \alias{featureMotifs}
 \title{Extraction of the Motif Features of RNA and Protein Sequences}
 \usage{
-featureMotifs(seqRNA, seqPro, label = NULL,
-  featureMode = c("concatenate", "combine"), newMotif.RNA = NULL,
-  newMotif.Pro = NULL, newMotifOnly.RNA = FALSE,
-  newMotifOnly.Pro = FALSE, parallel.cores = 2, ...)
+featureMotifs(
+  seqRNA,
+  seqPro,
+  label = NULL,
+  featureMode = c("concatenate", "combine"),
+  newMotif.RNA = NULL,
+  newMotif.Pro = NULL,
+  newMotifOnly.RNA = FALSE,
+  newMotifOnly.Pro = FALSE,
+  parallel.cores = 2,
+  cl = NULL,
+  ...
+)
 }
 \arguments{
-\item{seqRNA}{RNA sequences loaded by function \code{\link[seqinr]{read.fasta}} of package
-"seqinr" (\code{\link[seqinr]{seqinr-package}}). Or a list of RNA sequences.
+\item{seqRNA}{RNA sequences loaded by function \code{\link[seqinr]{read.fasta}} from \code{\link[seqinr]{seqinr-package}}. Or a list of RNA sequences.
 RNA sequences will be converted into lower case letters.}
 
-\item{seqPro}{protein sequences loaded by function \code{\link[seqinr]{read.fasta}} of package
-"seqinr" (\code{\link[seqinr]{seqinr-package}}). Or a list of protein sequences.
+\item{seqPro}{protein sequences loaded by function \code{\link[seqinr]{read.fasta}} from \code{\link[seqinr]{seqinr-package}}. Or a list of protein sequences.
 Protein sequences will be converted into upper case letters.}
 
 \item{label}{optional. A string that indicates the class of the samples such as
@@ -26,13 +33,13 @@ If \code{"concatenate"}, the motif features of RNA and proteins will be simply c
 If \code{"combine"}, the returned dataset will be formed by combining the motif features of RNA and proteins.
 See details below. Default: \code{"concatenate"}.}
 
-\item{newMotif.RNA}{list specifying the motifs that are counted in RNA sequences. Default: \code{NULL}.
+\item{newMotif.RNA}{a list specifying the motifs that are counted in RNA sequences. Default: \code{NULL}.
 For example, \code{newMotif = list(hnRNPA1 = c("UAGGGU", "UAGGGA"), SF1 = "UACUAAC")}.
-Can be used with parameter \code{motifRNA} (see parameter \code{...}) to count various motifs.}
+Can be used with parameter \code{motifRNA} (see parameter \code{...}) to count motifs in RNA sequences.}
 
-\item{newMotif.Pro}{list specifying the motifs that are counted in protein sequences. Default: \code{NULL}.
+\item{newMotif.Pro}{a list specifying the motifs that are counted in protein sequences. Default: \code{NULL}.
 For example, \code{newMotif = list(YGG = "YGG", E = "E")}.
-Can be used with parameter \code{motifPro} (see parameter \code{...}) to count various motifs.}
+Can be used with parameter \code{motifPro} (see parameter \code{...}) to count motifs in protein sequences.}
 
 \item{newMotifOnly.RNA}{logical. If \code{TRUE}, only the new motifs defined in \code{newMotif.RNA} will be counted.
 Default: \code{FALSE}.}
@@ -41,16 +48,19 @@ Default: \code{FALSE}.}
 Default: \code{FALSE}.}
 
 \item{parallel.cores}{an integer that indicates the number of cores for parallel computation. Default: \code{2}.
-Set \code{parallel.cores = -1} to run with all the cores.}
+Set \code{parallel.cores = -1} to run with all the cores. \code{parallel.cores} should be == -1 or >= 1.}
 
-\item{...}{arguments (\code{motifRNA} and \code{motifPro}) passed to \code{\link{computeMotifs}}. See example below.}
+\item{cl}{parallel cores to be passed to this function.}
+
+\item{...}{argument \code{motifRNA} and \code{motifPro} to be passed to \code{\link{computeMotifs}}.
+Used to compute the default motifs. See examples below.}
 }
 \value{
 This function returns a data frame. Row names are the sequences names, and column names are the motif names.
-The names of RNA and protein sequences are seperated with ".",
-i.e. the row names format: ""\emph{RNASequenceName}.\emph{proteinSequenceName}" (e.g. "YDL227C.YOR198C").
-If \code{featureMode = "combine"}, the motif names of RNA and protein sequences are also seperated with ".",
-i.e. the column format: "motif_\emph{RNAMotifName}.motif_\emph{proteinMotifName}" (e.g. "motif_PUM.motif_EE").
+The names of RNA and protein sequences are separated with ".",
+i.e. row names format: "*RNASequenceName*.*proteinSequenceName*" (e.g. "YDL227C.YOR198C").
+If \code{featureMode = "combine"}, the motif names of RNA and protein sequences are also separated with ".",
+i.e. column names format: "motif_*RNAMotifName*.motif_*proteinMotifName*" (e.g. "motif_PUM.motif_EE").
 }
 \description{
 Basically a wrapper for \code{\link{computeMotifs}} function.
@@ -64,11 +74,11 @@ If \code{featureMode = "combine"}, \emph{m} RNA motif features will be
 combined with \emph{n} protein motif features, resulting in \emph{m} * \emph{n} possible combinations.
 
 \code{...} can be used to pass the default motif patterns of RNA and protein sequences.
-See details in \code{\link{computeMotifs}}.
+See arguments \code{motifRNA} and \code{motifPro} in \code{\link{computeMotifs}}.
 }
 \section{References}{
 
-[1] Han S, Liang Y, Li Y, \emph{et al}.
+[1] Han S, Liang Y, Ma Q, \emph{et al}.
 ncProR: an integrated R package for effective ncRNA-protein interaction prediction.
 (\emph{Submitted})
 

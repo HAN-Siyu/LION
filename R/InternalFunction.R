@@ -323,12 +323,6 @@ Internal.runRNAsubopt <- function(oneSeq, info = NULL, structureRNA.num = 6,
         index <- get("index")
 
         if (verbose) {
-                # if(is.null(info)) {
-                #         outinfo <- paste(" ", index, "length:", nchar(oneSeq), "nt", "\n")
-                # } else {
-                #         outinfo <- paste(" ", index, "of", info, "length:", nchar(oneSeq), "nt", "\n")
-                # }
-
                 outinfo <- paste(" ", index, "of", info, "length:", nchar(oneSeq), "nt", "\n")
                 cat(outinfo)
         }
@@ -343,6 +337,7 @@ Internal.runRNAsubopt <- function(oneSeq, info = NULL, structureRNA.num = 6,
                         x[x %in% "."] <- "0"
                         x[x %in% c("(", ")")] <- "1"
                         x <- as.numeric(x)
+                        return(x)
                 })
                 RNAsubopt.sum <- rowSums(RNAsubopt.num)
                 return(RNAsubopt.sum)
@@ -389,7 +384,7 @@ Internal.runPredator <- function(oneSeq, info = NULL, path.Predator, path.stride
         SS.Seq <- paste0(SS.Seq, collapse = "")
 
         # if(nchar(SS.Seq) != length(unlist(oneSeq))) stop("Extracting Secondary Structure of Protein Failed!")
-        if (length(SS.Seq) == length(unlist(oneSeq))) {
+        if (nchar(SS.Seq) == length(unlist(oneSeq))) {
                 if (file.exists(path.tmpFile)) file.remove(path.tmpFile)
                 # write.fasta(oneSeq, names = "Question Seq", file.out = paste0("QuestionSeq.", index, ".fa"), as.string = FALSE)
         } else {
@@ -770,6 +765,61 @@ Internal.randomForest_CV <- function(datasets = list(), all_folds, label.col = 1
         Ave.res <- as.data.frame(t(Ave.res))
         Ave.res$Ave.Res <- rowMeans(Ave.res)
         Ave.res
+}
+
+Internal.randomForest_tune <- function(datasets = list(), label.col = 1,
+                                       positive.class = NULL, folds.num = 10,
+                                       ntree.range = c(200, 500, 1000, 1500, 2000),
+                                       seed = 1, return.model = TRUE,
+                                       parallel.cores = 2, ...) {
+
+        for (i in 1:length(datasets)) {
+                names(datasets[[i]])[[label.col]] <- "label"
+        }
+
+        all_folds <- lapply(datasets, function(x) {
+                set.seed(seed)
+                folds <- caret::createFolds(x$label, k = folds.num, returnTrain = TRUE)
+        })
+
+        if (is.null(positive.class)) {
+                positive.class <- as.character(datasets[[1]]$label[[1]])
+        }
+
+        ntree.range <- sort(unique(ntree.range))
+        perf_tune <- data.frame()
+
+        parallel.cores <- ifelse(parallel.cores == -1, parallel::detectCores(), parallel.cores)
+        parallel.cores <- ifelse(parallel.cores > folds.num, folds.num, parallel.cores)
+
+        cl <- parallel::makeCluster(parallel.cores)
+
+        for (ntree in ntree.range) {
+                message("- ntree - ", ntree, "   ", Sys.time())
+
+                ntree_res <- Internal.randomForest_CV(datasets = datasets, label.col = label.col,
+                                                      positive.class = positive.class, ntree = ntree,
+                                                      folds.num = folds.num, all_folds = all_folds,
+                                                      cl = cl, ...)
+                ntree_perf <- t(ntree_res[folds.num + 1])
+                row.names(ntree_perf) <- paste0("ntree_", ntree)
+                perf_tune <- rbind(perf_tune, ntree_perf)
+                print(ntree_perf)
+        }
+        parallel::stopCluster(cl)
+
+        output <- ntree.range[which.max(perf_tune$Accuracy)]
+        message("- Optimal ntree: ", output)
+
+        if (return.model) {
+                message("\n+ Training the model...   ", Sys.time())
+                trainSet <- do.call("rbind", datasets)
+                output <- randomForest::randomForest(label ~ ., data = trainSet,
+                                                     ntree = output, ...)
+        } else {
+                output = list(ntree = output, performance = perf_tune)
+        }
+        output
 }
 
 Internal.checkNa <- function(dataset) {

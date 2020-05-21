@@ -4,32 +4,37 @@
 \alias{computePhysChem_AAindex}
 \title{Computation of the AAindex-Based Physicochemical Features of Protein Sequences}
 \usage{
-computePhysChem_AAindex(seqPro, entry.index = NULL, Fourier.len = 10,
-  parallel.cores = 2)
+computePhysChem_AAindex(
+  seqPro,
+  entry.index = NULL,
+  Fourier.len = 10,
+  parallel.cores = 2,
+  cl = NULL
+)
 }
 \arguments{
-\item{seqPro}{protein sequences loaded by function \code{\link[seqinr]{read.fasta}} of package
-"seqinr".
+\item{seqPro}{protein sequences loaded by function \code{\link[seqinr]{read.fasta}} from \code{\link[seqinr]{seqinr-package}}.
 Each sequence should be a vector of single characters.}
 
-\item{entry.index}{The entry number of AAindex. For example the entry number of the
-Kyte & Doolittle Hydrophaty index is 151, and the entry number of Hopp-Woods Hydrophilicity value is 115. And
+\item{entry.index}{The entry number of AAindex. For example the entry number of "Kyte & Doolittle Hydrophaty"
+index is 151, and the entry number of "Hopp-Woods Hydrophilicity" is 115. Thus,
 the corresponding \code{entry.index} is \code{c(151, 115)} for these two physicochemical indices. See examples and \code{\link[seqinr]{aaindex}} of
 "seqinr" package.}
 
-\item{Fourier.len}{postive integer specifying the Fourier series length that will be used as features.
+\item{Fourier.len}{positive integer specifying the Fourier series length that will be used as features.
 The \code{Fourier.len} should be >= the length of the input sequence. Default: \code{10}.}
 
 \item{parallel.cores}{an integer that indicates the number of cores for parallel computation. Default: \code{2}.
-Set \code{parallel.cores = -1} to run with all the cores.}
+Set \code{parallel.cores = -1} to run with all the cores. \code{parallel.cores} should be == -1 or >= 1.}
+
+\item{cl}{parallel cores to be passed to this function.}
 }
 \value{
 This function returns a data frame.
 }
 \description{
 The function \code{computePhysChem_AAindex} computes the physicochemical features of
-protein sequences with the help of AAindex provided by \code{\link[seqinr]{aaindex}} of package
-"seqinr" (\code{\link[seqinr]{seqinr-package}}).
+protein sequences with the help of AAindex provided by \code{\link[seqinr]{aaindex}} from \code{\link[seqinr]{seqinr-package}}.
 }
 \section{References}{
 
@@ -48,18 +53,19 @@ seqs <- demoPositiveSeq$Pro.positive
 data(aaindex, package = "seqinr")
 
 # Check the aaindex list provided by package "seqinr":
-# ?seqinr::aaindex
 
-# Supose that we need the Kyte & Doolittle Hydrophaty index,
+?seqinr::aaindex
+
+# Supose that we need "Kyte & Doolittle Hydrophaty" index,
 # and we can find the entries with Kyte as author:
 
 which(sapply(aaindex, function(x) length(grep("Kyte", x$A)) != 0))
 
 # This returns entry number 151.
-# And 151 is the entry.index used by function computePhysChem_AAindex.
+# And 151 is the "entry.index" used by this function.
 # Users can also obtain the entry number by retrieving information in other
-# fields such as x$D (Data description) or x$T (Title of the article).
-# See documentation of seqinr::aaindex for detailed information.
+# fields such as "x$D" (Data description) or "x$T" (Title of the article).
+# See documentation of "seqinr::aaindex" for detailed information.
 
 feature_aaindex_1 <- computePhysChem_AAindex(seqPro = seqs, entry.index = 151,
                                              Fourier.len = 10, parallel.cores = 2)
@@ -71,5 +77,5 @@ feature_aaindex_2 <- computePhysChem_AAindex(seqPro = seqs, entry.index = c(151,
 
 }
 \seealso{
-\code{\link{computePhysChem}}
+\code{\link{computePhysChem}}, \code{\link[seqinr]{aaindex}}
 }

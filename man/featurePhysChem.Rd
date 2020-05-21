@@ -4,16 +4,21 @@
 \alias{featurePhysChem}
 \title{Extraction of the Physicochemical Features of RNA and Protein Sequences}
 \usage{
-featurePhysChem(seqRNA, seqPro, label = NULL, parallel.cores = 2, ...)
+featurePhysChem(
+  seqRNA,
+  seqPro,
+  label = NULL,
+  parallel.cores = 2,
+  cl = NULL,
+  ...
+)
 }
 \arguments{
-\item{seqRNA}{RNA sequences loaded by function \code{\link[seqinr]{read.fasta}} of package
-"seqinr" (\code{\link[seqinr]{seqinr-package}}). Or a list of RNA sequences.
+\item{seqRNA}{RNA sequences loaded by function \code{\link[seqinr]{read.fasta}} from \code{\link[seqinr]{seqinr-package}}. Or a list of RNA sequences.
 RNA sequences will be converted into lower case letters.
 Each sequence should be a vector of single characters.}
 
-\item{seqPro}{protein sequences loaded by function \code{\link[seqinr]{read.fasta}} of package
-"seqinr" (\code{\link[seqinr]{seqinr-package}}). Or a list of protein sequences.
+\item{seqPro}{protein sequences loaded by function \code{\link[seqinr]{read.fasta}} from \code{\link[seqinr]{seqinr-package}}. Or a list of protein sequences.
 Protein sequences will be converted into upper case letters.
 Each sequence should be a vector of single characters.}
 
@@ -21,10 +26,12 @@ Each sequence should be a vector of single characters.}
 "Interact", "Non.Interact". Default: \code{NULL}}
 
 \item{parallel.cores}{an integer that indicates the number of cores for parallel computation.
-Default: \code{2}. Set \code{parallel.cores = -1} to run with all the cores.}
+Default: \code{2}. Set \code{parallel.cores = -1} to run with all the cores. \code{parallel.cores} should be == -1 or >= 1.}
 
-\item{...}{arguments (\code{Fourier.len}, \code{physchemRNA}, and \code{physchemPro})
-passed to \code{\link{computePhysChem}}. See examples below.}
+\item{cl}{parallel cores to be passed to this function.}
+
+\item{...}{arguments (\code{Fourier.len}, \code{physchemRNA} and \code{physchemPro}) to be
+passed to \code{\link{computePhysChem}}. See \code{\link{computePhysChem}} and examples below.}
 }
 \value{
 This function returns a data frame.
@@ -39,7 +46,7 @@ see \code{\link{computePhysChem}}.
 }
 \section{References}{
 
-[1] Han S, Liang Y, Li Y, \emph{et al}.
+[1] Han S, Liang Y, Ma Q, \emph{et al}.
 ncProR: an integrated R package for effective ncRNA-protein interaction prediction.
 (\emph{Submitted})
 
@@ -87,6 +94,8 @@ data(demoPositiveSeq)
 seqsRNA <- demoPositiveSeq$RNA.positive
 seqsPro <- demoPositiveSeq$Pro.positive
 
+# Pass "Fourier.len", "physchemRNA" and "physchemPro" using "..." argument:
+
 dataset1 <- featurePhysChem(seqRNA = seqsRNA, seqPro = seqsPro,
                             label = "Interact", Fourier.len = 10,
                             physchemRNA = c("hydrogenBonding", "vanderWaal"),
@@ -94,7 +103,9 @@ dataset1 <- featurePhysChem(seqRNA = seqsRNA, seqPro = seqsPro,
                                             "hphob.BullBreese", "hphob.KyteDoolittle",
                                             "hphob.Eisenberg", "hphob.HoppWoods"))
 
-dataset2 <- featurePhysChem(seqRNA = seqsRNA, seqPro = seqsPro, Fourier.len = 12)
+# Using the default setting:
+
+dataset2 <- featurePhysChem(seqRNA = seqsRNA, seqPro = seqsPro)
 
 }
 \seealso{

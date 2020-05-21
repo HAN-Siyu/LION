@@ -2,9 +2,8 @@
 #' @description This function generates a list of sequences according to the specified indices.
 #' The sequence list can be used as input for feature extraction or prediction.
 #'
-#' @param idx specifiying the sequence indices.
-#' @param seqs sequences loaded by function \code{\link[seqinr]{read.fasta}} of package
-#' "seqinr" (\code{\link[seqinr]{seqinr-package}}). Or a list of sequences.
+#' @param idx specifying the sequence indices.
+#' @param seqs sequences loaded by function \code{\link[seqinr]{read.fasta}} from \code{\link[seqinr]{seqinr-package}}. Or a list of sequences.
 #'
 #' @return This function returns a list.
 #'
@@ -43,9 +42,9 @@ formatSeq <- function(idx, seqs) {
 
 #' Normalize Data
 #' @description This function is used to normalize dataset.
-#' @param dataset input dataset. As a dataframe.
-#' @param direction \code{"row"} or {"column"} to indicate the normalization direction. (see details)
-#' @param returnNorm logical. Used for \code{direction = "column"}. The function will return nomalized
+#' @param dataset input dataset. As a data frame.
+#' @param direction \code{"row"} or {"column"} to indicate the normalization direction (see details).
+#' @param returnNorm logical. Used for \code{direction = "column"}. The function will return normalized
 #' data that can be used to process new dataset (test sets, for example).
 #' Ignored when \code{direction = "row"}.
 #' @param ignoreColumn numeric or \code{NULL}. Input the column number of the dataset
@@ -130,8 +129,8 @@ normalizeData <- function(dataset, direction = c("row", "column"),
 #' @param folds.num an integer. Number of folds. Default \code{10} for 10-fold cross validation.
 #' @param ntree parameter for random forest. Default: 1500. See \code{\link[randomForest]{randomForest}}.
 #' @param seed random seed for data splitting. Integer.
-#' @param parallel.cores an integer specfying the number of cores for parallel computation. Default: \code{2}.
-#' Set \code{parallel.cores = -1} to run with all the cores.
+#' @param parallel.cores an integer specifying the number of cores for parallel computation. Default: \code{2}.
+#' Set \code{parallel.cores = -1} to run with all the cores. \code{parallel.cores} should be == -1 or >= 1.
 #' @param ... other parameters passed to \code{\link[randomForest]{randomForest}} function.
 #' @return This function return the performance of \emph{k}-fold CV.
 #'
@@ -169,7 +168,7 @@ normalizeData <- function(dataset, direction = c("row", "column"),
 #'                            parallel.cores = 2, importance = TRUE, mtry = 20)
 #'
 #' # if you have more than one input dataset,
-#' # use code list(dataset1, dataset2, dataset3)
+#' # use "datasets = list(dataset1, dataset2, dataset3)".
 #'
 #' @export
 
@@ -244,16 +243,16 @@ randomForest_CV <- function(datasets = list(), label.col = 1,
 #' of the classes in label column. The first class in label column will be selected
 #' as the positive class if leave \code{positive.class = NULL}.
 #' @param folds.num an integer. Number of folds. Default \code{10} for 10-fold cross validation.
-#' @param ntree.range parameter for random forest. Used to indicate the range of ntree.
+#' @param ntree.range parameter for random forest. Used to indicate the range of \code{ntree}.
 #' Default: \code{c(200, 500, 1000, 1500, 2000)}.
 #' @param seed random seed for data splitting. Integer.
 #' @param return.model logical. If \code{TRUE}, the function will return a random forest
-#' model built with the optimal ntree. The trainging set is the combination of all input datasets.
-#' @param parallel.cores an integer specfying the number of cores for parallel computation. Default: \code{2}.
-#' Set \code{parallel.cores = -1} to run with all the cores.
+#' model built with the optimal \code{ntree}. The training set is the combination of all input datasets.
+#' @param parallel.cores an integer specifying the number of cores for parallel computation. Default: \code{2}.
+#' Set \code{parallel.cores = -1} to run with all the cores. \code{parallel.cores} should be == -1 or >= 1.
 #' @param ... other parameters passed to \code{\link[randomForest]{randomForest}} function.
-#' @return If \code{return.model = TRUR}, the function returns a randomForest model.
-#' If \code{FALSE}, the function returns the optimal ntree and the performance.
+#' @return If \code{return.model = TRUR}, the function returns a random forest model.
+#' If \code{FALSE}, the function returns the optimal \code{ntree} and the performance.
 #'
 #'
 #' @importFrom caret createFolds
@@ -295,7 +294,7 @@ randomForest_CV <- function(datasets = list(), label.col = 1,
 #'                                importance = TRUE, mtry = 20)
 #'
 #' # if you have more than one input dataset,
-#' # use code list(dataset1, dataset2, dataset3)
+#' # use "datasets = list(dataset1, dataset2, dataset3)".
 #'
 #' @export
 
@@ -325,7 +324,7 @@ randomForest_tune <- function(datasets = list(), label.col = 1,
         parallel.cores <- ifelse(parallel.cores == -1, parallel::detectCores(), parallel.cores)
         parallel.cores <- ifelse(parallel.cores > folds.num, folds.num, parallel.cores)
 
-        if (parallel.cores == 2) message("- Users can try to set parallel.cores = -1 to use all cores!")
+        if (parallel.cores == 2 & folds.num != 2) message("- Users can try to set parallel.cores = -1 to use all cores!")
 
         cl <- parallel::makeCluster(parallel.cores)
 
@@ -374,10 +373,10 @@ randomForest_tune <- function(datasets = list(), label.col = 1,
 #' @param folds.num an integer. Number of folds. Default \code{10} for 10-fold cross validation.
 #' @param ntree parameter for random forest. Default: 1500. See \code{\link[randomForest]{randomForest}}.
 #' @param seed random seed for data splitting. Integer.
-#' @param parallel.cores an integer specfying the number of cores for parallel computation. Default: \code{2}.
-#' Set \code{parallel.cores = -1} to run with all the cores.
+#' @param parallel.cores an integer specifying the number of cores for parallel computation. Default: \code{2}.
+#' Set \code{parallel.cores = -1} to run with all the cores. \code{parallel.cores} should be == -1 or >= 1.
 #' @param ... other parameters passed to \code{\link[randomForest]{randomForest}} function.
-#' @return The function returns a list containing importance scores and relevent performance of the features.
+#' @return The function returns a list containing importance scores and relevant performance of the features.
 #'
 #'
 #' @importFrom caret createFolds
@@ -419,7 +418,7 @@ randomForest_tune <- function(datasets = list(), label.col = 1,
 #'                              parallel.cores = 2, mtry = 20)
 #'
 #' # if you have more than one input dataset,
-#' # use code list(dataset1, dataset2, dataset3)
+#' # use "datasets = list(dataset1, dataset2, dataset3)".
 #'
 #' @export
 
@@ -550,4 +549,3 @@ randomForest_RFE <- function(datasets = list(), label.col = 1, positive.class = 
 
         outRes
 }
-

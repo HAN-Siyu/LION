@@ -4,9 +4,16 @@
 \alias{randomForest_CV}
 \title{Evaluation of Random Forest Classifier with K-Fold Cross Validation}
 \usage{
-randomForest_CV(datasets = list(), label.col = 1,
-  positive.class = NULL, folds.num = 10, ntree = 1500, seed = 1,
-  parallel.cores = 2, ...)
+randomForest_CV(
+  datasets = list(),
+  label.col = 1,
+  positive.class = NULL,
+  folds.num = 10,
+  ntree = 1500,
+  seed = 1,
+  parallel.cores = 2,
+  ...
+)
 }
 \arguments{
 \item{datasets}{a list containing one or several input datasets. See examples.}
@@ -23,8 +30,8 @@ as the positive class if leave \code{positive.class = NULL}.}
 
 \item{seed}{random seed for data splitting. Integer.}
 
-\item{parallel.cores}{an integer specfying the number of cores for parallel computation. Default: \code{2}.
-Set \code{parallel.cores = -1} to run with all the cores.}
+\item{parallel.cores}{an integer specifying the number of cores for parallel computation. Default: \code{2}.
+Set \code{parallel.cores = -1} to run with all the cores. \code{parallel.cores} should be == -1 or >= 1.}
 
 \item{...}{other parameters passed to \code{\link[randomForest]{randomForest}} function.}
 }
@@ -57,7 +64,7 @@ Perf_CV <- randomForest_CV(datasets = list(dataset), label.col = 1, ntree = 100,
                            parallel.cores = 2, importance = TRUE, mtry = 20)
 
 # if you have more than one input dataset,
-# use code list(dataset1, dataset2, dataset3)
+# use "datasets = list(dataset1, dataset2, dataset3)".
 
 }
 \seealso{

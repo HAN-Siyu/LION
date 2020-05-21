@@ -4,10 +4,17 @@
 \alias{randomForest_tune}
 \title{Find the Best Number of Trees for Random Forest Classifier Using K-Fold Cross Validation}
 \usage{
-randomForest_tune(datasets = list(), label.col = 1,
-  positive.class = NULL, folds.num = 10, ntree.range = c(200, 500,
-  1000, 1500, 2000), seed = 1, return.model = TRUE,
-  parallel.cores = 2, ...)
+randomForest_tune(
+  datasets = list(),
+  label.col = 1,
+  positive.class = NULL,
+  folds.num = 10,
+  ntree.range = c(200, 500, 1000, 1500, 2000),
+  seed = 1,
+  return.model = TRUE,
+  parallel.cores = 2,
+  ...
+)
 }
 \arguments{
 \item{datasets}{should be a list containing one or several input datasets. See examples.}
@@ -20,22 +27,22 @@ as the positive class if leave \code{positive.class = NULL}.}
 
 \item{folds.num}{an integer. Number of folds. Default \code{10} for 10-fold cross validation.}
 
-\item{ntree.range}{parameter for random forest. Used to indicate the range of ntree.
+\item{ntree.range}{parameter for random forest. Used to indicate the range of \code{ntree}.
 Default: \code{c(200, 500, 1000, 1500, 2000)}.}
 
 \item{seed}{random seed for data splitting. Integer.}
 
 \item{return.model}{logical. If \code{TRUE}, the function will return a random forest
-model built with the optimal ntree. The trainging set is the combination of all input datasets.}
+model built with the optimal \code{ntree}. The training set is the combination of all input datasets.}
 
-\item{parallel.cores}{an integer specfying the number of cores for parallel computation. Default: \code{2}.
-Set \code{parallel.cores = -1} to run with all the cores.}
+\item{parallel.cores}{an integer specifying the number of cores for parallel computation. Default: \code{2}.
+Set \code{parallel.cores = -1} to run with all the cores. \code{parallel.cores} should be == -1 or >= 1.}
 
 \item{...}{other parameters passed to \code{\link[randomForest]{randomForest}} function.}
 }
 \value{
-If \code{return.model = TRUR}, the function returns a randomForest model.
-If \code{FALSE}, the function returns the optimal ntree and the performance.
+If \code{return.model = TRUR}, the function returns a random forest model.
+If \code{FALSE}, the function returns the optimal \code{ntree} and the performance.
 }
 \description{
 Find the Best Number of Trees for Random Forest Classifier Using K-Fold Cross Validation
@@ -69,7 +76,7 @@ Perf_tune <- randomForest_tune(datasets = list(dataset), label.col = 1,
                                importance = TRUE, mtry = 20)
 
 # if you have more than one input dataset,
-# use code list(dataset1, dataset2, dataset3)
+# use "datasets = list(dataset1, dataset2, dataset3)".
 
 }
 \seealso{

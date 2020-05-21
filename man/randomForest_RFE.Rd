@@ -4,9 +4,17 @@
 \alias{randomForest_RFE}
 \title{Feature Selection Using Random Forest Classifier and Recursive Feature Elimination}
 \usage{
-randomForest_RFE(datasets = list(), label.col = 1,
-  positive.class = NULL, featureNum.range = NULL, folds.num = 10,
-  ntree = 1500, seed = 1, parallel.cores = 2, ...)
+randomForest_RFE(
+  datasets = list(),
+  label.col = 1,
+  positive.class = NULL,
+  featureNum.range = NULL,
+  folds.num = 10,
+  ntree = 1500,
+  seed = 1,
+  parallel.cores = 2,
+  ...
+)
 }
 \arguments{
 \item{datasets}{should be a list containing one or several input datasets. See examples.}
@@ -30,13 +38,13 @@ i.e. \code{c(1, 26, 50, 75, 100)} for 100-dimension feature set.}
 
 \item{seed}{random seed for data splitting. Integer.}
 
-\item{parallel.cores}{an integer specfying the number of cores for parallel computation. Default: \code{2}.
-Set \code{parallel.cores = -1} to run with all the cores.}
+\item{parallel.cores}{an integer specifying the number of cores for parallel computation. Default: \code{2}.
+Set \code{parallel.cores = -1} to run with all the cores. \code{parallel.cores} should be == -1 or >= 1.}
 
 \item{...}{other parameters passed to \code{\link[randomForest]{randomForest}} function.}
 }
 \value{
-The function returns a list containing importance scores and relevent performance of the features.
+The function returns a list containing importance scores and relevant performance of the features.
 }
 \description{
 Feature Selection Using Random Forest Classifier and Recursive Feature Elimination
@@ -70,7 +78,7 @@ Perf_RFE <- randomForest_RFE(datasets = list(dataset), label.col = 1,
                              parallel.cores = 2, mtry = 20)
 
 # if you have more than one input dataset,
-# use code list(dataset1, dataset2, dataset3)
+# use "datasets = list(dataset1, dataset2, dataset3)".
 
 }
 \seealso{

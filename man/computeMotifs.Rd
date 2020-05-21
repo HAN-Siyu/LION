@@ -4,16 +4,21 @@
 \alias{computeMotifs}
 \title{Counting the Number of Motifs in RNA or Protein Sequences}
 \usage{
-computeMotifs(seqs, seqType = c("RNA", "Pro"), motifRNA = c("rpiCOOL",
-  "Fox1", "Nova", "Slm2", "Fusip1", "PTB", "ARE", "hnRNPA1", "PUM", "U1A",
-  "HuD", "QKI", "U2B", "SF1", "HuR", "YB1", "AU", "UG", "selected5"),
-  motifPro = c("rpiCOOL", "E", "H", "K", "R", "H_R", "EE", "KK", "HR_RH",
-  "RS_SR", "RGG", "YGG"), newMotif = NULL, newMotifOnly = FALSE,
-  parallel.cores = 2)
+computeMotifs(
+  seqs,
+  seqType = c("RNA", "Pro"),
+  motifRNA = c("rpiCOOL", "Fox1", "Nova", "Slm2", "Fusip1", "PTB", "ARE", "hnRNPA1",
+    "PUM", "U1A", "HuD", "QKI", "U2B", "SF1", "HuR", "YB1", "AU", "UG", "selected5"),
+  motifPro = c("rpiCOOL", "E", "H", "K", "R", "H_R", "EE", "KK", "HR_RH", "RS_SR",
+    "RGG", "YGG"),
+  newMotif = NULL,
+  newMotifOnly = FALSE,
+  parallel.cores = 2,
+  cl = NULL
+)
 }
 \arguments{
-\item{seqs}{sequences loaded by function \code{\link[seqinr]{read.fasta}} of package
-"seqinr" (\code{\link[seqinr]{seqinr-package}}). Or a list of RNA/protein sequences.
+\item{seqs}{sequences loaded by function \code{\link[seqinr]{read.fasta}} from \code{\link[seqinr]{seqinr-package}}. Or a list of RNA/protein sequences.
 RNA sequences will be converted into lower case letters, but
 protein sequences will be converted into upper case letters.
 Each sequence should be a vector of single characters.}
@@ -28,7 +33,7 @@ Options: \code{"rpiCOOL"}, \code{"selected5"},
 \code{"PUM"}, \code{"U1A"}, \code{"HuD"}, \code{"QKI"}, \code{"U2B"}, \code{"SF1"}, \code{"HuR"}, \code{"YB1"},
 \code{"AU"}, and \code{"UG"}. Multiple elements can be selected at the same time.
 If \code{"rpiCOOL"}, all default motifs will be counted.
-\code{"selected5"} indicates the the total number of the occurrences of: PUM, Fox-1, U1A, Nova, and ARE which
+\code{"selected5"} indicates the total number of the occurrences of: PUM, Fox-1, U1A, Nova, and ARE which
 are regarded as the five most over-presented binding motifs. See details below.}
 
 \item{motifPro}{strings specifying the motifs that are counted in protein sequences. Ignored if \code{seqType = "RNA"}.
@@ -38,22 +43,24 @@ Options: \code{"rpiCOOL"}, \code{"E"}, \code{"H"}, \code{"K"}, \code{"R"}, \code
 \code{"H_R"} indicates the total number of the occurrences of: H and R.
 \code{"HR_RH"} indicates the total number of the occurrences of: HR and RH.
 \code{"RS_SR"} indicates the total number of the occurrences of: RS and SR.
-If \code{"rpiCOOL"}, default motifs of rpiCOOL (\code{"E"}, \code{"K"}, \code{"H_R"},
+If \code{"rpiCOOL"}, the default motifs of rpiCOOL (\code{"E"}, \code{"K"}, \code{"H_R"},
 \code{"EE"}, \code{"KK"}, \code{"RS_SR"}, \code{"RGG"}, and \code{"YGG"}) will be counted.
 See details below.}
 
 \item{newMotif}{list defining new motifs not listed above. New motifs are counted in RNA or protein sequences.
 For example, \code{newMotif = list(hnRNPA1 = c("UAGGGU", "UAGGGA"), SF1 = "UACUAAC")}.
-This parameter can be used together with parameter \code{motifRNA} or \code{motifPro} to count various motifs. Default: \code{NULL}.}
+This parameter can be used together with parameter \code{motifRNA} or \code{motifPro}. Default: \code{NULL}.}
 
 \item{newMotifOnly}{logical. If \code{TRUE}, only the new motifs defined in \code{newMotif} will be counted.
 Default: \code{FALSE}.}
 
-\item{parallel.cores}{an integer specfying the number of cores for parallel computation. Default: \code{2}.
-Set \code{parallel.cores = -1} to run with all the cores.}
+\item{parallel.cores}{an integer specifying the number of cores for parallel computation. Default: \code{2}.
+Set \code{parallel.cores = -1} to run with all the cores. \code{parallel.cores} should be == -1 or >= 1.}
+
+\item{cl}{parallel cores to be passed to this function.}
 }
 \value{
-This function returns a data frame. Row names are the sequences names, and column names are the motif names.
+This function returns a data frame. Row names are sequences names, and column names are motif names.
 }
 \description{
 Counts the number of motifs occurring in RNA/protein sequences. Motifs employed by tool "rpiCOOL"
@@ -88,7 +95,7 @@ The default motifs are selected or derived from tool "rpiCOOL" (Ref: [2]).
 
 If \code{"rpiCOOL"}, all default motifs will be counted, and there is no need to input other default motifs.
 \code{"selected5"} indicates the total number of the occurrences of: PUM, Fox-1, U1A, Nova, and ARE which
-are regarded as the five most over-presented binding motifs.}
+are regarded as the five most over-represented binding motifs.}
 
 \item Motifs of protein
 
@@ -113,10 +120,18 @@ There are some minor differences between this function and the extraction scheme
 In this function, motifs will be scanned directly.
 As to the extraction scheme of rpiCOOL, some motifs (\code{"UG"}, \code{"AU"}, and \code{"H_R"})
 are scanned in a 10 nt/aa sliding-window.
+
+New motif patterns are also supported. Users can pass new patterns to argument "newMotif" as a list.
+Format:
+
+\code{newMotif = list(*motif_name* = c("*motif_pattern_1*", "*motif_pattern_2*"))}.
+
+For example: \code{newMotif = list(HR_RH = c("HR", "RH"), RGG = "RGG")}.
+*HR_RH* is the name of this motif which contains two patterns: "HR" and "RH".
 }
 \section{References}{
 
-[1] Han S, Liang Y, Li Y, \emph{et al}.
+[1] Han S, Liang Y, Ma Q, \emph{et al}.
 ncProR: an integrated R package for effective ncRNA-protein interaction prediction.
 (\emph{Submitted})
 
@@ -148,14 +163,22 @@ seqsPro <- demoPositiveSeq$Pro.positive
 
 motifRNA1 <- computeMotifs(seqsRNA, seqType = "RNA", motifRNA = "rpiCOOL",
                            parallel.cores = 2)
+
 motifRNA2 <- computeMotifs(seqsRNA, seqType = "RNA",
                            motifRNA = c("Fox1", "HuR", "ARE"), parallel.cores = 2)
 
 motifPro1 <- computeMotifs(seqsPro, seqType = "Pro",
                            motifPro = c("rpiCOOL", "HR_RH"), parallel.cores = 2)
+
+# Customized motifs are also supported and can be extracted with default motifs.
+# Pass new motif patterns to "newMotif" argument as a list:
+
 motifPro2 <- computeMotifs(seqsPro, seqType = "Pro", motifPro = c("E", "K", "KK"),
                            newMotif = list(HR_RH = c("HR", "RH"), RGG = "RGG"),
                            parallel.cores = 2)
+
+# set "newMotifOnly = TRUE", if compute customized motifs only:
+
 motifPro3 <- computeMotifs(seqsPro, seqType = "Pro",
                            newMotif = list(HR_RH = c("HR", "RH"), RGG = "RGG"),
                            newMotifOnly = TRUE, parallel.cores = 2)

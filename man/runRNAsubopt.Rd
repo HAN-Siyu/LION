@@ -4,12 +4,18 @@
 \alias{runRNAsubopt}
 \title{Run RNAsubopt in R}
 \usage{
-runRNAsubopt(seqs, structureRNA.num = 6, path.RNAsubopt = "RNAsubopt",
-  returnSum = FALSE, verbose = FALSE, parallel.cores = 2)
+runRNAsubopt(
+  seqs,
+  structureRNA.num = 6,
+  path.RNAsubopt = "RNAsubopt",
+  returnSum = FALSE,
+  verbose = FALSE,
+  parallel.cores = 2,
+  cl = NULL
+)
 }
 \arguments{
-\item{seqs}{RNA sequences loaded by function \code{\link[seqinr]{read.fasta}} of package
-"seqinr" (\code{\link[seqinr]{seqinr-package}}). Or a list of RNA/protein sequences.
+\item{seqs}{RNA sequences loaded by function \code{\link[seqinr]{read.fasta}} from \code{\link[seqinr]{seqinr-package}}. Or a list of RNA/protein sequences.
 RNA sequences will be converted into lower case letters.
 Each sequence should be a vector of single characters.}
 
@@ -26,7 +32,9 @@ new numeric sequence.}
 \item{verbose}{logical. Should the relevant information be printed during the calculation? (Only available on UNIX/Linux.)}
 
 \item{parallel.cores}{an integer that indicates the number of cores for parallel computation. Default: \code{2}.
-Set \code{parallel.cores = -1} to run with all the cores.}
+Set \code{parallel.cores = -1} to run with all the cores. \code{parallel.cores} should be == -1 or >= 1.}
+
+\item{cl}{parallel cores to be passed to this function.}
 }
 \value{
 This function returns a data frame that contains the raw outputs when \code{returnSum = FALSE}.
@@ -36,7 +44,7 @@ Or a list of numeric results of RNAsubopt when \code{returnSum = TRUE}.
 This function can run and capture the result of RNAsubopt (ViennaRNA Package) in R
 by invoking the OS command.
 The results can be formatted and used as the features of tool "catRAPID", "lncPro", etc.
-ViennaRNA Package is required.
+ViennaRNA Package is required (\url{http://www.tbi.univie.ac.at/RNA/index.html}).
 }
 \details{
 This function depends on the program "RNAsubopt" of software "ViennaRNA".
@@ -47,12 +55,12 @@ default when the OS is UNIX/Linux. However, for some OS, such as Windows, users
 need to specify the \code{path.RNAsubopt} if the path of "RNAsubopt" haven't been
 added in environment variables (e.g. \code{path.RNAsubopt = '"C:/Program Files/ViennaRNA/RNAsubopt.exe"'}).
 
-This function can print the related information when the OS is UNIX/Linux,
+This function can print the related information when running on Linux OS,
 such as:
 
 \code{"25 of 100, length: 695 nt"},
 
-which means around 100 sequences are assigned to this node, and the program is
+which means around 100 sequences are assigned to this node, and the program is now
 computing the 25th sequence. The length of this sequence is 695 nt.
 }
 \section{References}{
@@ -67,8 +75,15 @@ Algorithms Mol. Biol. 2011; 6:26
 data(demoPositiveSeq)
 seqsRNA <- demoPositiveSeq$RNA.positive
 
-RNAsubopt.res <- runRNAsubopt(seqs = seqsRNA, path.RNAsubopt = "RNAsubopt",
-                              returnSum = FALSE, parallel.cores = -1)
+path.RNAsubopt = "RNAsubopt" # you need to use your own paths
+
+RNAsubopt_1 <- runRNAsubopt(seqs = seqsRNA, path.RNAsubopt = path.RNAsubopt,
+                            returnSum = FALSE, verbose = TRUE,
+                            parallel.cores = 2)
+
+RNAsubopt_2 <- runRNAsubopt(seqs = seqsRNA, structureRNA.num = 6,
+                            path.RNAsubopt = path.RNAsubopt,
+                            returnSum = TRUE, parallel.cores = 2)
 }
 }
 \seealso{
