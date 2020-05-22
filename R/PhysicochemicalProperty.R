@@ -232,14 +232,14 @@ computePhysChem <- function(seqs, seqType = c("RNA", "Pro"), Fourier.len = 10,
                                             "hphob.Eisenberg", "hphob.HoppWoods"),
                             as.list = TRUE, parallel.cores = 2, cl = NULL) {
 
+        seqType <- match.arg(seqType)
+        physchemRNA <- match.arg(physchemRNA, several.ok = TRUE)
+        physchemPro <- match.arg(physchemPro, several.ok = TRUE)
+
         if (min(lengths(seqs)) < Fourier.len) stop("The profile length of Fourier Series (Fourier.len) cannot be larger than the minimum length of the input sequences!")
 
         data(aaindex, package = "seqinr", envir = environment())
         aaindex <- get("aaindex")
-
-        seqType <- match.arg(seqType)
-        physchemRNA <- match.arg(physchemRNA, several.ok = TRUE)
-        physchemPro <- match.arg(physchemPro, several.ok = TRUE)
 
         close_cl <- FALSE
         if (is.null(cl)) {

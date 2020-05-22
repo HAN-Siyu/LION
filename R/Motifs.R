@@ -98,7 +98,7 @@
 #' \code{newMotif = list(*motif_name* = c("*motif_pattern_1*", "*motif_pattern_2*"))}.
 #'
 #' For example: \code{newMotif = list(HR_RH = c("HR", "RH"), RGG = "RGG")}.
-#' *HR_RH* is the name of this motif which contains two patterns: "HR" and "RH".
+#' "HR_RH" is the name of this motif which contains two patterns: "HR" and "RH".
 #'
 #' @section References:
 #' [1] Han S, Liang Y, Ma Q, \emph{et al}.
@@ -167,6 +167,8 @@ computeMotifs <- function(seqs, seqType = c("RNA", "Pro"),
                           newMotif = NULL, newMotifOnly = FALSE, parallel.cores = 2, cl = NULL) {
 
         seqType <- match.arg(seqType)
+        motifRNA <- match.arg(motifRNA, several.ok = TRUE)
+        motifPro <- match.arg(motifPro, several.ok = TRUE)
 
         close_cl <- FALSE
         if (is.null(cl)) {

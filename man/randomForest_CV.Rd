@@ -61,7 +61,7 @@ dataNegative <- featureFreq(seqRNA = demoNegativeSeq$RNA.negative,
 dataset <- rbind(dataPositive, dataNegative)
 
 Perf_CV <- randomForest_CV(datasets = list(dataset), label.col = 1, ntree = 100,
-                           parallel.cores = 2, importance = TRUE, mtry = 20)
+                           parallel.cores = 2, mtry = 20)
 
 # if you have more than one input dataset,
 # use "datasets = list(dataset1, dataset2, dataset3)".

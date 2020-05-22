@@ -19,10 +19,11 @@ This function generates a list of sequences according to the specified indices.
 The sequence list can be used as input for feature extraction or prediction.
 }
 \details{
-This function is useful for generating the dataset with the specified indices and a sequence list.
-For example, the positive pairs of RNA-protein interactions have been provided, but the sequences
-are randomly listed in one file. This function can generate the sequence list according to the indices.
-See examples for more details.
+This function is useful for formatting the sequences using the specified indices (or names) and a sequence list.
+For example, the names of RNA-protein interaction pairs have been provided, but the sequences
+are randomly listed in one file. This function can generate a list containing the sequences whose names are listed
+in \code{idx} object.
+See examples below.
 }
 \examples{
 data(demoIDX)

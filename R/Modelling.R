@@ -7,10 +7,11 @@
 #'
 #' @return This function returns a list.
 #'
-#' @details This function is useful for generating the dataset with the specified indices and a sequence list.
-#' For example, the positive pairs of RNA-protein interactions have been provided, but the sequences
-#' are randomly listed in one file. This function can generate the sequence list according to the indices.
-#' See examples for more details.
+#' @details This function is useful for formatting the sequences using the specified indices (or names) and a sequence list.
+#' For example, the names of RNA-protein interaction pairs have been provided, but the sequences
+#' are randomly listed in one file. This function can generate a list containing the sequences whose names are listed
+#' in \code{idx} object.
+#' See examples below.
 #'
 #' @examples
 #' data(demoIDX)
@@ -112,7 +113,7 @@ normalizeData <- function(dataset, direction = c("row", "column"),
         dataset_out <- Internal.checkNa(dataset_out)
         if (!is.null(ignoreColumn)) dataset_out <- cbind(dataset_out, dataset[,ignoreColumn, drop = F])
 
-        if (returnNorm) {
+        if (direction == "column" & returnNorm) {
                 dataset_out <- list(feature = dataset_out,
                                     normData = list(direction = direction,
                                                     normMin = normMin, normMax = normMax))
@@ -165,7 +166,7 @@ normalizeData <- function(dataset, direction = c("row", "column"),
 #' dataset <- rbind(dataPositive, dataNegative)
 #'
 #' Perf_CV <- randomForest_CV(datasets = list(dataset), label.col = 1, ntree = 100,
-#'                            parallel.cores = 2, importance = TRUE, mtry = 20)
+#'                            parallel.cores = 2, mtry = 20)
 #'
 #' # if you have more than one input dataset,
 #' # use "datasets = list(dataset1, dataset2, dataset3)".
@@ -193,6 +194,8 @@ randomForest_CV <- function(datasets = list(), label.col = 1,
 
         if (is.null(positive.class)) {
                 positive.class <- as.character(datasets[[1]]$label[[1]])
+        } else {
+                if (!positive.class %in% datasets[[1]]$label) stop("positive.class should be NULL or one of the classes in label.")
         }
         parallel::clusterExport(cl, varlist = c("datasets", "all_folds", "positive.class", "ntree"), envir = environment())
 
@@ -316,6 +319,8 @@ randomForest_tune <- function(datasets = list(), label.col = 1,
 
         if (is.null(positive.class)) {
                 positive.class <- as.character(datasets[[1]]$label[[1]])
+        } else {
+                if (!positive.class %in% datasets[[1]]$label) stop("positive.class should be NULL or one of the classes in label.")
         }
 
         ntree.range <- sort(unique(ntree.range))
@@ -450,6 +455,8 @@ randomForest_RFE <- function(datasets = list(), label.col = 1, positive.class = 
 
         if (is.null(positive.class)) {
                 positive.class <- as.character(datasets[[1]]$label[[1]])
+        } else {
+                if (!positive.class %in% datasets[[1]]$label) stop("positive.class should be NULL or one of the classes in label.")
         }
 
         if (is.null(featureNum.range)) {

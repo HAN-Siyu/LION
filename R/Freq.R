@@ -120,13 +120,12 @@ computeFreq <- function(seqs, seqType = c("RNA", "Pro"),
                         normalize = c("none", "row", "column"), normData = NULL,
                         parallel.cores = 2, cl = NULL) {
 
+        seqType <- match.arg(seqType)
+        computePro <- match.arg(computePro)
         normalize <- match.arg(normalize)
 
         flagComputeNorm <- FALSE
         if (normalize == "column" & is.null(normData)) flagComputeNorm <- TRUE
-
-        seqType <- match.arg(seqType)
-        computePro <- match.arg(computePro)
 
         close_cl <- FALSE
         if (is.null(cl)) {
@@ -293,6 +292,8 @@ featureFreq <- function(seqRNA, seqPro, label = NULL, featureMode = c("concatena
         if (length(seqRNA) != length(seqPro)) stop("The number of RNA sequences should match the number of protein sequences!")
 
         featureMode <- match.arg(featureMode)
+        computePro <- match.arg(computePro)
+        normalize <- match.arg(normalize)
 
         close_cl <- FALSE
         if (is.null(cl)) {

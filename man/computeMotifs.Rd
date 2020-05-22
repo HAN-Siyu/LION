@@ -127,7 +127,7 @@ Format:
 \code{newMotif = list(*motif_name* = c("*motif_pattern_1*", "*motif_pattern_2*"))}.
 
 For example: \code{newMotif = list(HR_RH = c("HR", "RH"), RGG = "RGG")}.
-*HR_RH* is the name of this motif which contains two patterns: "HR" and "RH".
+"HR_RH" is the name of this motif which contains two patterns: "HR" and "RH".
 }
 \section{References}{
 

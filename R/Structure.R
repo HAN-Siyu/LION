@@ -364,10 +364,11 @@ computeStructure <- function(seqs, seqType = c("RNA", "Pro"), structureRNA.num =
                              path.stride = "Predator/stride.dat", verbose = FALSE,
                              parallel.cores = 2, cl = NULL) {
 
+        seqType <- match.arg(seqType)
+        structurePro <- match.arg(structurePro, several.ok = TRUE)
+
         if (seqType == "Pro" & !file.exists(path.stride)) stop("The path of stride.dat is not correct! Please check parameter path.stride.")
         if (min(lengths(seqs)) < Fourier.len) stop("The profile length of Fourier Series (Fourier.len) cannot be larger than the minimum length of the input sequences!")
-
-        seqType <- match.arg(seqType)
 
         close_cl <- FALSE
         if (is.null(cl)) {
