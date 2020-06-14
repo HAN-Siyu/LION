@@ -220,11 +220,22 @@ randomForest_CV <- function(datasets = list(), label.col = 1,
                 confusion.res <- caret::confusionMatrix(data.frame(res)[,1], testSet$label,
                                                         positive = positive.class,
                                                         mode = "everything")
+                TP <- confusion.res$table[1]
+                FN <- confusion.res$table[2]
+                FP <- confusion.res$table[3]
+                TN <- confusion.res$table[4]
+                N  <- sum(confusion.res$table)
+                S  <- (TP + FN) / N
+                P  <- (TP + FP) / N
+                MCC <- ((TP / N) - (S * P)) / sqrt(P * S * (1 - S) * (1 - P))
+                # MCC <- ((TP * TN) - (FP * FN)) / sqrt((TP + FP) * (TP + FN) * (TN + FP) * (TN + FN))
 
-                performance.res <- data.frame(Sensitivity = confusion.res$byClass[1],
+                performance.res <- data.frame(TP = TP, TN = TN, FP = FP, FN = FN,
+                                              Sensitivity = confusion.res$byClass[1],
                                               Specificity = confusion.res$byClass[2],
                                               Accuracy    = confusion.res$overall[1],
                                               F.Measure   = confusion.res$byClass[7],
+                                              MCC         = MCC,
                                               Kappa       = confusion.res$overall[2])
 
         })
@@ -234,7 +245,7 @@ randomForest_CV <- function(datasets = list(), label.col = 1,
         Ave.res <- as.data.frame(t(Ave.res))
         Ave.res$Ave.Res <- rowMeans(Ave.res)
         message("- Performance:")
-        print(round(t(Ave.res[ncol(Ave.res)]), digits = 4))
+        print(round(t(Ave.res[ncol(Ave.res)]), digits = 4)[,-c(1:4)])
         message("\n+ Completed.   ", Sys.time())
         Ave.res
 }
@@ -344,7 +355,7 @@ randomForest_tune <- function(datasets = list(), label.col = 1,
                 ntree_perf <- t(ntree_res[folds.num + 1])
                 row.names(ntree_perf) <- paste0("ntree_", ntree)
                 perf_tune <- rbind(perf_tune, ntree_perf)
-                print(ntree_perf)
+                print(round(ntree_perf, digits = 4)[,-c(1:4)])
         }
         parallel::stopCluster(cl)
 
@@ -517,11 +528,22 @@ randomForest_RFE <- function(datasets = list(), label.col = 1, positive.class = 
                         confusion.res <- caret::confusionMatrix(data.frame(res)[,1], testSet$label,
                                                                 positive = positive.class,
                                                                 mode = "everything")
+                        TP <- confusion.res$table[1]
+                        FN <- confusion.res$table[2]
+                        FP <- confusion.res$table[3]
+                        TN <- confusion.res$table[4]
+                        N  <- sum(confusion.res$table)
+                        S  <- (TP + FN) / N
+                        P  <- (TP + FP) / N
+                        MCC <- ((TP / N) - (S * P)) / sqrt(P * S * (1 - S) * (1 - P))
+                        # MCC <- ((TP * TN) - (FP * FN)) / sqrt((TP + FP) * (TP + FN) * (TN + FP) * (TN + FN))
 
-                        performance.res <- data.frame(Sensitivity = confusion.res$byClass[1],
+                        performance.res <- data.frame(TP = TP, TN = TN, FP = FP, FN = FN,
+                                                      Sensitivity = confusion.res$byClass[1],
                                                       Specificity = confusion.res$byClass[2],
                                                       Accuracy    = confusion.res$overall[1],
                                                       F.Measure   = confusion.res$byClass[7],
+                                                      MCC         = MCC,
                                                       Kappa       = confusion.res$overall[2])
 
                         importantScore <- RF.mod$importance
@@ -546,7 +568,7 @@ randomForest_RFE <- function(datasets = list(), label.col = 1, positive.class = 
                 varName <- row.names(impScore)[order(impScore$AveRes, decreasing =  TRUE)]
 
                 message("- Performance:")
-                print(round(t(perf.res[(folds.num + 1)]), digits = 4))
+                print(round(t(perf.res[(folds.num + 1)]), digits = 4)[,-c(1:4)])
         }
         parallel::stopCluster(cl)
         outNames <- paste0("FeatureNum.", featureNum.range)
