@@ -1,3 +1,8 @@
+# ncProR 1.1.2
+
+* Matthews correlation coefficient (MCC) is included into evaluation metrics.
+* TP, TN, FP and FN are reported in evaluation results.
+
 # ncProR 1.1.1
 
 * Add argument verification.

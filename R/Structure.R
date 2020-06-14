@@ -419,7 +419,7 @@ computeStructure <- function(seqs, seqType = c("RNA", "Pro"), structureRNA.num =
                 data(aaindex, package = "seqinr", envir = environment())
                 aaindex <- get("aaindex")
 
-                message("\n", "+ Calculating structural information of protein sequences...")
+                message("\n", "+ Calculating structural information of protein sequences...", Sys.time())
                 structurePro <- match.arg(structurePro, several.ok = TRUE)
                 seqValidate <- seqs[which(lengths(seqs) >= 30)]
                 if (length(seqValidate) < length(seqs)) {

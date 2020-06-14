@@ -752,11 +752,22 @@ Internal.randomForest_CV <- function(datasets = list(), all_folds, label.col = 1
                 confusion.res <- caret::confusionMatrix(data.frame(res)[,1], testSet$label,
                                                         positive = positive.class,
                                                         mode = "everything")
+                TP <- confusion.res$table[1]
+                FN <- confusion.res$table[2]
+                FP <- confusion.res$table[3]
+                TN <- confusion.res$table[4]
+                N  <- sum(confusion.res$table)
+                S  <- (TP + FN) / N
+                P  <- (TP + FP) / N
+                MCC <- ((TP / N) - (S * P)) / sqrt(P * S * (1 - S) * (1 - P))
+                # MCC <- ((TP * TN) - (FP * FN)) / sqrt((TP + FP) * (TP + FN) * (TN + FP) * (TN + FN))
 
-                performance.res <- data.frame(Sensitivity = confusion.res$byClass[1],
+                performance.res <- data.frame(TP = TP, TN = TN, FP = FP, FN = FN,
+                                              Sensitivity = confusion.res$byClass[1],
                                               Specificity = confusion.res$byClass[2],
                                               Accuracy    = confusion.res$overall[1],
                                               F.Measure   = confusion.res$byClass[7],
+                                              MCC         = MCC,
                                               Kappa       = confusion.res$overall[2])
 
         }, datasets = datasets, all_folds = all_folds, positive.class = positive.class, ntree = ntree)
