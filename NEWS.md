@@ -2,6 +2,8 @@
 
 * Matthews correlation coefficient (MCC) is included into evaluation metrics.
 * TP, TN, FP and FN are reported in evaluation results.
+* Add `evaluatePrediction()` for prediction evaluation.
+* Bugs fixed.
 
 # ncProR 1.1.1
 
