@@ -49,6 +49,9 @@ Find the Best Number of Trees for Random Forest Classifier Using K-Fold Cross Va
 }
 \examples{
 
+# Following codes only show how to use this function
+# and cannot reflect the genuine performance of tools or classifiers.
+
 data(demoPositiveSeq)
 data(demoNegativeSeq)
 
@@ -80,5 +83,5 @@ Perf_tune <- randomForest_tune(datasets = list(dataset), label.col = 1,
 
 }
 \seealso{
-\code{\link{randomForest_RFE}}, \code{\link{randomForest_CV}}
+\code{\link{randomForest_RFE}}, \code{\link{randomForest_CV}}, \code{\link[randomForest]{randomForest}}
 }

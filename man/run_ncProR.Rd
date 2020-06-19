@@ -79,6 +79,9 @@ ncProR: an integrated R package for effective ncRNA-protein interaction predicti
 
 \examples{
 
+# Following codes only show how to use this function
+# and cannot reflect the genuine performance of tools or classifiers.
+
 data(demoPositiveSeq)
 seqRNA <- demoPositiveSeq$RNA.positive
 seqPro <- demoPositiveSeq$Pro.positive

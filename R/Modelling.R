@@ -143,10 +143,13 @@ normalizeData <- function(dataset, direction = c("row", "column"),
 #' @importFrom parallel parSapply
 #' @importFrom parallel stopCluster
 #' @importFrom parallel detectCores
-#' @seealso \code{\link{randomForest_RFE}}, \code{\link{randomForest_tune}}
+#' @seealso \code{\link{randomForest_RFE}}, \code{\link{randomForest_tune}}, \code{\link[randomForest]{randomForest}}
 #'
 #'
 #' @examples
+#'
+#' # Following codes only show how to use this function
+#' # and cannot reflect the genuine performance of tools or classifiers.
 #'
 #' data(demoPositiveSeq)
 #' data(demoNegativeSeq)
@@ -180,6 +183,7 @@ randomForest_CV <- function(datasets = list(), label.col = 1,
         message("+ Initializing...  ", Sys.time())
         for (i in 1:length(datasets)) {
                 names(datasets[[i]])[[label.col]] <- "label"
+                datasets[[i]]$label <- as.factor(datasets[[i]]$label)
         }
 
         all_folds <- lapply(datasets, function(x) {
@@ -277,9 +281,12 @@ randomForest_CV <- function(datasets = list(), label.col = 1,
 #' @importFrom parallel parSapply
 #' @importFrom parallel stopCluster
 #' @importFrom parallel detectCores
-#' @seealso \code{\link{randomForest_RFE}}, \code{\link{randomForest_CV}}
+#' @seealso \code{\link{randomForest_RFE}}, \code{\link{randomForest_CV}}, \code{\link[randomForest]{randomForest}}
 #'
 #' @examples
+#'
+#' # Following codes only show how to use this function
+#' # and cannot reflect the genuine performance of tools or classifiers.
 #'
 #' data(demoPositiveSeq)
 #' data(demoNegativeSeq)
@@ -321,6 +328,7 @@ randomForest_tune <- function(datasets = list(), label.col = 1,
         message("+ Initializing...  ", Sys.time())
         for (i in 1:length(datasets)) {
                 names(datasets[[i]])[[label.col]] <- "label"
+                datasets[[i]]$label <- as.factor(datasets[[i]]$label)
         }
 
         all_folds <- lapply(datasets, function(x) {
@@ -403,9 +411,12 @@ randomForest_tune <- function(datasets = list(), label.col = 1,
 #' @importFrom parallel parSapply
 #' @importFrom parallel stopCluster
 #' @importFrom parallel detectCores
-#' @seealso \code{\link{randomForest_CV}}, \code{\link{randomForest_tune}}
+#' @seealso \code{\link{randomForest_CV}}, \code{\link{randomForest_tune}}, \code{\link[randomForest]{randomForest}}
 #'
 #' @examples
+#'
+#' # Following codes only show how to use this function
+#' # and cannot reflect the genuine performance of tools or classifiers.
 #'
 #' data(demoPositiveSeq)
 #' data(demoNegativeSeq)
@@ -445,6 +456,7 @@ randomForest_RFE <- function(datasets = list(), label.col = 1, positive.class = 
         message("+ Initializing...  ", Sys.time())
         for (len_datasets in 1:length(datasets)) {
                 names(datasets[[len_datasets]])[[label.col]] <- "label"
+                datasets[[len_datasets]]$label <- as.factor(datasets[[len_datasets]]$label)
         }
 
         if (length(datasets) > 1) {
@@ -577,4 +589,85 @@ randomForest_RFE <- function(datasets = list(), label.col = 1, positive.class = 
         message("\n+ Completed.   ", Sys.time())
 
         outRes
+}
+
+#' Evaluate Predicted Result
+#' @description This function can evaluate prediction based on reference labels and predicted results.
+#' @param reference a factor/character string of classes to be used as the true results.
+#' @param prediction a factor/character string of predicted classes.
+#' @param positive.class \code{NULL} or string. Which class is the positive class? Should be one
+#' of the classes in label column. The first class in label column will be selected
+#' as the positive class if leave \code{positive.class = NULL}.
+#'
+#' @return A dataframe that reports TP, TN, FP, FN, Sensitivity, Specificity, Accuracy,
+#' F-Measure (F1-Score), MCC (Matthews Correlation Coefficient) and Cohen's Kappa.
+#'
+#' @details \code{reference} and \code{prediction} should have exactly the same classes.
+#' More information please refer to \code{\link[caret]{confusionMatrix}}.
+#'
+#' @section References:
+#' Kuhn M.
+#' Building predictive models in R using the caret package.
+#' Journal of statistical software. 2008; 28(5):1-26.
+#'
+#' @importFrom caret confusionMatrix
+#' @seealso \code{\link[caret]{confusionMatrix}}
+#'
+#' @examples
+#'
+#' # Following codes only show how to use this function
+#' # and cannot reflect the genuine performance of tools or classifiers.
+#'
+#' data(demoPositiveSeq)
+#' seqRNA <- demoPositiveSeq$RNA.positive
+#' seqPro <- demoPositiveSeq$Pro.positive
+#'
+#' # Predicting ncRNA-protein pairs using RPISeq (web-based):
+#'
+#' Res_RPISeq <- run_RPISeq(seqRNA = seqRNA, seqPro = seqPro,
+#'                          parallel.cores = 2) # Network is required.
+#'
+#' # Evaluating the result:
+#'
+#' perf_RPISeq <- evaluatePrediction(reference = rep("Non.Interact", 20),
+#'                                   prediction = Res_RPISeq$RF_res,
+#'                                   positive.class = "Non.Interact")
+#'
+#' @export
+
+evaluatePrediction <- function(reference, prediction, positive.class = NULL) {
+
+        if (is.null(positive.class)) positive.class <- as.character(reference[[1]])
+
+        if (!is.factor(reference)) reference <- as.factor(reference)
+        if (!is.factor(prediction)) prediction <- as.factor(prediction)
+
+        if (length(levels(reference)) == 1 & length(levels(prediction)) == 1) stop("Two classes are required!")
+        if (length(levels(reference)) == 1) reference <- factor(reference, levels = levels(prediction))
+        if (length(levels(prediction)) == 1) prediction <- factor(prediction, levels = levels(reference))
+        if (length(unique(c(levels(reference), levels(prediction)))) != 2) stop("Classes in reference and prediction cannot match!")
+        if (!positive.class %in% levels(reference)) stop("positive.class should be NULL or one of the classes of reference/prediction!")
+
+        confusion.res <- caret::confusionMatrix(prediction,
+                                                reference,
+                                                positive = positive.class,
+                                                mode = "everything")
+        TP <- confusion.res$table[1]
+        FN <- confusion.res$table[2]
+        FP <- confusion.res$table[3]
+        TN <- confusion.res$table[4]
+        N  <- sum(confusion.res$table)
+        S  <- (TP + FN) / N
+        P  <- (TP + FP) / N
+        MCC <- ((TP / N) - (S * P)) / sqrt(P * S * (1 - S) * (1 - P))
+        # MCC <- ((TP * TN) - (FP * FN)) / sqrt((TP + FP) * (TP + FN) * (TN + FP) * (TN + FN))
+
+        performance.res <- data.frame(TP = TP, TN = TN, FP = FP, FN = FN,
+                                      Sensitivity = confusion.res$byClass[1],
+                                      Specificity = confusion.res$byClass[2],
+                                      Accuracy    = confusion.res$overall[1],
+                                      F.Measure   = confusion.res$byClass[7],
+                                      MCC         = MCC,
+                                      Kappa       = confusion.res$overall[2])
+        performance.res
 }

@@ -92,7 +92,12 @@
 #' @importFrom stats predict
 #'
 #' @examples
+#'
 #' \dontrun{
+#'
+#' # Following codes only show how to use this function
+#' # and cannot reflect the genuine performance of tools or classifiers.
+#'
 #' data(demoPositiveSeq)
 #' seqRNA <- demoPositiveSeq$RNA.positive
 #' seqPro <- demoPositiveSeq$Pro.positive
@@ -167,7 +172,10 @@ run_lncPro <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "featur
 
         mode <- match.arg(mode)
         prediction <- match.arg(prediction)
+
+        if (!file.exists(path.stride)) stop("The path of stride.dat is not correct! Please check parameter path.stride.")
         if (length(seqRNA) != length(seqPro)) stop("The number of RNA sequences should match the number of protein sequences!")
+
         if (mode == "retrain") {
                 if (length(label) != length(seqRNA) | length(unique(label)) != 2) {
                         stop("label is required and should correspond to input sequences!")
@@ -178,6 +186,29 @@ run_lncPro <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "featur
         }
 
         message("+ Initializing...  ", Sys.time())
+
+        message("- Checking sequences...  ")
+
+        check_idx <- which(lengths(seqRNA) <= 4095)
+        if (length(check_idx) < length(seqRNA)) {
+                message("* Due to the limitation of RNAsubopt,")
+                message("  sequences with length more than 4095 nt will be omitted.")
+                message("  ", length(seqRNA) - length(check_idx), " of ", length(seqRNA), " pairs have been removed.")
+                seqRNA <- seqRNA[check_idx]
+                seqPro <- seqPro[check_idx]
+                if (!is.null(label)) label <- label[check_idx]
+        }
+
+        check_idx <- which(lengths(seqPro) >= 30)
+        if (length(check_idx) < length(seqPro)) {
+                message("* Due to the limitation of predator,")
+                message("  sequences with length less than 30 amino acids will be omitted.")
+                message("  ", length(seqPro) - length(check_idx), " of ", length(seqPro), " pairs have been removed.")
+                seqRNA <- seqRNA[check_idx]
+                seqPro <- seqPro[check_idx]
+                if (!is.null(label)) label <- label[check_idx]
+        }
+
         message("- Creating cores...  ")
 
         parallel.cores <- ifelse(parallel.cores == -1, parallel::detectCores(), parallel.cores)
@@ -349,6 +380,9 @@ run_lncPro <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "featur
 #' @importFrom stats predict
 #'
 #' @examples
+#'
+#' # Following codes only show how to use this function
+#' # and cannot reflect the genuine performance of tools or classifiers.
 #'
 #' data(demoPositiveSeq)
 #' seqRNA <- demoPositiveSeq$RNA.positive
@@ -565,6 +599,9 @@ run_RPISeq <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "featur
 #'
 #' @examples
 #'
+#' # Following codes only show how to use this function
+#' # and cannot reflect the genuine performance of tools or classifiers.
+#'
 #' data(demoPositiveSeq)
 #' seqRNA <- demoPositiveSeq$RNA.positive
 #' seqPro <- demoPositiveSeq$Pro.positive
@@ -749,6 +786,9 @@ run_rpiCOOL <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "featu
 #' @importFrom stats predict
 #'
 #' @examples
+#'
+#' # Following codes only show how to use this function
+#' # and cannot reflect the genuine performance of tools or classifiers.
 #'
 #' data(demoPositiveSeq)
 #' seqRNA <- demoPositiveSeq$RNA.positive

@@ -590,13 +590,13 @@ Internal.lncPro_extractFeatures <- function(cl, seqs, seqType = c("RNA", "Pro"),
 
         if (seqType == "RNA") {
 
-                seqValidate <- seqs[which(lengths(seqs) <= 4095)]
-                if (length(seqValidate) < length(seqs)) {
-                        message("- Due to the limitation of RNAsubopt,")
-                        message("- sequences with length more than 4095 nt will be omitted.")
-                        message("- ", length(seqs) - length(seqValidate), " of ", length(seqs), " sequences have been removed.", "\n")
-                }
-                seqs <- seqValidate
+                # seqValidate <- seqs[which(lengths(seqs) <= 4095)]
+                # if (length(seqValidate) < length(seqs)) {
+                #         message("- Due to the limitation of RNAsubopt,")
+                #         message("- sequences with length more than 4095 nt will be omitted.")
+                #         message("- ", length(seqs) - length(seqValidate), " of ", length(seqs), " sequences have been removed.")
+                # }
+                # seqs <- seqValidate
 
                 parallel::clusterExport(cl, varlist = c("Internal.checkRNA", "Internal.FourierSeries",
                                                         "Internal.convertSeq_customize", "Internal.convertSeq",
@@ -619,15 +619,15 @@ Internal.lncPro_extractFeatures <- function(cl, seqs, seqType = c("RNA", "Pro"),
 
         } else {
 
-                if (!file.exists(path.stride)) stop("The path of stride.dat is not correct! Please check parameter path.stride.")
+                # if (!file.exists(path.stride)) stop("The path of stride.dat is not correct! Please check parameter path.stride.")
 
-                seqValidate <- seqs[which(lengths(seqs) >= 30)]
-                if (length(seqValidate) < length(seqs)) {
-                        message("- Due to the limitation of predator,")
-                        message("- sequences with length less than 30 amino acids will be omitted.")
-                        message("- ", length(seqs) - length(seqValidate), " of ", length(seqs), " sequences have been removed.", "\n")
-                }
-                seqs <- seqValidate
+                # seqValidate <- seqs[which(lengths(seqs) >= 30)]
+                # if (length(seqValidate) < length(seqs)) {
+                #         message("- Due to the limitation of predator,")
+                #         message("- sequences with length less than 30 amino acids will be omitted.")
+                #         message("- ", length(seqs) - length(seqValidate), " of ", length(seqs), " sequences have been removed.")
+                # }
+                # seqs <- seqValidate
 
                 message("- Protein Sequences Number: ", length(seqs))
 
@@ -786,6 +786,7 @@ Internal.randomForest_tune <- function(datasets = list(), label.col = 1,
 
         for (i in 1:length(datasets)) {
                 names(datasets[[i]])[[label.col]] <- "label"
+                datasets[[i]]$label <- as.factor(datasets[[i]]$label)
         }
 
         all_folds <- lapply(datasets, function(x) {
@@ -815,7 +816,8 @@ Internal.randomForest_tune <- function(datasets = list(), label.col = 1,
                 ntree_perf <- t(ntree_res[folds.num + 1])
                 row.names(ntree_perf) <- paste0("ntree_", ntree)
                 perf_tune <- rbind(perf_tune, ntree_perf)
-                print(ntree_perf)
+                # print(ntree_perf)
+                print(round(ntree_perf, digits = 4)[,-c(1:4)])
         }
         parallel::stopCluster(cl)
 
@@ -856,4 +858,4 @@ Internal.checkNa <- function(dataset) {
 # devtools::build_manual()
 #
 # if (!library("devtools", logical.return = T)) install.packages("devtools")
-# devtools::install_github("HAN-Siyu/ncProR", subdir="pkg")
+# devtools::install_github("HAN-Siyu/ncProR")

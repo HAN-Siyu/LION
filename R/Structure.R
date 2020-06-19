@@ -73,9 +73,10 @@
 runRNAsubopt <- function(seqs, structureRNA.num = 6, path.RNAsubopt = "RNAsubopt",
                          returnSum = FALSE, verbose = FALSE, parallel.cores = 2, cl = NULL) {
 
+        message("+ Initializing...  ", Sys.time())
+
         close_cl <- FALSE
         if (is.null(cl)) {
-                message("+ Initializing...  ", Sys.time())
                 message("- Creating cores...  ")
                 parallel.cores <- ifelse(parallel.cores == -1, parallel::detectCores(), parallel.cores)
                 if (verbose) {
@@ -90,9 +91,9 @@ runRNAsubopt <- function(seqs, structureRNA.num = 6, path.RNAsubopt = "RNAsubopt
 
         seqValidate <- seqs[which(lengths(seqs) <= 4095)]
         if (length(seqValidate) < length(seqs)) {
-                message("- Due to the limitation of RNAsubopt,")
-                message("- sequences with length more than 4095 nt will be omitted.")
-                message("- ", length(seqs) - length(seqValidate), " of ", length(seqs), " sequences have been removed.", "\n")
+                message("* Due to the limitation of RNAsubopt,")
+                message("  sequences with length more than 4095 nt will be omitted.")
+                message("  ", length(seqs) - length(seqValidate), " of ", length(seqs), " sequences have been removed.")
         }
         seqs <- seqValidate
 
@@ -187,9 +188,10 @@ runPredator <- function(seqs, path.Predator, path.stride, workDir = getwd(),
 
         if (!file.exists(path.stride)) stop("The path of stride.dat is not correct! Please check parameter path.stride.")
 
+        message("+ Initializing...  ", Sys.time())
+
         close_cl <- FALSE
         if (is.null(cl)) {
-                message("+ Initializing...  ", Sys.time())
                 message("- Creating cores...  ")
                 parallel.cores <- ifelse(parallel.cores == -1, parallel::detectCores(), parallel.cores)
                 if (verbose) {
@@ -204,9 +206,9 @@ runPredator <- function(seqs, path.Predator, path.stride, workDir = getwd(),
 
         seqValidate <- seqs[which(lengths(seqs) >= 30)]
         if (length(seqValidate) < length(seqs)) {
-                message("- Due to the limitation of predator,")
-                message("- sequences with length less than 30 amino acids will be omitted.")
-                message("- ", length(seqs) - length(seqValidate), " of ", length(seqs), " sequences have been removed.", "\n")
+                message("* Due to the limitation of predator,")
+                message("  sequences with length less than 30 amino acids will be omitted.")
+                message("  ", length(seqs) - length(seqValidate), " of ", length(seqs), " sequences have been removed.")
         }
         seqs <- seqValidate
 
@@ -370,9 +372,10 @@ computeStructure <- function(seqs, seqType = c("RNA", "Pro"), structureRNA.num =
         if (seqType == "Pro" & !file.exists(path.stride)) stop("The path of stride.dat is not correct! Please check parameter path.stride.")
         if (min(lengths(seqs)) < Fourier.len) stop("The profile length of Fourier Series (Fourier.len) cannot be larger than the minimum length of the input sequences!")
 
+        message("+ Initializing...  ", Sys.time())
+
         close_cl <- FALSE
         if (is.null(cl)) {
-                message("+ Initializing...  ", Sys.time())
                 message("- Creating cores...  ")
                 parallel.cores <- ifelse(parallel.cores == -1, parallel::detectCores(), parallel.cores)
                 if (verbose) {
@@ -387,9 +390,9 @@ computeStructure <- function(seqs, seqType = c("RNA", "Pro"), structureRNA.num =
                 message("\n", "+ Calculating structural information of RNA sequences...  ", Sys.time())
                 seqValidate <- seqs[which(lengths(seqs) <= 4095)]
                 if (length(seqValidate) < length(seqs)) {
-                        message("- Due to the limitation of RNAsubopt,")
-                        message("- sequences with length more than 4095 nt will be omitted.")
-                        message("- ", length(seqs) - length(seqValidate), " of ", length(seqs), " sequences have been removed.", "\n")
+                        message("* Due to the limitation of RNAsubopt,")
+                        message("  sequences with length more than 4095 nt will be omitted.")
+                        message("  ", length(seqs) - length(seqValidate), " of ", length(seqs), " sequences have been removed.")
                 }
                 seqs <- seqValidate
 
@@ -423,9 +426,9 @@ computeStructure <- function(seqs, seqType = c("RNA", "Pro"), structureRNA.num =
                 structurePro <- match.arg(structurePro, several.ok = TRUE)
                 seqValidate <- seqs[which(lengths(seqs) >= 30)]
                 if (length(seqValidate) < length(seqs)) {
-                        message("- Due to the limitation of predator,")
-                        message("- sequences with length less than 30 amino acids will be omitted.")
-                        message("- ", length(seqs) - length(seqValidate), " of ", length(seqs), " sequences have been removed.", "\n")
+                        message("* Due to the limitation of predator,")
+                        message("  sequences with length less than 30 amino acids will be omitted.")
+                        message("  ", length(seqs) - length(seqValidate), " of ", length(seqs), " sequences have been removed.")
                 }
                 seqs <- seqValidate
 
@@ -554,29 +557,33 @@ featureStructure <- function(seqRNA, seqPro, label = NULL, parallel.cores = 2, c
 
         if (length(seqRNA) != length(seqPro)) stop("The number of RNA sequences should match the number of protein sequences!")
 
+        message("+ Initializing...  ", Sys.time())
+
+        message("- Checking sequences...  ")
         RNA.velidate.idx <- which(lengths(seqRNA) <= 4095)
         seqValidate <- seqRNA[RNA.velidate.idx]
         if (length(seqValidate) < length(seqRNA)) {
-                message("- Due to the limitation of RNAsubopt,")
-                message("- sequences with length more than 4095 nt will be omitted.")
-                message("- ", length(seqRNA) - length(seqValidate), " of ", length(seqRNA), " pairs have been removed.", "\n")
+                message("* Due to the limitation of RNAsubopt,")
+                message("  sequences with length more than 4095 nt will be omitted.")
+                message("  ", length(seqRNA) - length(seqValidate), " of ", length(seqRNA), " pairs have been removed.")
         }
         seqRNA <- seqValidate
         seqPro <- seqPro[RNA.velidate.idx]
+        if (!is.null(label)) label <- label[RNA.velidate.idx]
 
         Pro.velidate.idx <- which(lengths(seqPro) >= 30)
         seqValidate <- seqPro[Pro.velidate.idx]
         if (length(seqValidate) < length(seqPro)) {
-                message("- Due to the limitation of predator,")
-                message("- sequences with length less than 30 amino acids will be omitted.")
-                message("- ", length(seqPro) - length(seqValidate), " of ", length(seqPro), " pairs have been removed.", "\n")
+                message("* Due to the limitation of predator,")
+                message("  sequences with length less than 30 amino acids will be omitted.")
+                message("  ", length(seqPro) - length(seqValidate), " of ", length(seqPro), " pairs have been removed.")
         }
         seqPro <- seqValidate
         seqRNA <- seqRNA[Pro.velidate.idx]
+        if (!is.null(label)) label <- label[RNA.velidate.idx]
 
         close_cl <- FALSE
         if (is.null(cl)) {
-                message("+ Initializing...  ", Sys.time())
                 message("- Creating cores...  ")
                 parallel.cores <- ifelse(parallel.cores == -1, parallel::detectCores(), parallel.cores)
                 cl <- parallel::makeCluster(parallel.cores)

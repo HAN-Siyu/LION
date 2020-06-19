@@ -43,6 +43,9 @@ Evaluation of Random Forest Classifier with K-Fold Cross Validation
 }
 \examples{
 
+# Following codes only show how to use this function
+# and cannot reflect the genuine performance of tools or classifiers.
+
 data(demoPositiveSeq)
 data(demoNegativeSeq)
 
@@ -68,5 +71,5 @@ Perf_CV <- randomForest_CV(datasets = list(dataset), label.col = 1, ntree = 100,
 
 }
 \seealso{
-\code{\link{randomForest_RFE}}, \code{\link{randomForest_tune}}
+\code{\link{randomForest_RFE}}, \code{\link{randomForest_tune}}, \code{\link[randomForest]{randomForest}}
 }

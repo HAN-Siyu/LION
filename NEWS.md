@@ -1,7 +1,14 @@
+# Next Release
+
+* Users can use `run_multiple()` to get prediction results of multiple methods in one run.
+* Models will be rebuilt using updated data.
+
 # ncProR 1.1.2
 
 * Matthews correlation coefficient (MCC) is included into evaluation metrics.
 * TP, TN, FP and FN are reported in evaluation results.
+* Add `evaluatePrediction()` for prediction evaluation.
+* Bugs fixed.
 
 # ncProR 1.1.1
 

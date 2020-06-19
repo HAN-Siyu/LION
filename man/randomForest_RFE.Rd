@@ -51,6 +51,9 @@ Feature Selection Using Random Forest Classifier and Recursive Feature Eliminati
 }
 \examples{
 
+# Following codes only show how to use this function
+# and cannot reflect the genuine performance of tools or classifiers.
+
 data(demoPositiveSeq)
 data(demoNegativeSeq)
 
@@ -82,5 +85,5 @@ Perf_RFE <- randomForest_RFE(datasets = list(dataset), label.col = 1,
 
 }
 \seealso{
-\code{\link{randomForest_CV}}, \code{\link{randomForest_tune}}
+\code{\link{randomForest_CV}}, \code{\link{randomForest_tune}}, \code{\link[randomForest]{randomForest}}
 }
