@@ -274,7 +274,7 @@ run_lncPro <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "featur
                         message("\n", "+ Predicting pairs using lncPro...  ", Sys.time())
                         if (is.null(retrained.model)) {
                                 message("- Default retrained model selected.  ", Sys.time())
-                                data(mod_lncPro, envir = environment())
+                                data(mod_lncPro, package = "ncProR", envir = environment())
                                 mod_lncPro <- get("mod_lncPro")
                         } else {
                                 message("- Using model provided by user.  ", Sys.time())
@@ -492,7 +492,7 @@ run_RPISeq <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "featur
                 } else {
                         if (is.null(retrained.model)) {
                                 message("- Default retrained model selected.")
-                                data(mod_RPISeq, envir = environment())
+                                data(mod_RPISeq, package = "ncProR", envir = environment())
                                 mod_RPISeq <- get("mod_RPISeq")
                         } else {
                                 message("- Using model provided by user.  ", Sys.time())
@@ -536,9 +536,10 @@ run_RPISeq <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "featur
         }
 }
 
-#' Predict RNA-Protein Interaction Using rpiCOOL Method
-#' @description This function can predict lncRNA/RNA-protein interactions using retrained model of rpiCOOL method. Model retraining and feature extraction are also supported.
-#' The codes of this function slightly differ from the rpiCOOL's script.
+#' Predict RNA-Protein Interaction Using rpiCOOL's Features
+#' @description This function can predict lncRNA/RNA-protein interactions using rebuilt model trained with rpiCOOL's feature set.
+#' Model retraining and feature extraction are also supported.
+#' The codes of this function slightly differ from rpiCOOL's script.
 #'
 #' @param seqRNA RNA sequences loaded by function \code{\link[seqinr]{read.fasta}} from \code{\link[seqinr]{seqinr-package}}. Or a list of RNA/protein sequences.
 #' RNA sequences will be converted into lower case letters.
@@ -687,7 +688,7 @@ run_rpiCOOL <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "featu
 
                 if (is.null(retrained.model)) {
                         message("- Default retrained model selected. ")
-                        data(mod_rpiCOOL, envir = environment())
+                        data(mod_rpiCOOL, package = "ncProR", envir = environment())
                         mod_rpiCOOL <- get("mod_rpiCOOL")
                 } else {
                         message("- Using model provided by user.")
@@ -704,6 +705,201 @@ run_rpiCOOL <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "featu
                 } else {
                         outRes <- cbind(RNA_Name = names.seqRNA, Pro_Name = names.seqPro, label = label,
                                         rpiCOOL_res = as.character(res), rpiCOOL_prob = prob[,1])
+                        outRes <- data.frame(outRes, stringsAsFactors = F, row.names = NULL)
+                }
+                message("\n", "+ Completed.  ", Sys.time())
+                return(outRes)
+        } else if (mode == "feature") {
+                if (!is.null(label)) featureSet <- cbind(label = label, featureSet)
+                message("\n", "+ Completed.  ", Sys.time())
+                return(featureSet)
+        } else {
+                featureSet <- cbind(label = label, featureSet)
+                message("\n", "+ Retraining model...  ", Sys.time())
+                retrained.model <- Internal.randomForest_tune(datasets = list(featureSet), label.col = 1,
+                                                              positive.class = positive.class, folds.num = folds.num,
+                                                              ntree.range = ntree.range,
+                                                              seed = seed, return.model = TRUE,
+                                                              parallel.cores = parallel.cores, ...)
+                message("\n", "+ Completed.  ", Sys.time())
+                return(retrained.model)
+        }
+}
+
+#' Predict RNA-Protein Interaction Using LncADeep's Features
+#' @description This function can predict lncRNA/RNA-protein interactions using rebuilt model trained with LncADeep's feature set.
+#' Model retraining and feature extraction are also supported.
+#' LncADeep selects 110 features to build its classifier.
+#' Here, the 110 top features are determined by averaging feature scores of 33 evaluation results provided by
+#' LncADeep. LncADeep's original model is trained using deep neural network (DNN). Considering that DNN architecture is hard
+#' to perform parameter tuning, we rebuild the model using the same machine algorithm (random forest) as the other methods.
+#' Users can build DNN model with the features generated by this function.
+#'
+#' @param seqRNA RNA sequences loaded by function \code{\link[seqinr]{read.fasta}} from \code{\link[seqinr]{seqinr-package}}. Or a list of RNA/protein sequences.
+#' RNA sequences will be converted into lower case letters.
+#' @param seqPro protein sequences loaded by function \code{\link[seqinr]{read.fasta}} from \code{\link[seqinr]{seqinr-package}}. Or a list of protein sequences.
+#' Protein sequences will be converted into upper case letters.
+#' Each sequence should be a vector of single characters.
+#'
+#' @param mode a string. Set \code{"prediction"} to predict ncRNA-protein pairs and return prediction results;
+#' set \code{"retrain"} to build a new random forest model using the input data;
+#' set \code{"feature"} to return a data frame contains the extracted features.
+#' Users can use the extracted features generated by \code{mode = "feature"} to train classifiers
+#' with other machine learning algorithms. Default: \code{"prediction"}.
+#' @param retrained.model (only when \code{mode = "prediction"})
+#' use the default model or a new retrained model to predict ncRNA-protein pairs?
+#' If \code{NULL}, default machine learning model will be used. Or pass the model generated by this function
+#' with parameter \code{"mode = retrain"}. Default: \code{NULL}. See examples below.
+#' @param label a string or a vector of strings or \code{NULL}.
+#' Optional when \code{mode = "prediction"} or \code{mode = "feature"}: used to give labels or notes to the output result.
+#' Required when \code{mode = "retrain"}: must be a vector of strings that corresponds to input sequences.
+#' Each string indicates the class of each input pair. Default: \code{NULL}.
+#' @param positive.class (only when \code{mode = "retrain"}) \code{NULL} or a string used to indicate
+#' which class is the positive class, Should be one
+#' of the classes in \code{label} or leave \code{positive.class = NULL}.
+#' In the latter case, the first class in \code{label} will be used
+#' as the positive class. Default: \code{NULL}.
+#' @param folds.num (only when \code{mode = "retrain"}) an integer indicates the number of folds for cross validation.
+#' Default: \code{10} for 10-fold cross validation.
+#' @param ntree.range (only when \code{mode = "retrain"}) used to indicate the range of \code{ntree}
+#' when tuning the random forest classifier.
+#' Default: \code{c(200, 500, 1000, 1500, 2000)}.
+#' @param seed (only when \code{mode = "retrain"}) an integer indicates the random seed for data splitting.
+#' @param parallel.cores an integer that indicates the number of cores for parallel computation.
+#' Default: \code{2}. Set \code{parallel.cores = -1} to run with all the cores. \code{parallel.cores} should be == -1 or >= 1.
+#' @param ... (only when \code{mode = "retrain"}) other parameters passed to \code{\link[randomForest]{randomForest}} function.
+#'
+#' @return
+#' If \code{mode = "prediction"}, this function returns a data frame that contains the predicted results.
+#' If \code{mode = "retrain"}, this function returns a random forest classifier.
+#' If \code{mode = "prediction"}, this function returns a data frame that contains the extracted features.
+#'
+#' @section References:
+#' Yang C, Yang L, Zhou M, \emph{et al}.
+#' LncADeep: an ab initio lncRNA identification and functional annotation tool based on deep learning.
+#' Bioinformatics. 2018; 34(22):3825-3834.
+#'
+#' @importFrom caret createFolds
+#' @importFrom caret confusionMatrix
+#' @importFrom randomForest randomForest
+#' @importFrom parallel makeCluster
+#' @importFrom parallel clusterExport
+#' @importFrom parallel parLapply
+#' @importFrom parallel parSapply
+#' @importFrom parallel stopCluster
+#' @importFrom parallel detectCores
+#' @importFrom seqinr count
+#' @importFrom seqinr getSequence
+#' @importFrom stats predict
+#'
+#' @examples
+#'
+#' # Following codes only show how to use this function
+#' # and cannot reflect the genuine performance of tools or classifiers.
+#'
+#' data(demoPositiveSeq)
+#' seqRNA <- demoPositiveSeq$RNA.positive
+#' seqPro <- demoPositiveSeq$Pro.positive
+#'
+#' # Predicting ncRNA-protein pairs:
+#'
+#' Res_LncADeep_1 <- run_LncADeep(seqRNA = seqRNA, seqPro = seqPro, mode = "prediction",
+#'                                retrained.model = NULL, label = "LncADeep_res",
+#'                                parallel.cores = 2) # using default rebuilt model
+#'
+#' # Train a new model:
+#'
+#' # Argument "label" which indicates the class of each input pair is required here.
+#' # "label" should correspond to the classes of "seqRNA" and "seqPro".
+#' # "positive.class" should be one of the classes in argument "label" or can be set as "NULL".
+#' # In the latter case, the first label in "label" will be used as the positive class.
+#' # Parameters of random forest, such as "mtry", can be passed using "..." argument.
+#'
+#' LncADeep_model = run_LncADeep(seqRNA = seqRNA, seqPro = seqPro, mode = "retrain",
+#'                               label = rep(c("Interact", "Non.Interact"), each = 10),
+#'                               positive.class = NULL, folds.num = 5,
+#'                               ntree.range = c(300, 500), seed = 1,
+#'                               parallel.cores = 2)
+#'
+#' # Predicting using new built model by setting "retrained.model = LncADeep_model":
+#'
+#' Res_LncADeep_2 <- run_LncADeep(seqRNA = seqRNA, seqPro = seqPro, mode = "prediction",
+#'                                retrained.model = LncADeep_model, label = NULL,
+#'                                parallel.cores = 2)
+#'
+#' # Only extracting features:
+#'
+#' LncADeep_feature_df <- run_LncADeep(seqRNA = seqRNA, seqPro = seqPro, mode = "feature",
+#'                                     label = "feature", parallel.cores = 2)
+#'
+#' # Extracted features can be used to build classifiers using other machine learning
+#' # algorithms, which provides users with more flexibility.
+#'
+#' @export
+
+run_LncADeep <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "feature"),
+                        retrained.model = NULL, label = NULL, positive.class = NULL,
+                        folds.num = 10, ntree.range = c(200, 500, 1000, 1500, 2000),
+                        seed = 1, parallel.cores = 2, ...) {
+
+        mode <- match.arg(mode)
+        if (length(seqRNA) != length(seqPro)) stop("The number of RNA sequences should match the number of protein sequences!")
+        if (mode == "retrain") {
+                if (length(label) != length(seqRNA) | length(unique(label)) != 2) {
+                        stop("label is required and should correspond to input sequences!")
+                }
+                if (!is.null(positive.class)) {
+                        if (!positive.class %in% label) stop("positive.class should be NULL or one of the classes in label.")
+                }
+        }
+
+        message("+ Initializing...  ", Sys.time())
+        message("- Creating cores...  ")
+
+        parallel.cores <- ifelse(parallel.cores == -1, parallel::detectCores(), parallel.cores)
+        cl <- parallel::makeCluster(parallel.cores)
+
+        seqRNA <- parallel::parSapply(cl, seqRNA, Internal.checkRNA)
+
+        if (length(names(seqRNA)) != 0) names.seqRNA <- names(seqRNA) else names.seqRNA <- "RNA.noName"
+        if (length(names(seqPro)) != 0) names.seqPro <- names(seqPro) else names.seqPro <- "Protein.noName"
+
+        # message("- Extracting sequence-based features...  ", Sys.time())
+        featureSetFreq <- featureFreq(seqRNA = seqRNA, seqPro = seqPro,
+                                      featureMode = "conc", computePro = "RPISeq", k.Pro = 3,
+                                      k.RNA = 4, normalize = "none", cl = cl)
+
+        # message("- Calculating MLC coverage...  ", Sys.time())
+        featureSetCoverage <- Internal.featureCoverage(seqRNA = seqRNA, cl = cl)
+        parallel::stopCluster(cl)
+
+        featureSet <- cbind(featureSetFreq, featureSetCoverage[,2,drop = F])
+
+        selectedFeature_idx <- names(featureSet) %in% LncADeep_featureRank$Name
+        featureSet <- featureSet[,selectedFeature_idx]
+
+        if(mode == "prediction") {
+                message("\n", "+ Predicting pairs using LncADeep (retrained model)...  ", Sys.time())
+
+                if (is.null(retrained.model)) {
+                        message("- Default retrained model selected. ")
+                        data(mod_LncADeep, package = "ncProR", envir = environment())
+                        mod_LncADeep <- get("mod_LncADeep")
+                } else {
+                        message("- Using model provided by user.")
+                        mod_LncADeep <- retrained.model
+                }
+
+                res <- stats::predict(mod_LncADeep, featureSet, type = "response")
+                prob <- stats::predict(mod_LncADeep, featureSet, type = "prob")
+
+                if (is.null(label)) {
+                        outRes <- cbind(RNA_Name = names.seqRNA, Pro_Name = names.seqPro,
+                                        LncADeep_res = as.character(res), LncADeep_prob = prob[,1])
+                        outRes <- data.frame(outRes, stringsAsFactors = F, row.names = NULL)
+                } else {
+                        outRes <- cbind(RNA_Name = names.seqRNA, Pro_Name = names.seqPro, label = label,
+                                        LncADeep_res = as.character(res), LncADeep_prob = prob[,1])
                         outRes <- data.frame(outRes, stringsAsFactors = F, row.names = NULL)
                 }
                 message("\n", "+ Completed.  ", Sys.time())
@@ -885,7 +1081,7 @@ run_ncProR <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "featur
 
                 if (is.null(retrained.model)) {
                         message("- Default retrained model selected.")
-                        data(mod_ncProR, envir = environment())
+                        data(mod_ncProR, package = "ncProR", envir = environment())
                         mod_ncProR <- get("mod_ncProR")
                 } else {
                         message("- Using model provided by user.")
