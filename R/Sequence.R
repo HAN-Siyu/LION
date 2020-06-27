@@ -1,3 +1,60 @@
+#' Computation of the most-like CDS region of an RNA sequence
+#' @description This function compute the most-like CDS (MLC) region of one RNA.
+#' Methods based on the longest open reading frame (ORF) and maximum subarray sum (MSS) are supported.
+#' @param oneRNA one RNA loaded by function \code{\link[seqinr]{read.fasta}} from \code{\link[seqinr]{seqinr-package}}.
+#' Or a list of one RNA sequence. The sequence should be a vector of single characters.
+#' @param mode can be \code{"ORF"} (compute the longest open reading frame) and/or
+#' \code{"MSS"} (compute subsequence having the maximum subarray sum of hexamer score).
+#'
+#' @return A data frame. The MLC region, length and coverage of the MLC will be returned.
+#' MSS-based method is based on [1] and [2].
+#' ORF extraction function is borrowed from our previous work [3].
+#'
+#' @section References:
+#' [1] Yang C, Yang L, Zhou M, \emph{et al}.
+#' LncADeep: an ab initio lncRNA identification and functional annotation tool based on deep learning.
+#' Bioinformatics. 2018; 34(22):3825-3834.
+#'
+#' [2] Sun L, Luo H, Bu D, \emph{et al}.
+#' Utilizing sequence intrinsic composition to classify protein-coding and long non-coding transcripts.
+#' Nucleic acids research. 2013; 41(17):e166-e166.
+#'
+#' [3] Han S, Liang Y, Ma Q, \emph{et al}.
+#' LncFinder: an integrated platform for long non-coding RNA identification utilizing sequence intrinsic composition, structural information and physicochemical property.
+#' Briefings in bioinformatics. 2019; 20(6):2009-2027.
+#'
+#' @importFrom seqinr getSequence
+#'
+#' @examples
+#'
+#' # Use "read.fasta" function of package "seqinr" to read a FASTA file:
+#'
+#' seqRNA <- seqinr::read.fasta(file =
+#' "http://www.ncbi.nlm.nih.gov/WebSub/html/help/sample_files/nucleotide-sample.txt")
+#'
+#' # Compute the MLC region using both "ORF" and "MSS" methods:
+#'
+#' MLC_list <- lapply(seqRNA, computeMLC, mode = c("ORF", "MSS"))
+#'
+#' @export
+
+computeMLC <- function(oneRNA, mode = c("ORF", "MSS")) {
+        mode <- match.arg(mode, several.ok = TRUE)
+        oneRNA <- Internal.checkRNA(oneRNA)
+        info <- data.frame(stringsAsFactors = F)
+
+        if ("ORF" %in% mode) {
+                info_ORF <- Internal.findORF(oneRNA, max.only = TRUE)
+                info <- rbind(info, info_ORF)
+        }
+
+        if ("MSS" %in% mode) {
+                info_MSS <- Internal.calculateMLC(oneRNA, logscore = LncADeep_logScore)
+                info <- rbind(info, info_MSS)
+        }
+        info
+}
+
 #' Computation of the K-Mer Frequencies of RNA or Protein Sequences
 #' @description This function can calculate the \emph{k}-mer frequencies of RNA or protein sequences.
 #' Three kinds of protein representations are available.
@@ -14,6 +71,7 @@
 #' Three modes indicate three different amino acid residues classifications that corresponds to methods "RPISeq", "De Novo prediction",
 #' and "rpiCOOL". See details below. Default: \code{"RPISeq"}.
 #' @param k an integer that indicates the sliding window step. Default: \code{3}.
+#' @param EDP logical. If \code{TRUE}, entropy density profile (EDP) will be computed. Default: \code{FALSE}.
 #' @param normalize can be \code{"none"}, \code{"row"} or \code{"column"}. Indicate if the frequencies should be normalized.
 #' If normalize, should the features be normalized by row (each sequence) or by column (each feature)?
 #' See details below. Default: \code{"none"}.
@@ -31,6 +89,7 @@
 #'
 #' If \code{normalize = "column"}, the function will return a list containing features (a data frame named "feature")
 #' and normalization values (a list named "normData") for extracting features for test sets.
+#'
 #' @details Function \code{computeFreq} calculate the \emph{k}-mer frequencies of RNA/protein sequences. Three computation modes
 #' of protein frequencies are:
 #'
@@ -46,13 +105,17 @@
 #' \{A, E\}, \{I, L, F, M, V\}, \{N, D, T, S\}, \{G\}, \{P\}, \{R, K, Q, H\}, \{Y, W\}, \{C\}
 #' (Ref: [5]).
 #'
-#' The function provides two normalization strategies: by row (each sequence) or by column (each feature).
+#' If \code{EDP = TRUE}, entropy density profile (EDP) will be computed with equation:
+#' s_\emph{i} = -1/H * c_\emph{i} * log2(c_\emph{i}), H = -sum(c_\emph{j} * log2(c_\emph{j})).
+#' c is the frequencies, \emph{i} and \emph{j} represents the indices of \emph{k}-mer frequencies. (Ref: [6])
+#'
+#' The function also provides two normalization strategies: by row (each sequence) or by column (each feature).
 #' If by row, the dataset will be processed with equation (Ref: [2]):
-#' di = (fi - min\{f1, f2, ...\}) / max\{f1, f2, ...\}.
-#' f1, f2, ..., fi are the original values of each row.
+#' d_\emph{i} = (f_\emph{i} - min\{f_1, f_2, ...\}) / max\{f_1, f_2, ...\}.
+#' f_1, f_2, ..., f_\emph{i} are the original values of each row.
 #'
 #' If by column, the dataset will be processed with:
-#' di = (fi - min\{f1, f2, ...\}) / (max\{f1, f2, ...\} - min\{f1, f2, ...\}).
+#' d_\emph{i} = (f_\emph{i} - min\{f_1, f_2, ...\}) / (max\{f_1, f_2, ...\} - min\{_f1, f_2, ...\}).
 #'
 #' In [2], normalization is computed by row (each sequence).
 #'
@@ -76,6 +139,10 @@
 #' [5] Akbaripour-Elahabad M, Zahiri J, Rafeh R, \emph{et al}.
 #' rpiCOOL: A tool for In Silico RNA-protein interaction detection using random forest.
 #' J. Theor. Biol. 2016; 402:1-8
+#'
+#' [6] Yang C, Yang L, Zhou M, \emph{et al}.
+#' LncADeep: an ab initio lncRNA identification and functional annotation tool based on deep learning.
+#' Bioinformatics. 2018; 34(22):3825-3834.
 #'
 #' @importFrom parallel makeCluster
 #' @importFrom parallel clusterExport
@@ -116,7 +183,7 @@
 #' @export
 
 computeFreq <- function(seqs, seqType = c("RNA", "Pro"),
-                        computePro = c("RPISeq", "DeNovo", "rpiCOOL"), k = 3,
+                        computePro = c("RPISeq", "DeNovo", "rpiCOOL"), k = 3, EDP = FALSE,
                         normalize = c("none", "row", "column"), normData = NULL,
                         parallel.cores = 2, cl = NULL) {
 
@@ -144,7 +211,7 @@ computeFreq <- function(seqs, seqType = c("RNA", "Pro"),
         }
 
         features <- parallel::parSapply(cl, seqs, Internal.computeFreq, seqType = seqType,
-                                        computePro = computePro, k = k)
+                                        computePro = computePro, k = k, EDP = EDP)
         if (close_cl) parallel::stopCluster(cl)
 
         features <- t(features)
@@ -206,6 +273,7 @@ computeFreq <- function(seqs, seqType = c("RNA", "Pro"),
 #' and "rpiCOOL". See details below. Default: \code{"RPISeq"}.
 #' @param k.Pro an integer that indicates the sliding window step of RNA sequences. Default: \code{4}.
 #' @param k.RNA an integer that indicates the sliding window step of protein sequences. Default: \code{3}.
+#' @param EDP logical. If \code{TRUE}, entropy density profile (EDP) will be computed. Default: \code{FALSE}.
 #' @param normalize can be \code{"none"}, \code{"row"} or \code{"column"}. Indicate if the frequencies should be normalized.
 #' If normalize, should the features be normalized by row (each sequence) or by column (each feature)?
 #' See details below. Default: \code{"none"}.
@@ -221,9 +289,9 @@ computeFreq <- function(seqs, seqType = c("RNA", "Pro"),
 #' @return If \code{normalize = "none"} or \code{normalize = "row"}, this function will return a data frame.
 #' Row names are sequences names, and column names are polymer names.
 #' The names of RNA and protein sequences are separated with ".",
-#' i.e. row names format: "*RNASequenceName*.*proteinSequenceName*" (e.g. "YDL227C.YOR198C").
+#' i.e. row names format: "\emph{RNASequenceName}.\emph{proteinSequenceName}" (e.g. "YDL227C.YOR198C").
 #' If \code{featureMode = "combine"}, the polymers of RNA and protein sequences are also separated with ".",
-#' i.e. column format: "*RNAPolymerName*.*proteinPolymerName*" (e.g. aa.CCA).
+#' i.e. column format: "\emph{RNAPolymerName}.\emph{proteinPolymerName}" (e.g. "aa.CCA").
 #'
 #' If \code{normalize = "column"}, the function will return a list containing features (a data frame named "feature") and normalization
 #' values (a list named "normData") for extracting features for test sets.
@@ -285,7 +353,7 @@ computeFreq <- function(seqs, seqType = c("RNA", "Pro"),
 #' @export
 
 featureFreq <- function(seqRNA, seqPro, label = NULL, featureMode = c("concatenate", "combine"),
-                        computePro = c("RPISeq", "DeNovo", "rpiCOOL"), k.Pro = 3, k.RNA = 4,
+                        computePro = c("RPISeq", "DeNovo", "rpiCOOL"), k.Pro = 3, k.RNA = 4, EDP = FALSE,
                         normalize = c("none", "row", "column"), normData = NULL,
                         parallel.cores = 2, cl = NULL) {
 
@@ -305,18 +373,18 @@ featureFreq <- function(seqRNA, seqPro, label = NULL, featureMode = c("concatena
         }
 
         if (normalize == "column" & !is.null(normData)) {
-                featureRNA <- computeFreq(seqs = seqRNA, seqType = "RNA", k = k.RNA,
+                featureRNA <- computeFreq(seqs = seqRNA, seqType = "RNA", k = k.RNA, EDP = EDP,
                                           normalize = normalize, normData = normData$normData_RNA,
                                           cl = cl)
-                featurePro <- computeFreq(seqs = seqPro, seqType = "Pro", k = k.Pro,
+                featurePro <- computeFreq(seqs = seqPro, seqType = "Pro", k = k.Pro, EDP = EDP,
                                           normalize = normalize, computePro = computePro,
                                           normData = normData$normData_Pro,
                                           cl = cl)
         } else {
-                featureRNA <- computeFreq(seqs = seqRNA, seqType = "RNA", k = k.RNA,
+                featureRNA <- computeFreq(seqs = seqRNA, seqType = "RNA", k = k.RNA, EDP = EDP,
                                           normalize = normalize, normData = NULL,
                                           cl = cl)
-                featurePro <- computeFreq(seqs = seqPro, seqType = "Pro", k = k.Pro,
+                featurePro <- computeFreq(seqs = seqPro, seqType = "Pro", k = k.Pro, EDP = EDP,
                                           normalize = normalize, computePro = computePro,
                                           normData = NULL, cl = cl)
         }

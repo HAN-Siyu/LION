@@ -21,6 +21,181 @@ Internal.checkRNA <- function(oneSeq) {
         oneSeq
 }
 
+Internal.findORF <- function(oneSeq, max.only = TRUE) {
+        oneSeq <- unlist(seqinr::getSequence(oneSeq, as.string = TRUE))
+        oneSeq <- gsub("\n", "", oneSeq)
+        start_pos <- unlist(gregexpr("aug", oneSeq, ignore.case = TRUE))
+        if(sum(start_pos) == -1) {
+                if(max.only) {
+                        ORF_info <- list(ORF.Max.Len = 0, ORF.Max.Cov = 0, ORF.Max.Seq = NA)
+                } else {
+                        ORF_info <- data.frame(ORF.Seq = NA, ORF.Start = 0, ORF.Stop = 0, ORF.Len = 0)
+                }
+
+        } else {
+                stop_pos <- sapply(c("uaa", "uag", "uga"), function(x){
+                        pos <- unlist(gregexpr(x, oneSeq, ignore.case = TRUE))
+                })
+                stop_pos <- sort(unlist(stop_pos, use.names = FALSE))
+                seq_length <- nchar(oneSeq)
+                if(all(stop_pos == -1)) {
+                        if(max.only) {
+                                orf_start <- min(start_pos)
+                                orf_stop  <- seq_length - ((seq_length - orf_start + 1) %% 3) - 2
+                                max_len   <- orf_stop - orf_start + 3
+                                max_cov   <- max_len / seq_length
+                                orf_seq   <- substr(oneSeq, start = orf_start, stop = orf_stop + 2)
+                                ORF_info  <- list(ORF.Max.Len = max_len, ORF.Max.Cov = max_cov, ORF.Max.Seq = orf_seq)
+                        } else {
+                                for(i in seq_along(start_pos)) {
+                                        start.val  <- start_pos[i]
+                                        stop.val   <- seq_length - ((seq_length - start.val + 1) %% 3) - 2
+                                        length.val <- stop.val - start.val + 3
+                                        cover.val  <- length.val / seq_length
+                                        ORF.seq    <- substr(oneSeq, start = start.val, stop = stop.val + 2)
+                                        output.tmp <- data.frame(ORF.Seq = ORF.seq, ORF.Start = start.val, ORF.Stop = stop.val,
+                                                                 ORF.Len = length.val, ORF.Cov = cover.val, stringsAsFactors = FALSE)
+                                        if(i == 1) {
+                                                ORF_info <- output.tmp
+                                        } else {
+                                                ORF_info <- rbind(ORF_info, output.tmp)
+                                        }
+                                }
+                        }
+                } else {
+                        orf_starts  <- c()
+                        orf_stops   <- c()
+                        orf_lengths <- c()
+                        for(i in start_pos){
+                                orf_flag <- 0
+                                for(j in stop_pos){
+                                        if(j < i) next
+                                        diff_mod    <- (j - i) %% 3
+                                        if(diff_mod != 0) next
+                                        orf_starts  <- c(orf_starts, i)
+                                        orf_stops   <- c(orf_stops, j)
+                                        orf_lengths <- c(orf_lengths, j - i + 3)
+                                        orf_flag    <- 1
+                                        break
+                                }
+                                if(orf_flag == 0){
+                                        orf_starts   <- c(orf_starts, i)
+                                        orf_stop_tmp <- seq_length - ((seq_length - i + 1) %% 3) - 2
+                                        orf_stops    <- c(orf_stops, orf_stop_tmp)
+                                        orf_lengths  <- c(orf_lengths, orf_stop_tmp - i + 3)
+                                }
+                        }
+                        if(max.only) {
+                                max_len   <- max(orf_lengths)
+                                max_cov   <- max_len / seq_length
+                                max_index <- which(orf_lengths == max_len)
+                                orf_start <- orf_starts[max_index]
+                                orf_stop  <- orf_stops[max_index]
+                                orf_seq   <- substr(oneSeq, start = orf_start, stop = orf_stop + 2)
+                                ORF_info  <- list(ORF.Max.Len = max_len, ORF.Max.Cov = max_cov, ORF.Max.Seq = orf_seq)
+                        } else {
+                                for(i in seq_along(orf_starts)) {
+                                        start.val  <- orf_starts[i]
+                                        stop.val   <- orf_stops[i] + 2
+                                        length.val <- orf_lengths[i]
+                                        cover.val  <- length.val / seq_length
+                                        ORF.seq    <- substr(oneSeq, start = start.val, stop = stop.val)
+                                        output.tmp <- data.frame(ORF.Seq = ORF.seq, ORF.Start = start.val, ORF.Stop = stop.val,
+                                                                 ORF.Len = length.val, ORF.Cov = cover.val, stringsAsFactors = FALSE)
+                                        if(i == 1) {
+                                                ORF_info <- output.tmp
+                                        } else {
+                                                ORF_info <- rbind(ORF_info, output.tmp)
+                                        }
+                                }
+                        }
+                }
+        }
+        ORF <- data.frame(subseq = ORF_info$ORF.Max.Seq, length = ORF_info$ORF.Max.Len,
+                          coverage = ORF_info$ORF.Max.Cov, stringsAsFactors = FALSE, row.names = "ORF")
+        ORF
+}
+
+Internal.generateHexamer <- function(oneSeq, logscore) {
+        idx <- seq(1, (length(oneSeq) / 3 - 1))
+        hexamer <- sapply(idx, function(step, inputSeq) {
+                start <- 3 * (step - 1) + 1
+                end   <- start + 5
+                substr <- paste0(inputSeq[start:end], collapse = "")
+        }, inputSeq = oneSeq)
+        hexamer_factors <- factor(hexamer, levels = logscore$V1)
+        levels(hexamer_factors) <- logscore$V2
+        hexamer_score <- as.numeric(as.character(hexamer_factors))
+        hexamer_score[is.na(hexamer_score)] <- 0
+        hexamer <- data.frame(Hexamer = hexamer,
+                              Score = hexamer_score)
+}
+
+Internal.detectMSSL <- function(hexamer) {
+        if (nrow(hexamer) > 3) {
+                SS <- sum(hexamer$Score[1:3]) # at least 12 nt
+                MM <- SS
+                best <- MM
+
+                idx <- 1
+                start <- 1
+                end <- 3
+
+                for (step in 4:nrow(hexamer)) {
+                        SS <- SS + hexamer$Score[step] - hexamer$Score[step - 3]
+                        if (MM + hexamer$Score[step] > SS) {
+                                MM <- MM + hexamer$Score[step]
+                        } else {
+                                MM <- SS
+                                idx <- step - 2
+                        }
+
+                        if (MM > best) {
+                                best <- MM
+                                start <- idx
+                                end <- step
+                        }
+                }
+                sum_round <- round(sum(hexamer$Score[start:end]), digits = 5)
+                best_round <- round(best, digits = 5)
+                if (sum_round != best_round) stop("Error! best: ", best_round, ", sum: ", sum_round)
+                substr_idx <- c(Start = start, End = end, Score = best)
+        } else {
+                substr_idx <- c(Start = 0, End = 0, Score = 0)
+        }
+        substr_idx
+}
+
+Internal.calculateMLC <- function(oneSeq, logscore) {
+        hexamer_list <- sapply(1:3, function(start, inputSeq) {
+                start = 1
+                subSeq <- inputSeq[start:length(oneSeq)]
+                hexamer <- Internal.generateHexamer(subSeq, logscore = logscore)
+                MSSL_idx <- Internal.detectMSSL(hexamer)
+        }, inputSeq = oneSeq)
+        hexamer_list <- data.frame(t(hexamer_list))
+        hexamer_list$phase <- c(1:3)
+        max_idx <- which(hexamer_list$Score == max(hexamer_list$Score))
+        max_substr <- hexamer_list[max_idx,,drop = FALSE]
+        if (nrow(max_substr) > 1) {
+                max_substr$length <- max_substr$End - max_substr$Start + 1
+                max_substr <- max_substr[which.max(max_substr$length),]
+        }
+        start_seq <- (3 * max_substr$Start) + max_substr$phase - 3
+        end_seq <- (3 * max_substr$End) + 2 + max_substr$phase
+        if (start_seq > 0 & end_seq > 0 & (end_seq - start_seq) > 0) {
+                MLC_seq <- paste0(oneSeq[start_seq:end_seq], collapse = "")
+                MLC_len <- nchar(MLC_seq)
+        } else {
+                MLC_seq <- NA
+                MLC_len <- 0
+        }
+        MLC_coverage <- MLC_len / length(oneSeq)
+        MLC <- data.frame(subseq = MLC_seq, length = MLC_len, coverage = MLC_coverage,
+                          stringsAsFactors = FALSE, row.names = "MSS")
+        MLC
+}
+
 Internal.convertSeq <- function(oneSeq, aa.index, aaindex) {
         oneSeq <- oneSeq[oneSeq %in% LETTERS]
         tmp.seq <- factor(oneSeq)
@@ -186,7 +361,7 @@ Internal.FourierSeries <- function(Num.Seq, profile.length = 10){
 
 Internal.computeFreq <- function(oneSeq, seqType = c("RNA", "Pro"),
                                  computePro = c("RPISeq", "DeNovo", "rpiCOOL"),
-                                 k = 3) {
+                                 k = 3, EDP = FALSE) {
 
         if (seqType == "RNA") {
                 oneSeq <- Internal.checkRNA(oneSeq)
@@ -219,7 +394,16 @@ Internal.computeFreq <- function(oneSeq, seqType = c("RNA", "Pro"),
                                                   alphabet = c("A", "I", "N", "G", "R", "P", "Y", "C"))
                 }
         }
+        if (EDP) freq.raw <- Internal.computeEDP(freq.raw)
         return(freq.raw)
+}
+
+Internal.computeEDP <- function(freq.raw) {
+        log_freq <- -freq.raw * log2(freq.raw)
+        H <- sum(log_freq, na.rm = TRUE)
+        EDP <- log_2 / H
+        EDP[EDP < 1e-7 | EDP > 1e7] <- 0
+        EDP
 }
 
 Internal.computeMotifs <- function(oneSeq, motifs = NULL) {
@@ -845,8 +1029,8 @@ Internal.checkNa <- function(dataset) {
 }
 
 # usethis::use_data(m_1_1, m_1_2, m_2_1, m_2_2, m_3_1, m_3_2, m_4_1, m_4_2, m_5_1,
-#                   m_5_2, w_1, w_2, w_3, w_4, w_5, internal = T,
-#                   overwrite = T, version = 2)
+#                   m_5_2, w_1, w_2, w_3, w_4, w_5, LncADeep_featureRank,
+#                   LncADeep_logScore, internal = T, overwrite = T, version = 2)
 
 # save(mod_lncPro, file = "mod_lncPro.RData", compress = "xz")
 # save(mod_ncProR, file = "mod_ncProR.RData", compress = "xz")

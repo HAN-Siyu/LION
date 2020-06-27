@@ -274,7 +274,7 @@ run_lncPro <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "featur
                         message("\n", "+ Predicting pairs using lncPro...  ", Sys.time())
                         if (is.null(retrained.model)) {
                                 message("- Default retrained model selected.  ", Sys.time())
-                                data(mod_lncPro, envir = environment())
+                                data(mod_lncPro, package = "ncProR", envir = environment())
                                 mod_lncPro <- get("mod_lncPro")
                         } else {
                                 message("- Using model provided by user.  ", Sys.time())
@@ -492,7 +492,7 @@ run_RPISeq <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "featur
                 } else {
                         if (is.null(retrained.model)) {
                                 message("- Default retrained model selected.")
-                                data(mod_RPISeq, envir = environment())
+                                data(mod_RPISeq, package = "ncProR", envir = environment())
                                 mod_RPISeq <- get("mod_RPISeq")
                         } else {
                                 message("- Using model provided by user.  ", Sys.time())
@@ -687,7 +687,7 @@ run_rpiCOOL <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "featu
 
                 if (is.null(retrained.model)) {
                         message("- Default retrained model selected. ")
-                        data(mod_rpiCOOL, envir = environment())
+                        data(mod_rpiCOOL, package = "ncProR", envir = environment())
                         mod_rpiCOOL <- get("mod_rpiCOOL")
                 } else {
                         message("- Using model provided by user.")
@@ -885,7 +885,7 @@ run_ncProR <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "featur
 
                 if (is.null(retrained.model)) {
                         message("- Default retrained model selected.")
-                        data(mod_ncProR, envir = environment())
+                        data(mod_ncProR, package = "ncProR", envir = environment())
                         mod_ncProR <- get("mod_ncProR")
                 } else {
                         message("- Using model provided by user.")

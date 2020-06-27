@@ -296,9 +296,9 @@ computeMotifs <- function(seqs, seqType = c("RNA", "Pro"),
 #'
 #' @return This function returns a data frame. Row names are the sequences names, and column names are the motif names.
 #' The names of RNA and protein sequences are separated with ".",
-#' i.e. row names format: "*RNASequenceName*.*proteinSequenceName*" (e.g. "YDL227C.YOR198C").
+#' i.e. row names format: "\emph{RNASequenceName.proteinSequenceName}" (e.g. "YDL227C.YOR198C").
 #' If \code{featureMode = "combine"}, the motif names of RNA and protein sequences are also separated with ".",
-#' i.e. column names format: "motif_*RNAMotifName*.motif_*proteinMotifName*" (e.g. "motif_PUM.motif_EE").
+#' i.e. column names format: "motif_\emph{RNAMotifName}.motif_\emph{proteinMotifName}" (e.g. "motif_PUM.motif_EE").
 #'
 #' @details
 #' If \code{featureMode = "concatenate"}, \emph{m} RNA motif features will be simply

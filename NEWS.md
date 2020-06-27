@@ -3,6 +3,14 @@
 * Users can use `run_multiple()` to get prediction results of multiple methods in one run.
 * Models will be rebuilt using updated data.
 
+# ncProR 1.1.3
+
+* Add `run_LncADeep()` for prediction using LncADeep's feature set. (coming soon)
+* Add `computeMLC()` to compute the most-like CDS (MLC) region.
+* Add parameter `EDP` which supports applying entropy density profile to sequence intrinsic features.
+* Update reference manual.
+* Bugs fixed.
+
 # ncProR 1.1.2
 
 * Matthews correlation coefficient (MCC) is included into evaluation metrics.

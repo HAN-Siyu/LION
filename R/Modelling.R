@@ -58,11 +58,11 @@ formatSeq <- function(idx, seqs) {
 #'
 #' @details The function provides two normalization strategies: by row or by column.
 #' If by row, the dataset will be processed with equation (see reference):
-#' di = (fi - min\{f1, f2, ...\}) / max\{f1, f2, ...\}.
-#' f1, f2, ..., fi are the original values of each row.
+#' d\emph{i} = (f\emph{i} - min\{f1, f2, ...\}) / max\{f1, f2, ...\}.
+#' f1, f2, ..., f\emph{i} are the original values of each row.
 #'
 #' If by column, the dataset will be processed with:
-#' di = (fi - min\{f1, f2, ...\}) / (max\{f1, f2, ...\} - min\{f1, f2, ...\}).
+#' d\emph{i} = (f\emph{i} - min\{f1, f2, ...\}) / (max\{f1, f2, ...\} - min\{f1, f2, ...\}).
 #'
 #' @section References:
 #' Shen J, Zhang J, Luo X, \emph{et al}.
@@ -662,12 +662,14 @@ evaluatePrediction <- function(reference, prediction, positive.class = NULL) {
         MCC <- ((TP / N) - (S * P)) / sqrt(P * S * (1 - S) * (1 - P))
         # MCC <- ((TP * TN) - (FP * FN)) / sqrt((TP + FP) * (TP + FN) * (TN + FP) * (TN + FN))
 
-        performance.res <- data.frame(TP = TP, TN = TN, FP = FP, FN = FN,
+        performance.res <- data.frame(Positive = positive.class,
+                                      TP = TP, TN = TN, FP = FP, FN = FN,
                                       Sensitivity = confusion.res$byClass[1],
                                       Specificity = confusion.res$byClass[2],
                                       Accuracy    = confusion.res$overall[1],
                                       F.Measure   = confusion.res$byClass[7],
                                       MCC         = MCC,
                                       Kappa       = confusion.res$overall[2])
+        row.names(performance.res) <- NULL
         performance.res
 }

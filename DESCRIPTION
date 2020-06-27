@@ -1,7 +1,7 @@
 Package: ncProR
 Type: Package
 Title: Tool for Prediction of Non-coding RNAs-Protein Interaction
-Version: 1.1.2
+Version: 1.1.3
 Authors@R: c(
     person(family = "HAN", given = "Siyu", email = "hansy15@mails.jlu.edu.cn", role = c("aut", "cre")),
     person(family = "LI", given = "Ying", email = "liying@jlu.edu.cn", role = "aut"),
