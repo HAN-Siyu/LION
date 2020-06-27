@@ -225,6 +225,8 @@ Internal.featureCoverage <- function(seqRNA, label = NULL, parallel.cores = 2,
 
 }
 
+=======
+>>>>>>> c2ecb87b83dee6899a2185166548da632f39928f
 Internal.convertSeq <- function(oneSeq, aa.index, aaindex) {
         oneSeq <- oneSeq[oneSeq %in% LETTERS]
         tmp.seq <- factor(oneSeq)
