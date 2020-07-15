@@ -191,9 +191,9 @@ run_lncPro <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "featur
 
         check_idx <- which(lengths(seqRNA) <= 4095)
         if (length(check_idx) < length(seqRNA)) {
-                message("* Due to the limitation of RNAsubopt,")
-                message("  sequences with length more than 4095 nt will be omitted.")
-                message("  ", length(seqRNA) - length(check_idx), " of ", length(seqRNA), " pairs have been removed.")
+                message("  * Due to the limitation of RNAsubopt,")
+                message("    sequences with length more than 4095 nt will be omitted.")
+                message("    ", length(seqRNA) - length(check_idx), " of ", length(seqRNA), " pairs have been removed.")
                 seqRNA <- seqRNA[check_idx]
                 seqPro <- seqPro[check_idx]
                 if (!is.null(label)) label <- label[check_idx]
@@ -201,9 +201,9 @@ run_lncPro <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "featur
 
         check_idx <- which(lengths(seqPro) >= 30)
         if (length(check_idx) < length(seqPro)) {
-                message("* Due to the limitation of predator,")
-                message("  sequences with length less than 30 amino acids will be omitted.")
-                message("  ", length(seqPro) - length(check_idx), " of ", length(seqPro), " pairs have been removed.")
+                message("  * Due to the limitation of predator,")
+                message("    sequences with length less than 30 amino acids will be omitted.")
+                message("    ", length(seqPro) - length(check_idx), " of ", length(seqPro), " pairs have been removed.")
                 seqRNA <- seqRNA[check_idx]
                 seqPro <- seqPro[check_idx]
                 if (!is.null(label)) label <- label[check_idx]

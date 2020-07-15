@@ -91,9 +91,9 @@ runRNAsubopt <- function(seqs, structureRNA.num = 6, path.RNAsubopt = "RNAsubopt
 
         seqValidate <- seqs[which(lengths(seqs) <= 4095)]
         if (length(seqValidate) < length(seqs)) {
-                message("* Due to the limitation of RNAsubopt,")
-                message("  sequences with length more than 4095 nt will be omitted.")
-                message("  ", length(seqs) - length(seqValidate), " of ", length(seqs), " sequences have been removed.")
+                message("  * Due to the limitation of RNAsubopt,")
+                message("    sequences with length more than 4095 nt will be omitted.")
+                message("    ", length(seqs) - length(seqValidate), " of ", length(seqs), " sequences have been removed.")
         }
         seqs <- seqValidate
 
@@ -206,9 +206,9 @@ runPredator <- function(seqs, path.Predator, path.stride, workDir = getwd(),
 
         seqValidate <- seqs[which(lengths(seqs) >= 30)]
         if (length(seqValidate) < length(seqs)) {
-                message("* Due to the limitation of predator,")
-                message("  sequences with length less than 30 amino acids will be omitted.")
-                message("  ", length(seqs) - length(seqValidate), " of ", length(seqs), " sequences have been removed.")
+                message("  * Due to the limitation of predator,")
+                message("    sequences with length less than 30 amino acids will be omitted.")
+                message("    ", length(seqs) - length(seqValidate), " of ", length(seqs), " sequences have been removed.")
         }
         seqs <- seqValidate
 
@@ -390,9 +390,9 @@ computeStructure <- function(seqs, seqType = c("RNA", "Pro"), structureRNA.num =
                 message("\n", "+ Calculating structural information of RNA sequences...  ", Sys.time())
                 seqValidate <- seqs[which(lengths(seqs) <= 4095)]
                 if (length(seqValidate) < length(seqs)) {
-                        message("* Due to the limitation of RNAsubopt,")
-                        message("  sequences with length more than 4095 nt will be omitted.")
-                        message("  ", length(seqs) - length(seqValidate), " of ", length(seqs), " sequences have been removed.")
+                        message("  * Due to the limitation of RNAsubopt,")
+                        message("    sequences with length more than 4095 nt will be omitted.")
+                        message("    ", length(seqs) - length(seqValidate), " of ", length(seqs), " sequences have been removed.")
                 }
                 seqs <- seqValidate
 
@@ -426,9 +426,9 @@ computeStructure <- function(seqs, seqType = c("RNA", "Pro"), structureRNA.num =
                 structurePro <- match.arg(structurePro, several.ok = TRUE)
                 seqValidate <- seqs[which(lengths(seqs) >= 30)]
                 if (length(seqValidate) < length(seqs)) {
-                        message("* Due to the limitation of predator,")
-                        message("  sequences with length less than 30 amino acids will be omitted.")
-                        message("  ", length(seqs) - length(seqValidate), " of ", length(seqs), " sequences have been removed.")
+                        message("  * Due to the limitation of predator,")
+                        message("    sequences with length less than 30 amino acids will be omitted.")
+                        message("    ", length(seqs) - length(seqValidate), " of ", length(seqs), " sequences have been removed.")
                 }
                 seqs <- seqValidate
 
@@ -563,9 +563,9 @@ featureStructure <- function(seqRNA, seqPro, label = NULL, parallel.cores = 2, c
         RNA.velidate.idx <- which(lengths(seqRNA) <= 4095)
         seqValidate <- seqRNA[RNA.velidate.idx]
         if (length(seqValidate) < length(seqRNA)) {
-                message("* Due to the limitation of RNAsubopt,")
-                message("  sequences with length more than 4095 nt will be omitted.")
-                message("  ", length(seqRNA) - length(seqValidate), " of ", length(seqRNA), " pairs have been removed.")
+                message("  * Due to the limitation of RNAsubopt,")
+                message("    sequences with length more than 4095 nt will be omitted.")
+                message("    ", length(seqRNA) - length(seqValidate), " of ", length(seqRNA), " pairs have been removed.")
         }
         seqRNA <- seqValidate
         seqPro <- seqPro[RNA.velidate.idx]
@@ -574,9 +574,9 @@ featureStructure <- function(seqRNA, seqPro, label = NULL, parallel.cores = 2, c
         Pro.velidate.idx <- which(lengths(seqPro) >= 30)
         seqValidate <- seqPro[Pro.velidate.idx]
         if (length(seqValidate) < length(seqPro)) {
-                message("* Due to the limitation of predator,")
-                message("  sequences with length less than 30 amino acids will be omitted.")
-                message("  ", length(seqPro) - length(seqValidate), " of ", length(seqPro), " pairs have been removed.")
+                message("  * Due to the limitation of predator,")
+                message("    sequences with length less than 30 amino acids will be omitted.")
+                message("    ", length(seqPro) - length(seqValidate), " of ", length(seqPro), " pairs have been removed.")
         }
         seqPro <- seqValidate
         seqRNA <- seqRNA[Pro.velidate.idx]

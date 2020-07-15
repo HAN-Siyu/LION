@@ -450,8 +450,8 @@ randomForest_tune <- function(datasets = list(), label.col = 1,
 #' @export
 
 randomForest_RFE <- function(datasets = list(), label.col = 1, positive.class = NULL,
-                             featureNum.range = NULL, folds.num = 10, ntree = 1500,
-                             seed = 1, parallel.cores = 2, ...) {
+                             featureNum.range = NULL, folds.num = 10,
+                             ntree = 1500, seed = 1, parallel.cores = 2, ...) {
 
         message("+ Initializing...  ", Sys.time())
         for (len_datasets in 1:length(datasets)) {
@@ -494,8 +494,6 @@ randomForest_RFE <- function(datasets = list(), label.col = 1, positive.class = 
 
         outRes <- c()
         j <- 1
-
-        message("\n+ RFE Processing...")
 
         for (i in featureNum.range) {
 
