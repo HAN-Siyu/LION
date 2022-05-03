@@ -17,9 +17,9 @@ Imports:
     parallel (>= 2.1.0),
     caret (>= 6.0-71),
     RCurl (>= 1.95-4.12)
-URL: https://github.com/HAN-Siyu/ncProR
-RelevantData: https://github.com/HAN-Siyu/ncProR_Supplementary
-BugReports: https://github.com/HAN-Siyu/ncProR/issues
+URL: https://github.com/HAN-Siyu/LION
+RelevantData: https://github.com/HAN-Siyu/LION_Supplementary
+BugReports: https://github.com/HAN-Siyu/LION/issues
 LazyData: true
 RoxygenNote: 7.1.1
 Encoding: UTF-8

@@ -1059,21 +1059,3 @@ Internal.checkNa <- function(dataset) {
         dataset[,which(na_idx)] <- 0
         dataset
 }
-
-# usethis::use_data(m_1_1, m_1_2, m_2_1, m_2_2, m_3_1, m_3_2, m_4_1, m_4_2, m_5_1,
-#                   m_5_2, w_1, w_2, w_3, w_4, w_5, LncADeep_featureRank,
-#                   LncADeep_logScore, LION_featureRank,
-#                   internal = T, overwrite = T, version = 2)
-
-# save(mod_lncPro, file = "mod_lncPro.RData", compress = "xz")
-# save(mod_LncADeep, file = "mod_LncADeep.RData", compress = "xz")
-# save(mod_RPISeq, file = "mod_RPISeq.RData", compress = "xz")
-# save(mod_rpiCOOL, file = "mod_rpiCOOL.RData", compress = "xz")
-# save(mod_LION,   file = "mod_LION.RData", compress = "xz")
-
-# devtools::check(document = T, cleanup = FALSE, manual = T, cran = F, check_dir = "/Volumes/Work/Projects/ncProR/ncProR_app/")
-# devtools::document(roclets = c('rd', 'collate', 'namespace'))
-# devtools::build_manual()
-
-# if (!library("devtools", logical.return = T)) install.packages("devtools")
-# devtools::install_github("HAN-Siyu/ncProR")
