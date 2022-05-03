@@ -189,8 +189,8 @@ Internal.calculateMLC <- function(oneSeq, logscore) {
                 MLC_seq <- NA
                 MLC_len <- 0
         }
-        MLC_coverage <- MLC_len / length(oneSeq)
-        MLC <- data.frame(subseq = MLC_seq, length = MLC_len, coverage = MLC_coverage,
+        MLC_Coverage <- MLC_len / length(oneSeq)
+        MLC <- data.frame(subseq = MLC_seq, length = MLC_len, coverage = MLC_Coverage,
                           stringsAsFactors = FALSE, row.names = "MSS")
         MLC
 }
@@ -219,14 +219,12 @@ Internal.featureCoverage <- function(seqRNA, label = NULL, parallel.cores = 2,
         if (close_cl) parallel::stopCluster(cl)
 
         features <- data.frame(RNA = names(featureCoverage),
-                               MLC_coverage = featureCoverage)
+                               MLC_Coverage = featureCoverage)
         if (!is.null(label)) features <- data.frame(label = label, features)
         features
 
 }
 
-=======
->>>>>>> c2ecb87b83dee6899a2185166548da632f39928f
 Internal.convertSeq <- function(oneSeq, aa.index, aaindex) {
         oneSeq <- oneSeq[oneSeq %in% LETTERS]
         tmp.seq <- factor(oneSeq)
@@ -976,12 +974,14 @@ Internal.randomForest_CV <- function(datasets = list(), all_folds, label.col = 1
                 S  <- (TP + FN) / N
                 P  <- (TP + FP) / N
                 MCC <- ((TP / N) - (S * P)) / sqrt(P * S * (1 - S) * (1 - P))
+                Hm <- (2 * confusion.res$byClass[1] * confusion.res$byClass[2]) / (confusion.res$byClass[1] + confusion.res$byClass[2])
                 # MCC <- ((TP * TN) - (FP * FN)) / sqrt((TP + FP) * (TP + FN) * (TN + FP) * (TN + FN))
 
                 performance.res <- data.frame(TP = TP, TN = TN, FP = FP, FN = FN,
                                               Sensitivity = confusion.res$byClass[1],
                                               Specificity = confusion.res$byClass[2],
                                               Accuracy    = confusion.res$overall[1],
+                                              HarmonicMean = Hm,
                                               F.Measure   = confusion.res$byClass[7],
                                               MCC         = MCC,
                                               Kappa       = confusion.res$overall[2])
@@ -1062,16 +1062,18 @@ Internal.checkNa <- function(dataset) {
 
 # usethis::use_data(m_1_1, m_1_2, m_2_1, m_2_2, m_3_1, m_3_2, m_4_1, m_4_2, m_5_1,
 #                   m_5_2, w_1, w_2, w_3, w_4, w_5, LncADeep_featureRank,
-#                   LncADeep_logScore, internal = T, overwrite = T, version = 2)
+#                   LncADeep_logScore, LION_featureRank,
+#                   internal = T, overwrite = T, version = 2)
 
 # save(mod_lncPro, file = "mod_lncPro.RData", compress = "xz")
-# save(mod_ncProR, file = "mod_ncProR.RData", compress = "xz")
+# save(mod_LncADeep, file = "mod_LncADeep.RData", compress = "xz")
 # save(mod_RPISeq, file = "mod_RPISeq.RData", compress = "xz")
 # save(mod_rpiCOOL, file = "mod_rpiCOOL.RData", compress = "xz")
+# save(mod_LION,   file = "mod_LION.RData", compress = "xz")
 
-# devtools::check(document = T, cleanup = FALSE, manual = T, cran = F, check_dir = "E:\\ncProR")
+# devtools::check(document = T, cleanup = FALSE, manual = T, cran = F, check_dir = "/Volumes/Work/Projects/ncProR/ncProR_app/")
 # devtools::document(roclets = c('rd', 'collate', 'namespace'))
 # devtools::build_manual()
-#
+
 # if (!library("devtools", logical.return = T)) install.packages("devtools")
 # devtools::install_github("HAN-Siyu/ncProR")

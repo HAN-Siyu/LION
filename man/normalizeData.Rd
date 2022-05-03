@@ -34,11 +34,11 @@ This function is used to normalize dataset.
 \details{
 The function provides two normalization strategies: by row or by column.
 If by row, the dataset will be processed with equation (see reference):
-d\emph{i} = (f\emph{i} - min\{f1, f2, ...\}) / max\{f1, f2, ...\}.
-f1, f2, ..., f\emph{i} are the original values of each row.
+d_\emph{i} = (f_\emph{i} - min\{f_1, f_2, ...\}) / max\{f_1, f_2, ...\}.
+f_1, f_2, ..., f_\emph{i} are the original values of each row.
 
 If by column, the dataset will be processed with:
-d\emph{i} = (f\emph{i} - min\{f1, f2, ...\}) / (max\{f1, f2, ...\} - min\{f1, f2, ...\}).
+d_\emph{i} = (f_\emph{i} - min\{f_1, f_2, ...\}) / (max\{f_1, f_2, ...\} - min\{f_1, f_2, ...\}).
 }
 \section{References}{
 

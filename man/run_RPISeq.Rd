@@ -16,6 +16,7 @@ run_RPISeq(
   ntree.range = c(200, 500, 1000, 1500, 2000),
   seed = 1,
   parallel.cores = 2,
+  cl = NULL,
   ...
 )
 }
@@ -66,12 +67,16 @@ Default: \code{c(200, 500, 1000, 1500, 2000)}.}
 \item{parallel.cores}{an integer that indicates the number of cores for parallel computation.
 Default: \code{2}. Set \code{parallel.cores = -1} to run with all the cores. \code{parallel.cores} should be == -1 or >= 1.}
 
+\item{cl}{parallel cores to be passed to this function.}
+
 \item{...}{(only when \code{mode = "retrain"}) other parameters passed to \code{\link[randomForest]{randomForest}} function.}
 }
 \value{
 If \code{mode = "prediction"}, this function returns a data frame that contains the predicted results.
+
 If \code{mode = "retrain"}, this function returns a random forest classifier.
-If \code{mode = "prediction"}, this function returns a data frame that contains the extracted features.
+
+If \code{mode = "feature"}, this function returns a data frame that contains the extracted features.
 }
 \description{
 This function can predict lncRNA/RNA-protein interactions using RPISeq method.
@@ -112,7 +117,7 @@ Res_RPISeq_2 <- run_RPISeq(seqRNA = seqRNA, seqPro = seqPro, mode = "prediction"
 # In the latter case, the first label in "label" will be used as the positive class.
 # Parameters of random forest, such as "mtry", can be passed using "..." argument.
 
-RPI_model = run_RPISeq(seqRNA = seqRNA, seqPro = seqPro, mode = "retrain",
+RPI_model <- run_RPISeq(seqRNA = seqRNA, seqPro = seqPro, mode = "retrain",
                        label = rep(c("Interact", "Non.Interact"), each = 10),
                        positive.class = "Interact", folds.num = 5,
                        ntree.range = c(300, 500), seed = 1,

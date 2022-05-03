@@ -71,9 +71,12 @@ seqsPro <- demoPositiveSeq$Pro.positive
 path.Predator <- "/mnt/external_drive_1/hansy/predator/predator"
 path.stride <- "/mnt/external_drive_1/hansy/predator/stride.dat"
 
+path.stride <- "/media/psf/AllFiles/Volumes/Work/Projects/ncPro/lnc-pro/predator/stride.dat"
+path.Predator <- "/media/psf/AllFiles/Volumes/Work/Projects/ncPro/lnc-pro/predator/predator"
+
 Predator.res <- runPredator(seqs = seqsPro, path.Predator = path.Predator,
                             path.stride = path.stride, workDir = "tmp",
-                            verbose = TRUE, parallel.cores = 4)
+                            verbose = TRUE, parallel.cores = 2)
 }
 }
 \seealso{

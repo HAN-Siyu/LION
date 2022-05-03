@@ -75,7 +75,8 @@ Algorithms Mol. Biol. 2011; 6:26
 data(demoPositiveSeq)
 seqsRNA <- demoPositiveSeq$RNA.positive
 
-path.RNAsubopt = "RNAsubopt" # you need to use your own paths
+path.RNAsubopt <- "RNAsubopt" # you need to use your own paths, for example:
+# path.RNAsubopt <- '"C:/Program Files (x86)/ViennaRNA Package/RNAsubopt.exe"' # in Windows OS
 
 RNAsubopt_1 <- runRNAsubopt(seqs = seqsRNA, path.RNAsubopt = path.RNAsubopt,
                             returnSum = FALSE, verbose = TRUE,

@@ -25,8 +25,9 @@ RNA sequences will be converted into lower case letters.}
 \item{seqPro}{protein sequences loaded by function \code{\link[seqinr]{read.fasta}} from \code{\link[seqinr]{seqinr-package}}. Or a list of protein sequences.
 Protein sequences will be converted into upper case letters.}
 
-\item{label}{optional. A string that indicates the class of the samples such as
-"Interact", "Non.Interact". Default: \code{NULL}}
+\item{label}{optional. A string or a vector of strings or \code{NULL}.
+Indicates the class of the samples such as
+"Interact", "Non.Interact". Default: \code{NULL}.}
 
 \item{featureMode}{a string that can be \code{"concatenate"} or \code{"combine"}.
 If \code{"concatenate"}, the motif features of RNA and proteins will be simply concatenated.

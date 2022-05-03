@@ -152,9 +152,13 @@
 #'                            newMotif = list(HR_RH = c("HR", "RH"), RGG = "RGG"),
 #'                            parallel.cores = 2)
 #'
+#' motifPro3 <- computeMotifs(seqsPro, seqType = "Pro", motifPro = c("rpiCOOL"),
+#'                            newMotif = list(HR_RH = c("HR", "RH"), RGG = "RGG"),
+#'                            parallel.cores = 2)
+#'
 #' # set "newMotifOnly = TRUE", if compute customized motifs only:
 #'
-#' motifPro3 <- computeMotifs(seqsPro, seqType = "Pro",
+#' motifPro4 <- computeMotifs(seqsPro, seqType = "Pro",
 #'                            newMotif = list(HR_RH = c("HR", "RH"), RGG = "RGG"),
 #'                            newMotifOnly = TRUE, parallel.cores = 2)
 #' @export
@@ -253,6 +257,9 @@ computeMotifs <- function(seqs, seqType = c("RNA", "Pro"),
                 motifPatterns <- c(motifPatterns, Patterns)
         }
 
+        motifPatterns <- motifPatterns[!duplicated(motifPatterns)]
+        if (any(duplicated(names(motifPatterns)))) stop("ERROR: identical motif name for different motifs is not allowed!")
+
         motifCounts <- parallel::parLapply(cl, seqs, Internal.computeMotifs, motifs = motifPatterns)
         if (close_cl) parallel::stopCluster(cl)
 
@@ -272,8 +279,9 @@ computeMotifs <- function(seqs, seqType = c("RNA", "Pro"),
 #' RNA sequences will be converted into lower case letters.
 #' @param seqPro protein sequences loaded by function \code{\link[seqinr]{read.fasta}} from \code{\link[seqinr]{seqinr-package}}. Or a list of protein sequences.
 #' Protein sequences will be converted into upper case letters.
-#' @param label optional. A string that indicates the class of the samples such as
-#' "Interact", "Non.Interact". Default: \code{NULL}
+#' @param label optional. A string or a vector of strings or \code{NULL}.
+#' Indicates the class of the samples such as
+#' "Interact", "Non.Interact". Default: \code{NULL}.
 #' @param featureMode a string that can be \code{"concatenate"} or \code{"combine"}.
 #' If \code{"concatenate"}, the motif features of RNA and proteins will be simply concatenated.
 #' If \code{"combine"}, the returned dataset will be formed by combining the motif features of RNA and proteins.
@@ -363,6 +371,12 @@ featureMotifs <- function(seqRNA, seqPro, label = NULL, featureMode = c("concate
                           newMotifOnly.Pro = FALSE, parallel.cores = 2, cl = NULL, ...) {
 
         if (length(seqRNA) != length(seqPro)) stop("The number of RNA sequences should match the number of protein sequences!")
+        if (!is.null(label)) {
+                if (length(label) == 1) {
+                        label <- rep(label, length(seqPro))
+                }
+                if (length(label) != length(seqPro)) stop("The length of label should be one or match the length of sequences!")
+        }
 
         featureMode <- match.arg(featureMode)
 
@@ -381,7 +395,7 @@ featureMotifs <- function(seqRNA, seqPro, label = NULL, featureMode = c("concate
                                     newMotifOnly = newMotifOnly.Pro, cl = cl, ...)
         if (close_cl) parallel::stopCluster(cl)
 
-        sequenceName <- paste(row.names(featureRNA), row.names(featurePro), sep = ".")
+        sequenceName <- paste(names(seqRNA), names(seqPro), sep = ".")
 
         if (featureMode == "combine") {
                 featureName <- sapply(names(featureRNA), function(nameRNA) {
@@ -393,7 +407,10 @@ featureMotifs <- function(seqRNA, seqPro, label = NULL, featureMode = c("concate
                 features <- as.data.frame(t(featureValue), row.names = sequenceName)
                 names(features) <- featureName
         } else {
-                features <- cbind(featureRNA, featurePro, row.names = sequenceName)
+                # features <- as.data.frame(cbind(featureRNA, featurePro),
+                #                           row.names = sequenceName)
+                features <- cbind(featureRNA, featurePro)
+                row.names(features) <- make.names(sequenceName, unique = TRUE)
         }
 
         if (!is.null(label)) features <- data.frame(label = label, features)

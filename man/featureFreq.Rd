@@ -28,8 +28,9 @@ Each sequence should be a vector of single characters.}
 Protein sequences will be converted into upper case letters.
 Each sequence should be a vector of single characters.}
 
-\item{label}{optional. A string that indicates the class of the samples such as
-"Interact", "Non.Interact". Default: \code{NULL}}
+\item{label}{optional. A string or a vector of strings or \code{NULL}.
+Indicates the class of the samples such as
+"Interact", "Non.Interact". Default: \code{NULL}.}
 
 \item{featureMode}{a string that can be \code{"concatenate"} or \code{"combine"}.
 If \code{"concatenate"}, the \emph{k}-mer features of RNA and proteins will be simply concatenated.

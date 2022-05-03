@@ -177,9 +177,13 @@ motifPro2 <- computeMotifs(seqsPro, seqType = "Pro", motifPro = c("E", "K", "KK"
                            newMotif = list(HR_RH = c("HR", "RH"), RGG = "RGG"),
                            parallel.cores = 2)
 
+motifPro3 <- computeMotifs(seqsPro, seqType = "Pro", motifPro = c("rpiCOOL"),
+                           newMotif = list(HR_RH = c("HR", "RH"), RGG = "RGG"),
+                           parallel.cores = 2)
+
 # set "newMotifOnly = TRUE", if compute customized motifs only:
 
-motifPro3 <- computeMotifs(seqsPro, seqType = "Pro",
+motifPro4 <- computeMotifs(seqsPro, seqType = "Pro",
                            newMotif = list(HR_RH = c("HR", "RH"), RGG = "RGG"),
                            newMotifOnly = TRUE, parallel.cores = 2)
 }

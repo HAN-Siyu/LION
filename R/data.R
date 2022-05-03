@@ -23,6 +23,15 @@ NULL
 #' @usage data(demoPositiveSeq)
 NULL
 
+#' Retrained classifier of LncADeep method
+#'
+#' This file is required by function \code{\link{run_LncADeep}} to predict ncRNA-protein interaction.
+#' Users don't need to load this file manually.
+#'
+#' @name mod_LncADeep
+#' @usage data(mod_LncADeep)
+NULL
+
 #' Retrained random forest classifier of lncPro method
 #'
 #' This file is required by function \code{\link{run_lncPro}} to predict ncRNA-protein interaction.
@@ -50,11 +59,11 @@ NULL
 #' @usage data(mod_RPISeq)
 NULL
 
-#' Retrained random forest classifier of ncProR method
+#' Retrained random forest classifier of LION method
 #'
-#' This file is required by function \code{\link{run_ncProR}} to predict ncRNA-protein interaction.
+#' This file is required by function \code{\link{run_LION}} to predict ncRNA-protein interaction.
 #' Users don't need to load this file manually.
 #'
-#' @name mod_ncProR
-#' @usage data(mod_ncProR)
+#' @name mod_LION
+#' @usage data(mod_LION)
 NULL

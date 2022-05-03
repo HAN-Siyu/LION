@@ -32,13 +32,14 @@
 #' @export
 
 formatSeq <- function(idx, seqs) {
-        tmp <- c()
-        for (x in idx) {
-                seqTmp <- seqs[names(seqs) == x]
-                seqTmp <- seqTmp[1]
-                tmp <- c(tmp, seqTmp)
-        }
-        tmp
+        # tmp <- c()
+        # for (x in idx) {
+        #         seqTmp <- seqs[names(seqs) == x]
+        #         seqTmp <- seqTmp[1]
+        #         tmp <- c(tmp, seqTmp)
+        # }
+        # tmp
+        unlist(lapply(idx, function(x) seqs[names(seqs) == x][1]), recursive = F)
 }
 
 #' Normalize Data
@@ -204,7 +205,7 @@ randomForest_CV <- function(datasets = list(), label.col = 1,
         parallel::clusterExport(cl, varlist = c("datasets", "all_folds", "positive.class", "ntree"), envir = environment())
 
         message("\n+ ", folds.num, "-fold CV Processing...\n")
-        perf.res <- parallel::parSapply(cl, 1:folds.num, function(x) {
+        perf.res <- parallel::parSapply(cl, 1:folds.num, function(x, ...) {
                 trainSet <- c()
                 testSet <- c()
                 for (i in 1:length(datasets)) {
@@ -232,17 +233,19 @@ randomForest_CV <- function(datasets = list(), label.col = 1,
                 S  <- (TP + FN) / N
                 P  <- (TP + FP) / N
                 MCC <- ((TP / N) - (S * P)) / sqrt(P * S * (1 - S) * (1 - P))
+                Hm <- (2 * confusion.res$byClass[1] * confusion.res$byClass[2]) / (confusion.res$byClass[1] + confusion.res$byClass[2])
                 # MCC <- ((TP * TN) - (FP * FN)) / sqrt((TP + FP) * (TP + FN) * (TN + FP) * (TN + FN))
 
                 performance.res <- data.frame(TP = TP, TN = TN, FP = FP, FN = FN,
                                               Sensitivity = confusion.res$byClass[1],
                                               Specificity = confusion.res$byClass[2],
                                               Accuracy    = confusion.res$overall[1],
+                                              HarmonicMean = Hm,
                                               F.Measure   = confusion.res$byClass[7],
                                               MCC         = MCC,
                                               Kappa       = confusion.res$overall[2])
 
-        })
+        }, ... = ...)
 
         parallel::stopCluster(cl)
         Ave.res <- apply(perf.res, 1, as.numeric)
@@ -254,7 +257,7 @@ randomForest_CV <- function(datasets = list(), label.col = 1,
         Ave.res
 }
 
-#' Find the Best Number of Trees for Random Forest Classifier Using K-Fold Cross Validation
+#' Deprecated: Determine ntree for Random Forest Classifier Using K-Fold Cross Validation
 #' @param datasets should be a list containing one or several input datasets. See examples.
 #' @param label.col an integer. Column number of the label.
 #' @param positive.class \code{NULL} or string. Which class is the positive class? Should be one
@@ -331,10 +334,10 @@ randomForest_tune <- function(datasets = list(), label.col = 1,
                 datasets[[i]]$label <- as.factor(datasets[[i]]$label)
         }
 
-        all_folds <- lapply(datasets, function(x) {
+        all_folds <- lapply(datasets, function(x, ...) {
                 set.seed(seed)
                 folds <- caret::createFolds(x$label, k = folds.num, returnTrain = TRUE)
-        })
+        }, ... = ...)
 
         if (is.null(positive.class)) {
                 positive.class <- as.character(datasets[[1]]$label[[1]])
@@ -363,6 +366,7 @@ randomForest_tune <- function(datasets = list(), label.col = 1,
                 ntree_perf <- t(ntree_res[folds.num + 1])
                 row.names(ntree_perf) <- paste0("ntree_", ntree)
                 perf_tune <- rbind(perf_tune, ntree_perf)
+
                 print(round(ntree_perf, digits = 4)[,-c(1:4)])
         }
         parallel::stopCluster(cl)
@@ -518,7 +522,7 @@ randomForest_RFE <- function(datasets = list(), label.col = 1, positive.class = 
 
                 parallel::clusterExport(cl, varlist = c("datasets", "all_folds", "positive.class", "ntree"), envir = environment())
 
-                outInfo <- parallel::parSapply(cl, 1:folds.num, function(x) {
+                outInfo <- parallel::parSapply(cl, 1:folds.num, function(x, ...) {
                         trainSet <- c()
                         testSet <- c()
                         for (len_datasets in 1:length(datasets)) {
@@ -546,12 +550,14 @@ randomForest_RFE <- function(datasets = list(), label.col = 1, positive.class = 
                         S  <- (TP + FN) / N
                         P  <- (TP + FP) / N
                         MCC <- ((TP / N) - (S * P)) / sqrt(P * S * (1 - S) * (1 - P))
+                        Hm <- (2 * confusion.res$byClass[1] * confusion.res$byClass[2]) / (confusion.res$byClass[1] + confusion.res$byClass[2])
                         # MCC <- ((TP * TN) - (FP * FN)) / sqrt((TP + FP) * (TP + FN) * (TN + FP) * (TN + FN))
 
                         performance.res <- data.frame(TP = TP, TN = TN, FP = FP, FN = FN,
                                                       Sensitivity = confusion.res$byClass[1],
                                                       Specificity = confusion.res$byClass[2],
                                                       Accuracy    = confusion.res$overall[1],
+                                                      HarmonicMean = Hm,
                                                       F.Measure   = confusion.res$byClass[7],
                                                       MCC         = MCC,
                                                       Kappa       = confusion.res$overall[2])
@@ -560,9 +566,9 @@ randomForest_RFE <- function(datasets = list(), label.col = 1, positive.class = 
                         importantScore <- importantScore[,ncol(importantScore)]
 
                         outInfo <- list(performance.res, importantScore)
-                })
+                }, ... = ...)
 
-                perf.res <- (outInfo[1,])
+                perf.res <- outInfo[1,]
                 perf.res <- sapply(perf.res, unlist)
                 perf.res <- as.data.frame(perf.res)
                 perf.res$AveRes <- rowMeans(perf.res)
@@ -628,7 +634,7 @@ randomForest_RFE <- function(datasets = list(), label.col = 1, positive.class = 
 #' # Evaluating the result:
 #'
 #' perf_RPISeq <- evaluatePrediction(reference = rep("Non.Interact", 20),
-#'                                   prediction = Res_RPISeq$RF_res,
+#'                                   prediction = Res_RPISeq$RPISeq_Web_RF_pred,
 #'                                   positive.class = "Non.Interact")
 #'
 #' @export
@@ -658,13 +664,14 @@ evaluatePrediction <- function(reference, prediction, positive.class = NULL) {
         S  <- (TP + FN) / N
         P  <- (TP + FP) / N
         MCC <- ((TP / N) - (S * P)) / sqrt(P * S * (1 - S) * (1 - P))
+        Hm <- (2 * confusion.res$byClass[1] * confusion.res$byClass[2]) / (confusion.res$byClass[1] + confusion.res$byClass[2])
         # MCC <- ((TP * TN) - (FP * FN)) / sqrt((TP + FP) * (TP + FN) * (TN + FP) * (TN + FN))
 
-        performance.res <- data.frame(Positive = positive.class,
-                                      TP = TP, TN = TN, FP = FP, FN = FN,
+        performance.res <- data.frame(TP = TP, TN = TN, FP = FP, FN = FN,
                                       Sensitivity = confusion.res$byClass[1],
                                       Specificity = confusion.res$byClass[2],
                                       Accuracy    = confusion.res$overall[1],
+                                      HarmonicMean = Hm,
                                       F.Measure   = confusion.res$byClass[7],
                                       MCC         = MCC,
                                       Kappa       = confusion.res$overall[2])

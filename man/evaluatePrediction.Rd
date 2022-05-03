@@ -50,7 +50,7 @@ Res_RPISeq <- run_RPISeq(seqRNA = seqRNA, seqPro = seqPro,
 # Evaluating the result:
 
 perf_RPISeq <- evaluatePrediction(reference = rep("Non.Interact", 20),
-                                  prediction = Res_RPISeq$RF_res,
+                                  prediction = Res_RPISeq$RPISeq_Web_RF_pred,
                                   positive.class = "Non.Interact")
 
 }

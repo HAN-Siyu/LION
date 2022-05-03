@@ -58,7 +58,8 @@
 #' data(demoPositiveSeq)
 #' seqsRNA <- demoPositiveSeq$RNA.positive
 #'
-#' path.RNAsubopt = "RNAsubopt" # you need to use your own paths
+#' path.RNAsubopt <- "RNAsubopt" # you need to use your own paths, for example:
+#' # path.RNAsubopt <- '"C:/Program Files (x86)/ViennaRNA Package/RNAsubopt.exe"' # in Windows OS
 #'
 #' RNAsubopt_1 <- runRNAsubopt(seqs = seqsRNA, path.RNAsubopt = path.RNAsubopt,
 #'                             returnSum = FALSE, verbose = TRUE,
@@ -101,7 +102,7 @@ runRNAsubopt <- function(seqs, structureRNA.num = 6, path.RNAsubopt = "RNAsubopt
         index <- 1
         seqs <- parallel::parLapply(cl, seqs, Internal.checkRNA)
         seq.string <- parallel::parSapply(cl, seqs, seqinr::getSequence, TRUE)
-        info <- paste(round(length(seqs) / parallel.cores), ",", sep = "")
+        info <- paste(ceiling(length(seqs) / parallel.cores), ",", sep = "")
 
         parallel::clusterExport(cl, varlist = c("index"), envir = environment())
 
@@ -111,9 +112,9 @@ runRNAsubopt <- function(seqs, structureRNA.num = 6, path.RNAsubopt = "RNAsubopt
 
         if (close_cl) parallel::stopCluster(cl)
 
-        if (!returnSum) RNAsubopt.seq <- data.frame(RNAsubopt.seq, check.names = FALSE)
-
         message("\n", "+ Completed.  ", Sys.time())
+
+        if (!returnSum) RNAsubopt.seq <- data.frame(RNAsubopt.seq, check.names = FALSE)
 
         RNAsubopt.seq
 }
@@ -177,9 +178,12 @@ runRNAsubopt <- function(seqs, structureRNA.num = 6, path.RNAsubopt = "RNAsubopt
 #' path.Predator <- "/mnt/external_drive_1/hansy/predator/predator"
 #' path.stride <- "/mnt/external_drive_1/hansy/predator/stride.dat"
 #'
+#' path.stride <- "/media/psf/AllFiles/Volumes/Work/Projects/ncPro/lnc-pro/predator/stride.dat"
+#' path.Predator <- "/media/psf/AllFiles/Volumes/Work/Projects/ncPro/lnc-pro/predator/predator"
+#'
 #' Predator.res <- runPredator(seqs = seqsPro, path.Predator = path.Predator,
 #'                             path.stride = path.stride, workDir = "tmp",
-#'                             verbose = TRUE, parallel.cores = 4)
+#'                             verbose = TRUE, parallel.cores = 2)
 #' }
 #' @export
 
@@ -215,7 +219,7 @@ runPredator <- function(seqs, path.Predator, path.stride, workDir = getwd(),
         message("- Sequences Number: ", length(seqs))
         index <- 1
 
-        info <- paste0(round(length(seqs) / parallel.cores), ",")
+        info <- paste0(ceiling(length(seqs) / parallel.cores), ",")
 
         parallel::clusterExport(cl, varlist = c("index", "Internal.randomName"), envir = environment())
 
@@ -337,9 +341,9 @@ runPredator <- function(seqs, path.Predator, path.stride, workDir = getwd(),
 #' @seealso \code{\link{runRNAsubopt}}, \code{\link{runPredator}}, \code{\link{featureStructure}}
 #' @examples
 #' \dontrun{
-#' data(demoNegativeSeq)
-#' seqsRNA <- demoNegativeSeq$RNA.negative
-#' seqsPro <- demoNegativeSeq$Pro.negative
+#' data(demoPositiveSeq)
+#' seqsRNA <- demoPositiveSeq$RNA.positive
+#' seqsPro <- demoPositiveSeq$Pro.positive
 #'
 #' # You need to use your own paths:
 #'
@@ -372,10 +376,9 @@ computeStructure <- function(seqs, seqType = c("RNA", "Pro"), structureRNA.num =
         if (seqType == "Pro" & !file.exists(path.stride)) stop("The path of stride.dat is not correct! Please check parameter path.stride.")
         if (min(lengths(seqs)) < Fourier.len) stop("The profile length of Fourier Series (Fourier.len) cannot be larger than the minimum length of the input sequences!")
 
-        message("+ Initializing...  ", Sys.time())
-
         close_cl <- FALSE
         if (is.null(cl)) {
+                message("+ Initializing...  ", Sys.time())
                 message("- Creating cores...  ")
                 parallel.cores <- ifelse(parallel.cores == -1, parallel::detectCores(), parallel.cores)
                 if (verbose) {
@@ -395,12 +398,16 @@ computeStructure <- function(seqs, seqType = c("RNA", "Pro"), structureRNA.num =
                         message("    ", length(seqs) - length(seqValidate), " of ", length(seqs), " sequences have been removed.")
                 }
                 seqs <- seqValidate
+                seqNames <- names(seqs)
+                if(is.null(seqNames)) {
+                        seqNames <- sapply(seqs, attr, "name")
+                }
 
                 message("- Sequences Number: ", length(seqs))
                 index <- 1
                 seqs <- parallel::parLapply(cl, seqs, Internal.checkRNA)
                 seq.string <- parallel::parSapply(cl, seqs, seqinr::getSequence, TRUE)
-                info <- paste(round(length(seqs) / parallel.cores), ",", sep = "")
+                info <- paste(ceiling(length(seqs) / parallel.cores), ",", sep = "")
 
                 parallel::clusterExport(cl, varlist = c("index"), envir = environment())
                 RNAsubopt.seq <- parallel::parLapply(cl, seq.string, Internal.runRNAsubopt, info = info,
@@ -412,8 +419,10 @@ computeStructure <- function(seqs, seqType = c("RNA", "Pro"), structureRNA.num =
 
                 if (!as.list) {
                         tmp.df <- t(as.data.frame(out.seq))
-                        row.names(tmp.df) <- names(out.seq)
+                        # row.names(tmp.df) <- seqNames
+                        # .rowNamesDF(tmp.df, make.names = T) <- seqNames
                         tmp.df <- as.data.frame(tmp.df)
+                        row.names(tmp.df) <- make.names(seqNames, unique = TRUE)
                         names(tmp.df) <- paste0("RNAstructure", c(1:ncol(tmp.df)))
                         out.seq <- tmp.df
                 }
@@ -431,11 +440,15 @@ computeStructure <- function(seqs, seqType = c("RNA", "Pro"), structureRNA.num =
                         message("    ", length(seqs) - length(seqValidate), " of ", length(seqs), " sequences have been removed.")
                 }
                 seqs <- seqValidate
+                seqNames <- names(seqs)
+                if(is.null(seqNames)) {
+                        seqNames <- sapply(seqs, attr, "name")
+                }
 
                 message("- Sequences Number: ", length(seqs))
                 index <- 1
 
-                info <- paste0(round(length(seqs) / parallel.cores), ",")
+                info <- paste0(ceiling(length(seqs) / parallel.cores), ",")
 
                 parallel::clusterExport(cl, varlist = c("index", "Internal.randomName",
                                                         "aaindex", "Internal.convertSeq",
@@ -458,7 +471,12 @@ computeStructure <- function(seqs, seqType = c("RNA", "Pro"), structureRNA.num =
 
                 if (createDir & length(dir(workDir.Pro, all.files = TRUE, recursive = TRUE)) == 0) unlink(workDir.Pro, recursive = TRUE)
 
-                if (!as.list) out.seq <- as.data.frame(t(data.frame(out.seq, check.names = FALSE)))
+                if (!as.list) {
+                        out.seq <- as.data.frame(t(data.frame(out.seq, check.names = FALSE)))
+                        # row.names(out.seq) <- seqNames
+                        # .rowNamesDF(out.seq, make.names = T) <- seqNames
+                        row.names(out.seq) = make.names(seqNames, unique = TRUE)
+                }
         }
         # message("\n", "+ Completed.  ", Sys.time(), "\n")
 
@@ -476,8 +494,9 @@ computeStructure <- function(seqs, seqType = c("RNA", "Pro"), structureRNA.num =
 #' @param seqPro protein sequences loaded by function \code{\link[seqinr]{read.fasta}} from \code{\link[seqinr]{seqinr-package}}. Or a list of protein sequences.
 #' Protein sequences will be converted into upper case letters.
 #' Each sequence should be a vector of single characters.
-#' @param label optional. A string that indicates the class of the samples such as
-#' "Interact", "NonInteract". Default: \code{NULL}
+#' @param label optional. A string or a vector of strings or \code{NULL}.
+#' Indicates the class of the samples such as
+#' "Interact", "Non.Interact". Default: \code{NULL}.
 #' @param parallel.cores an integer that indicates the number of cores for parallel computation.
 #' Default: \code{2}. Set \code{parallel.cores = -1} to run with all the cores. \code{parallel.cores} should be == -1 or >= 1.
 #' @param cl parallel cores to be passed to this function.
@@ -557,9 +576,23 @@ featureStructure <- function(seqRNA, seqPro, label = NULL, parallel.cores = 2, c
 
         if (length(seqRNA) != length(seqPro)) stop("The number of RNA sequences should match the number of protein sequences!")
 
-        message("+ Initializing...  ", Sys.time())
+        if (!is.null(label)) {
+                if (length(label) == 1) {
+                        label <- rep(label, length(seqPro))
+                }
+                if (length(label) != length(seqPro)) stop("The length of label should be one or match the length of sequences!")
+        }
 
-        message("- Checking sequences...  ")
+        close_cl <- FALSE
+        if (is.null(cl)) {
+                message("+ Initializing...  ", Sys.time())
+                message("- Creating cores...  ")
+                parallel.cores <- ifelse(parallel.cores == -1, parallel::detectCores(), parallel.cores)
+                cl <- parallel::makeCluster(parallel.cores)
+                close_cl <- TRUE
+        }
+
+        message("\n+ Checking sequences for secondary structure computation...  ")
         RNA.velidate.idx <- which(lengths(seqRNA) <= 4095)
         seqValidate <- seqRNA[RNA.velidate.idx]
         if (length(seqValidate) < length(seqRNA)) {
@@ -582,20 +615,15 @@ featureStructure <- function(seqRNA, seqPro, label = NULL, parallel.cores = 2, c
         seqRNA <- seqRNA[Pro.velidate.idx]
         if (!is.null(label)) label <- label[RNA.velidate.idx]
 
-        close_cl <- FALSE
-        if (is.null(cl)) {
-                message("- Creating cores...  ")
-                parallel.cores <- ifelse(parallel.cores == -1, parallel::detectCores(), parallel.cores)
-                cl <- parallel::makeCluster(parallel.cores)
-                close_cl <- TRUE
-        }
-
         Structure.RNA <- computeStructure(seqs = seqRNA, seqType = "RNA", as.list = FALSE, cl = cl, ...)
         Structure.Pro <- computeStructure(seqs = seqPro, seqType = "Pro", as.list = FALSE, cl = cl, ...)
         if (close_cl) parallel::stopCluster(cl)
 
-        sequenceName <- paste(row.names(Structure.RNA), row.names(Structure.Pro), sep = ".")
-        features <- cbind(Structure.RNA, Structure.Pro, row.names = sequenceName)
+        sequenceName <- paste(names(seqRNA), names(seqPro), sep = ".")
+        # features <- as.data.frame(cbind(Structure.RNA, Structure.Pro),
+        #                           row.names = sequenceName)
+        features <- cbind(Structure.RNA, Structure.Pro)
+        row.names(features) <- make.names(sequenceName, unique = TRUE)
 
         if (!is.null(label)) features <- data.frame(label = label, features)
         features

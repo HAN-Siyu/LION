@@ -22,8 +22,9 @@ Each sequence should be a vector of single characters.}
 Protein sequences will be converted into upper case letters.
 Each sequence should be a vector of single characters.}
 
-\item{label}{optional. A string that indicates the class of the samples such as
-"Interact", "Non.Interact". Default: \code{NULL}}
+\item{label}{optional. A string or a vector of strings or \code{NULL}.
+Indicates the class of the samples such as
+"Interact", "Non.Interact". Default: \code{NULL}.}
 
 \item{parallel.cores}{an integer that indicates the number of cores for parallel computation.
 Default: \code{2}. Set \code{parallel.cores = -1} to run with all the cores. \code{parallel.cores} should be == -1 or >= 1.}

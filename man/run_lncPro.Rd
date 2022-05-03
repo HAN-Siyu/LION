@@ -20,6 +20,7 @@ run_lncPro(
   ntree.range = c(200, 500, 1000, 1500, 2000),
   seed = 1,
   parallel.cores = 2,
+  cl = NULL,
   ...
 )
 }
@@ -82,12 +83,16 @@ Default: \code{c(200, 500, 1000, 1500, 2000)}.}
 \item{parallel.cores}{an integer that indicates the number of cores for parallel computation.
 Default: \code{2}. Set \code{parallel.cores = -1} to run with all the cores. \code{parallel.cores} should be == -1 or >= 1.}
 
+\item{cl}{parallel cores to be passed to this function.}
+
 \item{...}{(only when \code{mode = "retrain"}) other parameters passed to \code{\link[randomForest]{randomForest}} function.}
 }
 \value{
 If \code{mode = "prediction"}, this function returns a data frame that contains the predicted results.
+
 If \code{mode = "retrain"}, this function returns a random forest classifier.
-If \code{mode = "prediction"}, this function returns a data frame that contains the extracted features.
+
+If \code{mode = "feature"}, this function returns a data frame that contains the extracted features.
 }
 \description{
 This function can predict lncRNA/RNA-protein interactions using lncPro method. Model retraining and feature extraction are also supported.

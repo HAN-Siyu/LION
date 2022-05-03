@@ -2,7 +2,7 @@
 % Please edit documentation in R/Modelling.R
 \name{randomForest_tune}
 \alias{randomForest_tune}
-\title{Find the Best Number of Trees for Random Forest Classifier Using K-Fold Cross Validation}
+\title{Deprecated: Determine ntree for Random Forest Classifier Using K-Fold Cross Validation}
 \usage{
 randomForest_tune(
   datasets = list(),
@@ -45,7 +45,7 @@ If \code{return.model = TRUR}, the function returns a random forest model.
 If \code{FALSE}, the function returns the optimal \code{ntree} and the performance.
 }
 \description{
-Find the Best Number of Trees for Random Forest Classifier Using K-Fold Cross Validation
+Deprecated: Determine ntree for Random Forest Classifier Using K-Fold Cross Validation
 }
 \examples{
 

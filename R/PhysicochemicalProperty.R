@@ -285,8 +285,9 @@ computePhysChem <- function(seqs, seqType = c("RNA", "Pro"), Fourier.len = 10,
 #' @param seqPro protein sequences loaded by function \code{\link[seqinr]{read.fasta}} from \code{\link[seqinr]{seqinr-package}}. Or a list of protein sequences.
 #' Protein sequences will be converted into upper case letters.
 #' Each sequence should be a vector of single characters.
-#' @param label optional. A string that indicates the class of the samples such as
-#' "Interact", "Non.Interact". Default: \code{NULL}
+#' @param label optional. A string or a vector of strings or \code{NULL}.
+#' Indicates the class of the samples such as
+#' "Interact", "Non.Interact". Default: \code{NULL}.
 #' @param parallel.cores an integer that indicates the number of cores for parallel computation.
 #' Default: \code{2}. Set \code{parallel.cores = -1} to run with all the cores. \code{parallel.cores} should be == -1 or >= 1.
 #' @param cl parallel cores to be passed to this function.
@@ -370,6 +371,12 @@ computePhysChem <- function(seqs, seqType = c("RNA", "Pro"), Fourier.len = 10,
 featurePhysChem <- function(seqRNA, seqPro, label = NULL, parallel.cores = 2, cl = NULL, ...) {
 
         if (length(seqRNA) != length(seqPro)) stop("The number of RNA sequences should match the number of protein sequences!")
+        if (!is.null(label)) {
+                if (length(label) == 1) {
+                        label <- rep(label, length(seqPro))
+                }
+                if (length(label) != length(seqPro)) stop("The length of label should be one or match the length of sequences!")
+        }
 
         close_cl <- FALSE
         if (is.null(cl)) {
@@ -384,8 +391,11 @@ featurePhysChem <- function(seqRNA, seqPro, label = NULL, parallel.cores = 2, cl
         PhysChem.Pro <- computePhysChem(seqs = seqPro, seqType = "Pro", as.list = FALSE, cl = cl, ...)
         if (close_cl) parallel::stopCluster(cl)
 
-        sequenceName <- paste(row.names(PhysChem.RNA), row.names(PhysChem.Pro), sep = ".")
-        features <- cbind(PhysChem.RNA, PhysChem.Pro, row.names = sequenceName)
+        sequenceName <- paste(names(seqRNA), names(seqPro), sep = ".")
+        # features <- as.data.frame(cbind(PhysChem.RNA, PhysChem.Pro),
+        #                           row.names = sequenceName)
+        features <- cbind(PhysChem.RNA, PhysChem.Pro)
+        row.names(features) <- make.names(sequenceName, unique = TRUE)
 
         if (!is.null(label)) features <- data.frame(label = label, features)
         features

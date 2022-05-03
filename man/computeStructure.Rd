@@ -120,9 +120,9 @@ BMC Genomics 2013; 14:651
 
 \examples{
 \dontrun{
-data(demoNegativeSeq)
-seqsRNA <- demoNegativeSeq$RNA.negative
-seqsPro <- demoNegativeSeq$Pro.negative
+data(demoPositiveSeq)
+seqsRNA <- demoPositiveSeq$RNA.positive
+seqsPro <- demoPositiveSeq$Pro.positive
 
 # You need to use your own paths:
 
