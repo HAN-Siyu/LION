@@ -31,3 +31,4 @@ vignettes/*.pdf
 ^\.Rproj\.user$
 ^.*\.Rhistory$
 LION.Rproj
+ignore_check_PKG.R

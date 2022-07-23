@@ -12,7 +12,8 @@ run_LION(
   label = NULL,
   positive.class = NULL,
   folds.num = 10,
-  ntree.range = c(200, 500, 1000, 1500, 2000),
+  ntree = 3000,
+  mtry.ratios = c(0.1, 0.2, 0.4, 0.6, 0.8),
   seed = 1,
   parallel.cores = 2,
   cl = NULL,
@@ -52,9 +53,11 @@ as the positive class. Default: \code{NULL}.}
 \item{folds.num}{(only when \code{mode = "retrain"}) an integer indicates the number of folds for cross validation.
 Default: \code{10} for 10-fold cross validation.}
 
-\item{ntree.range}{(only when \code{mode = "retrain"}) used to indicate the range of \code{ntree}
-when tuning the random forest classifier.
-Default: \code{c(200, 500, 1000, 1500, 2000)}.}
+\item{ntree}{integer, number of trees to grow. See \code{\link[randomForest]{randomForest}}.
+Default: \code{3000}.}
+
+\item{mtry.ratios}{(only when \code{mode = "retrain"}) used to indicate the ratios of \code{mtry} when tuning the random forest classifier.
+\code{mtry} = ratio of mtry * number of features Default: \code{c(0.1, 0.2, 0.4, 0.6, 0.8)}.}
 
 \item{seed}{(only when \code{mode = "retrain"}) an integer indicates the random seed for data splitting.}
 
@@ -107,13 +110,12 @@ Res_LION_2 <- run_LION(seqRNA = seqRNA, seqPro = seqPro, mode = "prediction",
 # "label" should correspond to the classes of "seqRNA" and "seqPro".
 # "positive.class" should be one of the classes in argument "label" or can be set as "NULL".
 # In the latter case, the first label in "label" will be used as the positive class.
-# Parameters of random forest, such as "mtry", can be passed using "..." argument.
+# Parameters of random forest, such as "replace", can be passed using "..." argument.
 
 LION_model <- run_LION(seqRNA = seqRNA, seqPro = seqPro, mode = "retrain",
                        label = rep(c("Interact", "Non.Interact"), each = 10),
-                       positive.class = NULL, folds.num = 5,
-                       ntree.range = c(300, 500), seed = 1,
-                       parallel.cores = 2, mtry = 20)
+                       positive.class = NULL, folds.num = 5, ntree = 100,
+                       seed = 1, parallel.cores = 2, replace = FALSE)
 
 # Predicting using new built model by setting "retrained.model = LION_model":
 
