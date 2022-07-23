@@ -376,7 +376,7 @@ run_lncPro <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "featur
 #' @param parallel.cores an integer that indicates the number of cores for parallel computation.
 #' Default: \code{2}. Set \code{parallel.cores = -1} to run with all the cores. \code{parallel.cores} should be == -1 or >= 1.
 #' @param cl parallel cores to be passed to this function.
-#' @param ... (only when \code{mode = "retrain"}) other parameters passed to \code{\link[randomForest]{randomForest}} function.
+#' @param ... (only when \code{mode = "retrain"}) other parameters (except \code{ntree} and \code{mtry}) passed to \code{\link[randomForest]{randomForest}} function.
 #'
 #' @return
 #' If \code{mode = "prediction"}, this function returns a data frame that contains the predicted results.
@@ -622,7 +622,7 @@ run_RPISeq <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "featur
 #' @param parallel.cores an integer that indicates the number of cores for parallel computation.
 #' Default: \code{2}. Set \code{parallel.cores = -1} to run with all the cores. \code{parallel.cores} should be == -1 or >= 1.
 #' @param cl parallel cores to be passed to this function.
-#' @param ... (only when \code{mode = "retrain"}) other parameters passed to \code{\link[randomForest]{randomForest}} function.
+#' @param ... (only when \code{mode = "retrain"}) other parameters (except \code{ntree} and \code{mtry}) passed to \code{\link[randomForest]{randomForest}} function.
 #'
 #' @return
 #' If \code{mode = "prediction"}, this function returns a data frame that contains the predicted results.
@@ -835,7 +835,7 @@ run_rpiCOOL <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "featu
 #' @param parallel.cores an integer that indicates the number of cores for parallel computation.
 #' Default: \code{2}. Set \code{parallel.cores = -1} to run with all the cores. \code{parallel.cores} should be == -1 or >= 1.
 #' @param cl parallel cores to be passed to this function.
-#' @param ... (only when \code{mode = "retrain"}) other parameters passed to \code{\link[randomForest]{randomForest}} function.
+#' @param ... (only when \code{mode = "retrain"}) other parameters (except \code{ntree} and \code{mtry}) passed to \code{\link[randomForest]{randomForest}} function.
 #'
 #' @return
 #' If \code{mode = "prediction"}, this function returns a data frame that contains the predicted results.
@@ -1045,7 +1045,7 @@ run_LncADeep <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "feat
 #' @param parallel.cores an integer that indicates the number of cores for parallel computation.
 #' Default: \code{2}. Set \code{parallel.cores = -1} to run with all the cores. \code{parallel.cores} should be == -1 or >= 1.
 #' @param cl parallel cores to be passed to this function.
-#' @param ... (only when \code{mode = "retrain"}) other parameters passed to \code{\link[randomForest]{randomForest}} function.
+#' @param ... (only when \code{mode = "retrain"}) other parameters (except \code{ntree} and \code{mtry}) passed to \code{\link[randomForest]{randomForest}} function.
 #'
 #' @return
 #' If \code{mode = "prediction"}, this function returns a data frame that contains the predicted results.
@@ -1055,7 +1055,7 @@ run_LncADeep <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "feat
 #' If \code{mode = "feature"}, this function returns a data frame that contains the extracted features.
 #'
 #' @section References:
-#' Han S, Liang Y, Ma Q, \emph{et al}.
+#' Han S, \emph{et al}.
 #' LION: an integrated R package for effective ncRNA-protein interaction prediction.
 #' (\emph{Submitted})
 #'
@@ -1258,7 +1258,7 @@ run_LION <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "feature"
 #' @return A list containing the predicted results.
 #'
 #' @section References:
-#' Han S, Liang Y, Ma Q, \emph{et al}.
+#' Han S, \emph{et al}.
 #' LION: an integrated R package for effective ncRNA-protein interaction prediction.
 #' (\emph{Submitted})
 #'

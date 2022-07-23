@@ -101,8 +101,8 @@
 #' "HR_RH" is the name of this motif which contains two patterns: "HR" and "RH".
 #'
 #' @section References:
-#' [1] Han S, Liang Y, Ma Q, \emph{et al}.
-#' ncProR: an integrated R package for effective ncRNA-protein interaction prediction.
+#' [1] Han S, \emph{et al}.
+#' LION: an integrated R package for effective ncRNA-protein interaction prediction.
 #' (\emph{Submitted})
 #'
 #' [2] Akbaripour-Elahabad M, Zahiri J, Rafeh R, \emph{et al}.
@@ -318,8 +318,8 @@ computeMotifs <- function(seqs, seqType = c("RNA", "Pro"),
 #' See arguments \code{motifRNA} and \code{motifPro} in \code{\link{computeMotifs}}.
 #'
 #' @section References:
-#' [1] Han S, Liang Y, Ma Q, \emph{et al}.
-#' ncProR: an integrated R package for effective ncRNA-protein interaction prediction.
+#' [1] Han S, \emph{et al}.
+#' LION: an integrated R package for effective ncRNA-protein interaction prediction.
 #' (\emph{Submitted})
 #'
 #' [2] Akbaripour-Elahabad M, Zahiri J, Rafeh R, \emph{et al}.

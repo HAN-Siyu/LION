@@ -1041,12 +1041,13 @@ Internal.randomForest_tune <- function(datasets = list(), label.col = 1,
 
         output <- mtry.ratios[which.max(perf_tune$Accuracy)]
         message("- Optimal mtryRatio: ", output)
+        mtry_optimal <- floor((ncol(datasets[[1]]) - 1) * output)
 
         if (return.model) {
                 message("\n+ Training the model...   ", Sys.time())
                 trainSet <- do.call("rbind", datasets)
                 output <- randomForest::randomForest(label ~ ., data = trainSet,
-                                                     ntree = ntree, mtry = mtry, ...)
+                                                     ntree = ntree, mtry = mtry_optimal, ...)
         } else {
                 output = list(mtry = output, performance = perf_tune)
         }

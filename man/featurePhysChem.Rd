@@ -47,8 +47,8 @@ see \code{\link{computePhysChem}}.
 }
 \section{References}{
 
-[1] Han S, Liang Y, Ma Q, \emph{et al}.
-ncProR: an integrated R package for effective ncRNA-protein interaction prediction.
+[1] Han S, \emph{et al}.
+LION: an integrated R package for effective ncRNA-protein interaction prediction.
 (\emph{Submitted})
 
 [2] Morozova N, Allers J, Myers J, \emph{et al}.

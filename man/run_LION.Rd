@@ -66,7 +66,7 @@ Default: \code{2}. Set \code{parallel.cores = -1} to run with all the cores. \co
 
 \item{cl}{parallel cores to be passed to this function.}
 
-\item{...}{(only when \code{mode = "retrain"}) other parameters passed to \code{\link[randomForest]{randomForest}} function.}
+\item{...}{(only when \code{mode = "retrain"}) other parameters (except \code{ntree} and \code{mtry}) passed to \code{\link[randomForest]{randomForest}} function.}
 }
 \value{
 If \code{mode = "prediction"}, this function returns a data frame that contains the predicted results.
@@ -80,7 +80,7 @@ This function can predict lncRNA/RNA-protein interactions using LION method. Mod
 }
 \section{References}{
 
-Han S, Liang Y, Ma Q, \emph{et al}.
+Han S, \emph{et al}.
 LION: an integrated R package for effective ncRNA-protein interaction prediction.
 (\emph{Submitted})
 }

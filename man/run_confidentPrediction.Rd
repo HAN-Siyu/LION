@@ -50,7 +50,7 @@ This function can predict lncRNA/RNA-protein interactions using all supported me
 }
 \section{References}{
 
-Han S, Liang Y, Ma Q, \emph{et al}.
+Han S, \emph{et al}.
 LION: an integrated R package for effective ncRNA-protein interaction prediction.
 (\emph{Submitted})
 }

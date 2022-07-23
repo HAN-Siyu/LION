@@ -89,8 +89,8 @@ Program "Predator" is only available on UNIX/Linux and 32-bit Windows OS.
 }
 \section{References}{
 
-[1] Han S, Liang Y, Ma Q, \emph{et al}.
-ncProR: an integrated R package for effective ncRNA-protein interaction prediction.
+[1] Han S, \emph{et al}.
+LION: an integrated R package for effective ncRNA-protein interaction prediction.
 (\emph{Submitted})
 
 [2] Chou PY, Fasman GD.

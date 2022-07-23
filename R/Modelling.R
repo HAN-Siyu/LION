@@ -257,21 +257,23 @@ randomForest_CV <- function(datasets = list(), label.col = 1,
         Ave.res
 }
 
-#' Deprecated: Determine ntree for Random Forest Classifier Using K-Fold Cross Validation
-#' @param datasets should be a list containing one or several input datasets. See examples.
+#' Determine mtry for Random Forest Classifier Using K-Fold Cross Validation
+#' @param datasets should be a list containing one or several input datasets. If input several datasets, stratified cross validation will be performed. See examples.
 #' @param label.col an integer. Column number of the label.
 #' @param positive.class \code{NULL} or string. Which class is the positive class? Should be one
 #' of the classes in label column. The first class in label column will be selected
 #' as the positive class if leave \code{positive.class = NULL}.
 #' @param folds.num an integer. Number of folds. Default \code{10} for 10-fold cross validation.
-#' @param ntree.range parameter for random forest. Used to indicate the range of \code{ntree}.
-#' Default: \code{c(200, 500, 1000, 1500, 2000)}.
+#' @param ntree integer, number of trees to grow. See \code{\link[randomForest]{randomForest}}.
+#' Default: \code{3000}.
+#' @param mtry.ratios (only when \code{mode = "retrain"}) used to indicate the ratios of \code{mtry} when tuning the random forest classifier.
+#' \code{mtry} = ratio of mtry * number of features Default: \code{c(0.1, 0.2, 0.4, 0.6, 0.8)}.
 #' @param seed random seed for data splitting. Integer.
 #' @param return.model logical. If \code{TRUE}, the function will return a random forest
 #' model built with the optimal \code{ntree}. The training set is the combination of all input datasets.
 #' @param parallel.cores an integer specifying the number of cores for parallel computation. Default: \code{2}.
 #' Set \code{parallel.cores = -1} to run with all the cores. \code{parallel.cores} should be == -1 or >= 1.
-#' @param ... other parameters passed to \code{\link[randomForest]{randomForest}} function.
+#' @param ... other parameters (except \code{ntree} and \code{mtry}) passed to \code{\link[randomForest]{randomForest}} function.
 #' @return If \code{return.model = TRUR}, the function returns a random forest model.
 #' If \code{FALSE}, the function returns the optimal \code{ntree} and the performance.
 #'
@@ -313,9 +315,9 @@ randomForest_CV <- function(datasets = list(), label.col = 1,
 #'
 #' Perf_tune <- randomForest_tune(datasets = list(dataset), label.col = 1,
 #'                                positive.class = "Interact", folds.num = 5,
-#'                                ntree.range = c(50, 100, 150), seed = 123,
+#'                                ntree = 150, seed = 123,
 #'                                return.model = TRUE, parallel.cores = 2,
-#'                                importance = TRUE, mtry = 20)
+#'                                importance = TRUE)
 #'
 #' # if you have more than one input dataset,
 #' # use "datasets = list(dataset1, dataset2, dataset3)".
@@ -324,7 +326,8 @@ randomForest_CV <- function(datasets = list(), label.col = 1,
 
 randomForest_tune <- function(datasets = list(), label.col = 1,
                               positive.class = NULL, folds.num = 10,
-                              ntree.range = c(200, 500, 1000, 1500, 2000),
+                              ntree = 3000,
+                              mtry.ratios = c(0.1, 0.2, 0.4, 0.6, 0.8),
                               seed = 1, return.model = TRUE,
                               parallel.cores = 2, ...) {
 
@@ -345,7 +348,7 @@ randomForest_tune <- function(datasets = list(), label.col = 1,
                 if (!positive.class %in% datasets[[1]]$label) stop("positive.class should be NULL or one of the classes in label.")
         }
 
-        ntree.range <- sort(unique(ntree.range))
+        mtry.ratios <- sort(unique(mtry.ratios))
         perf_tune <- data.frame()
 
         parallel.cores <- ifelse(parallel.cores == -1, parallel::detectCores(), parallel.cores)
@@ -356,29 +359,32 @@ randomForest_tune <- function(datasets = list(), label.col = 1,
         cl <- parallel::makeCluster(parallel.cores)
 
         message("\n+ Processing...")
-        for (ntree in ntree.range) {
-                message("- ntree - ", ntree, "   ", Sys.time())
+        for (mtry.ratio in mtry.ratios) {
+                mtry <- floor((ncol(datasets[[1]]) - 1) * mtry.ratio)
+                message("- mtryRatio: ", mtry.ratio, " (mtry: ", mtry, ")", "   ", Sys.time())
 
-                ntree_res <- Internal.randomForest_CV(datasets = datasets, label.col = label.col,
+                mtry_res <- Internal.randomForest_CV(datasets = datasets, label.col = label.col,
                                              positive.class = positive.class, ntree = ntree,
+                                             mtry = mtry,
                                              folds.num = folds.num, all_folds = all_folds,
                                              cl = cl, ...)
-                ntree_perf <- t(ntree_res[folds.num + 1])
-                row.names(ntree_perf) <- paste0("ntree_", ntree)
-                perf_tune <- rbind(perf_tune, ntree_perf)
+                mtry_perf <- t(mtry_res[folds.num + 1])
+                row.names(mtry_perf) <- paste0("mtryRatio_", mtry.ratio)
+                perf_tune <- rbind(perf_tune, mtry_perf)
 
-                print(round(ntree_perf, digits = 4)[,-c(1:4)])
+                print(round(mtry_perf, digits = 4)[,-c(1:4)])
         }
         parallel::stopCluster(cl)
 
-        output <- ntree.range[which.max(perf_tune$Accuracy)]
-        message("- Optimal ntree: ", output)
+        output <- mtry.ratios[which.max(perf_tune$Accuracy)]
+        message("- Optimal mtryRatio: ", output)
+        mtry_optimal <- floor((ncol(datasets[[1]]) - 1) * output)
 
         if (return.model) {
                 message("\n+ Training the model...   ", Sys.time())
                 trainSet <- do.call("rbind", datasets)
                 output <- randomForest::randomForest(label ~ ., data = trainSet,
-                                                     ntree = output, ...)
+                                                     ntree = ntree, mtry = mtry_optimal, ...)
         } else {
                 output = list(ntree = output, performance = perf_tune)
         }

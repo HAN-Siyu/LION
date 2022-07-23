@@ -2,14 +2,15 @@
 % Please edit documentation in R/Modelling.R
 \name{randomForest_tune}
 \alias{randomForest_tune}
-\title{Deprecated: Determine ntree for Random Forest Classifier Using K-Fold Cross Validation}
+\title{Determine mtry for Random Forest Classifier Using K-Fold Cross Validation}
 \usage{
 randomForest_tune(
   datasets = list(),
   label.col = 1,
   positive.class = NULL,
   folds.num = 10,
-  ntree.range = c(200, 500, 1000, 1500, 2000),
+  ntree = 3000,
+  mtry.ratios = c(0.1, 0.2, 0.4, 0.6, 0.8),
   seed = 1,
   return.model = TRUE,
   parallel.cores = 2,
@@ -17,7 +18,7 @@ randomForest_tune(
 )
 }
 \arguments{
-\item{datasets}{should be a list containing one or several input datasets. See examples.}
+\item{datasets}{should be a list containing one or several input datasets. If input several datasets, stratified cross validation will be performed. See examples.}
 
 \item{label.col}{an integer. Column number of the label.}
 
@@ -27,8 +28,11 @@ as the positive class if leave \code{positive.class = NULL}.}
 
 \item{folds.num}{an integer. Number of folds. Default \code{10} for 10-fold cross validation.}
 
-\item{ntree.range}{parameter for random forest. Used to indicate the range of \code{ntree}.
-Default: \code{c(200, 500, 1000, 1500, 2000)}.}
+\item{ntree}{integer, number of trees to grow. See \code{\link[randomForest]{randomForest}}.
+Default: \code{3000}.}
+
+\item{mtry.ratios}{(only when \code{mode = "retrain"}) used to indicate the ratios of \code{mtry} when tuning the random forest classifier.
+\code{mtry} = ratio of mtry * number of features Default: \code{c(0.1, 0.2, 0.4, 0.6, 0.8)}.}
 
 \item{seed}{random seed for data splitting. Integer.}
 
@@ -38,14 +42,14 @@ model built with the optimal \code{ntree}. The training set is the combination o
 \item{parallel.cores}{an integer specifying the number of cores for parallel computation. Default: \code{2}.
 Set \code{parallel.cores = -1} to run with all the cores. \code{parallel.cores} should be == -1 or >= 1.}
 
-\item{...}{other parameters passed to \code{\link[randomForest]{randomForest}} function.}
+\item{...}{other parameters (except \code{ntree} and \code{mtry}) passed to \code{\link[randomForest]{randomForest}} function.}
 }
 \value{
 If \code{return.model = TRUR}, the function returns a random forest model.
 If \code{FALSE}, the function returns the optimal \code{ntree} and the performance.
 }
 \description{
-Deprecated: Determine ntree for Random Forest Classifier Using K-Fold Cross Validation
+Determine mtry for Random Forest Classifier Using K-Fold Cross Validation
 }
 \examples{
 
@@ -74,9 +78,9 @@ dataset <- rbind(dataPositive, dataNegative)
 
 Perf_tune <- randomForest_tune(datasets = list(dataset), label.col = 1,
                                positive.class = "Interact", folds.num = 5,
-                               ntree.range = c(50, 100, 150), seed = 123,
+                               ntree = 150, seed = 123,
                                return.model = TRUE, parallel.cores = 2,
-                               importance = TRUE, mtry = 20)
+                               importance = TRUE)
 
 # if you have more than one input dataset,
 # use "datasets = list(dataset1, dataset2, dataset3)".

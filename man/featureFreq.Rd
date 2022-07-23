@@ -84,8 +84,8 @@ see \code{\link{computeFreq}}.
 }
 \section{References}{
 
-[1] Han S, Liang Y, Ma Q, \emph{et al}.
-ncProR: an integrated R package for effective ncRNA-protein interaction prediction.
+[1] Han S, \emph{et al}.
+LION: an integrated R package for effective ncRNA-protein interaction prediction.
 (\emph{Submitted})
 
 [2] Shen J, Zhang J, Luo X, \emph{et al}.
