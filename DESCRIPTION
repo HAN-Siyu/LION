@@ -1,12 +1,12 @@
 Package: LION
 Type: Package
 Title: Predicting Long non-coding RNA-Protein Interaction
-Version: 0.2.7
+Version: 0.2.8
 Authors@R: c(
-    person(family = "HAN", given = "Siyu", email = "hansy15@mails.jlu.edu.cn", role = c("aut", "cre")),
+    person(family = "HAN", given = "Siyu", email = "siyu.han@tum.de", role = c("aut", "cre")),
     person(family = "LI", given = "Ying", email = "liying@jlu.edu.cn", role = "aut"),
     person(family = "LIANG", given = "Yanchun", email = "ycliang@jlu.edu.cn", role = "aut"))
-Maintainer: HAN Siyu <hansy15@mails.jlu.edu.cn>
+Maintainer: HAN Siyu <siyu.han@tum.de>
 Acknowledgments: TAI Yun Hsiu, WANG Ruoyu, CHEN Hang, CHENG Ming, GUO Yuan, LI Han, FAN Linrui, YUE Yanzhu
 Description: Prediction of lncRNA-protein interaction using sequence, motif, secondary structure and physicochemical properies.
 License: GPL (>= 3)

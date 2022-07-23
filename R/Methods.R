@@ -41,14 +41,15 @@
 #' as the positive class. Default: \code{NULL}.
 #' @param folds.num (only when \code{mode = "retrain"}) an integer indicates the number of folds for cross validation.
 #' Default: \code{10} for 10-fold cross validation.
-#' @param ntree.range (only when \code{mode = "retrain"}) used to indicate the range of \code{ntree}
-#' when tuning the random forest classifier.
-#' Default: \code{c(200, 500, 1000, 1500, 2000)}.
+#' @param ntree integer, number of trees to grow. See \code{\link[randomForest]{randomForest}}.
+#' Default: \code{3000}.
+#' @param mtry.ratios (only when \code{mode = "retrain"}) used to indicate the ratios of \code{mtry} when tuning the random forest classifier.
+#' \code{mtry} = ratio of mtry * number of features Default: \code{c(0.1, 0.2, 0.4, 0.6, 0.8)}.
 #' @param seed (only when \code{mode = "retrain"}) an integer indicates the random seed for data splitting.
 #' @param parallel.cores an integer that indicates the number of cores for parallel computation.
 #' Default: \code{2}. Set \code{parallel.cores = -1} to run with all the cores. \code{parallel.cores} should be == -1 or >= 1.
 #' @param cl parallel cores to be passed to this function.
-#' @param ... (only when \code{mode = "retrain"}) other parameters passed to \code{\link[randomForest]{randomForest}} function.
+#' @param ... (only when \code{mode = "retrain"}) other parameters (except \code{ntree} and \code{mtry}) passed to \code{\link[randomForest]{randomForest}} function.
 #'
 #' @return
 #' If \code{mode = "prediction"}, this function returns a data frame that contains the predicted results.
@@ -131,15 +132,14 @@
 #' # "label" should correspond to the classes of "seqRNA" and "seqPro".
 #' # "positive.class" should be one of the classes in argument "label" or can be set as "NULL".
 #' # In the latter case, the first label in "label" will be used as the positive class.
-#' # Parameters of random forest, such as "mtry", can be passed using "..." argument.
+#' # Parameters of random forest, such as "replace", "nodesize", can be passed using "..." argument.
 #'
 #' lncPro_model = run_lncPro(seqRNA = seqRNA, seqPro = seqPro, mode = "retrain",
 #'                           path.RNAsubopt = path.RNAsubopt, path.Predator = path.Predator,
 #'                           path.stride = path.stride, workDir.Pro = workDir.Pro,
 #'                           label = rep(c("Interact", "Non.Interact"), each = 10),
 #'                           positive.class = NULL, folds.num = 10,
-#'                           ntree.range = c(300, 500), seed = 1,
-#'                           parallel.cores = 2, mtry = 20)
+#'                           ntree = 100, seed = 1, parallel.cores = 2, replace = FALSE)
 #'
 #' # Predicting using new built model by setting "retrained.model = lncPro_model":
 #'
@@ -170,7 +170,7 @@ run_lncPro <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "featur
                        path.stride = "Predator/stride.dat", workDir.Pro = getwd(),
                        prediction = c("original", "retrained"), retrained.model = NULL,
                        label = NULL, positive.class = NULL, folds.num = 10,
-                       ntree.range = c(200, 500, 1000, 1500, 2000), seed = 1,
+                       ntree = 3000, mtry.ratios = c(0.1, 0.2, 0.4, 0.6, 0.8), seed = 1,
                        parallel.cores = 2, cl = NULL, ...) {
 
         mode <- match.arg(mode, choices = c("prediction", "retrain", "feature"))
@@ -324,7 +324,8 @@ run_lncPro <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "featur
                 message("\n", "+ Retraining model...  ", Sys.time())
                 retrained.model <- Internal.randomForest_tune(datasets = list(featureSet), label.col = 1,
                                                               positive.class = positive.class, folds.num = folds.num,
-                                                              ntree.range = ntree.range,
+                                                              ntree = ntree,
+                                                              mtry.ratios = mtry.ratios,
                                                               seed = seed, return.model = TRUE,
                                                               parallel.cores = parallel.cores, ...)
                 message("\n", "+ Completed.  ", Sys.time())
@@ -367,9 +368,10 @@ run_lncPro <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "featur
 #' as the positive class. Default: \code{NULL}.
 #' @param folds.num (only when \code{mode = "retrain"}) an integer indicates the number of folds for cross validation.
 #' Default: \code{10} for 10-fold cross validation.
-#' @param ntree.range (only when \code{mode = "retrain"}) used to indicate the range of \code{ntree}
-#' when tuning the random forest classifier.
-#' Default: \code{c(200, 500, 1000, 1500, 2000)}.
+#' @param ntree integer, number of trees to grow. See \code{\link[randomForest]{randomForest}}.
+#' Default: \code{3000}.
+#' @param mtry.ratios (only when \code{mode = "retrain"}) used to indicate the ratios of \code{mtry} when tuning the random forest classifier.
+#' \code{mtry} = ratio of mtry * number of features Default: \code{c(0.1, 0.2, 0.4, 0.6, 0.8)}.
 #' @param seed (only when \code{mode = "retrain"}) an integer indicates the random seed for data splitting.
 #' @param parallel.cores an integer that indicates the number of cores for parallel computation.
 #' Default: \code{2}. Set \code{parallel.cores = -1} to run with all the cores. \code{parallel.cores} should be == -1 or >= 1.
@@ -426,13 +428,12 @@ run_lncPro <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "featur
 #' # "label" should correspond to the classes of "seqRNA" and "seqPro".
 #' # "positive.class" should be one of the classes in argument "label" or can be set as "NULL".
 #' # In the latter case, the first label in "label" will be used as the positive class.
-#' # Parameters of random forest, such as "mtry", can be passed using "..." argument.
+#' # Parameters of random forest, such as "nodesize", can be passed using "..." argument.
 #'
 #' RPI_model <- run_RPISeq(seqRNA = seqRNA, seqPro = seqPro, mode = "retrain",
 #'                        label = rep(c("Interact", "Non.Interact"), each = 10),
 #'                        positive.class = "Interact", folds.num = 5,
-#'                        ntree.range = c(300, 500), seed = 1,
-#'                        parallel.cores = 2, mtry = 20)
+#'                        ntree = 300, seed = 1, parallel.cores = 2, nodesize = 2)
 #'
 #' # Predicting using new built model by setting "retrained.model = RPI_model":
 #'
@@ -454,7 +455,7 @@ run_lncPro <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "featur
 run_RPISeq <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "feature"),
                        prediction = c("web", "retrained"), retrained.model = NULL,
                        label = NULL, positive.class = NULL, folds.num = 10,
-                       ntree.range = c(200, 500, 1000, 1500, 2000), seed = 1,
+                       ntree = 3000, mtry.ratios = c(0.1, 0.2, 0.4, 0.6, 0.8), seed = 1,
                        parallel.cores = 2, cl = NULL, ...) {
 
         mode <- match.arg(mode, choices = c("prediction", "retrain", "feature"))
@@ -573,7 +574,8 @@ run_RPISeq <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "featur
                 featureSet <- cbind(label = label, featureSet)
                 retrained.model <- Internal.randomForest_tune(datasets = list(featureSet), label.col = 1,
                                                               positive.class = positive.class, folds.num = folds.num,
-                                                              ntree.range = ntree.range,
+                                                              ntree = ntree,
+                                                              mtry.ratios = mtry.ratios,
                                                               seed = seed, return.model = TRUE,
                                                               parallel.cores = parallel.cores, ...)
                 message("\n", "+ Completed.  ", Sys.time())
@@ -612,9 +614,10 @@ run_RPISeq <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "featur
 #' as the positive class. Default: \code{NULL}.
 #' @param folds.num (only when \code{mode = "retrain"}) an integer indicates the number of folds for cross validation.
 #' Default: \code{10} for 10-fold cross validation.
-#' @param ntree.range (only when \code{mode = "retrain"}) used to indicate the range of \code{ntree}
-#' when tuning the random forest classifier.
-#' Default: \code{c(200, 500, 1000, 1500, 2000)}.
+#' @param ntree integer, number of trees to grow. See \code{\link[randomForest]{randomForest}}.
+#' Default: \code{3000}.
+#' @param mtry.ratios (only when \code{mode = "retrain"}) used to indicate the ratios of \code{mtry} when tuning the random forest classifier.
+#' \code{mtry} = ratio of mtry * number of features Default: \code{c(0.1, 0.2, 0.4, 0.6, 0.8)}.
 #' @param seed (only when \code{mode = "retrain"}) an integer indicates the random seed for data splitting.
 #' @param parallel.cores an integer that indicates the number of cores for parallel computation.
 #' Default: \code{2}. Set \code{parallel.cores = -1} to run with all the cores. \code{parallel.cores} should be == -1 or >= 1.
@@ -667,13 +670,12 @@ run_RPISeq <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "featur
 #' # "label" should correspond to the classes of "seqRNA" and "seqPro".
 #' # "positive.class" should be one of the classes in argument "label" or can be set as "NULL".
 #' # In the latter case, the first label in "label" will be used as the positive class.
-#' # Parameters of random forest, such as "mtry", can be passed using "..." argument.
+#' # Parameters of random forest, such as "replace", can be passed using "..." argument.
 #'
 #' rpiCOOL_model = run_rpiCOOL(seqRNA = seqRNA, seqPro = seqPro, mode = "retrain",
 #'                             label = rep(c("Interact", "Non.Interact"), each = 10),
-#'                             positive.class = NULL, folds.num = 5,
-#'                             ntree.range = c(300, 500), seed = 1,
-#'                             parallel.cores = 2)
+#'                             positive.class = NULL, folds.num = 5, ntree = 300,
+#'                             seed = 1, parallel.cores = 2, replace = FALSE)
 #'
 #' # Predicting using new built model by setting "retrained.model = rpiCOOL_model":
 #'
@@ -693,7 +695,7 @@ run_RPISeq <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "featur
 
 run_rpiCOOL <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "feature"),
                         retrained.model = NULL, label = NULL, positive.class = NULL,
-                        folds.num = 10, ntree.range = c(200, 500, 1000, 1500, 2000),
+                        folds.num = 10, ntree = 3000, mtry.ratios = c(0.1, 0.2, 0.4, 0.6, 0.8),
                         seed = 1, parallel.cores = 2, cl = NULL, ...) {
 
         mode <- match.arg(mode, choices = c("prediction", "retrain", "feature"))
@@ -781,7 +783,8 @@ run_rpiCOOL <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "featu
                 message("\n", "+ Retraining model...  ", Sys.time())
                 retrained.model <- Internal.randomForest_tune(datasets = list(featureSet), label.col = 1,
                                                               positive.class = positive.class, folds.num = folds.num,
-                                                              ntree.range = ntree.range,
+                                                              ntree = ntree,
+                                                              mtry.ratios = mtry.ratios,
                                                               seed = seed, return.model = TRUE,
                                                               parallel.cores = parallel.cores, ...)
                 message("\n", "+ Completed.  ", Sys.time())
@@ -824,9 +827,10 @@ run_rpiCOOL <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "featu
 #' as the positive class. Default: \code{NULL}.
 #' @param folds.num (only when \code{mode = "retrain"}) an integer indicates the number of folds for cross validation.
 #' Default: \code{10} for 10-fold cross validation.
-#' @param ntree.range (only when \code{mode = "retrain"}) used to indicate the range of \code{ntree}
-#' when tuning the random forest classifier.
-#' Default: \code{c(200, 500, 1000, 1500, 2000)}.
+#' @param ntree integer, number of trees to grow. See \code{\link[randomForest]{randomForest}}.
+#' Default: \code{3000}.
+#' @param mtry.ratios (only when \code{mode = "retrain"}) used to indicate the ratios of \code{mtry} when tuning the random forest classifier.
+#' \code{mtry} = ratio of mtry * number of features Default: \code{c(0.1, 0.2, 0.4, 0.6, 0.8)}.
 #' @param seed (only when \code{mode = "retrain"}) an integer indicates the random seed for data splitting.
 #' @param parallel.cores an integer that indicates the number of cores for parallel computation.
 #' Default: \code{2}. Set \code{parallel.cores = -1} to run with all the cores. \code{parallel.cores} should be == -1 or >= 1.
@@ -879,13 +883,12 @@ run_rpiCOOL <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "featu
 #' # "label" should correspond to the classes of "seqRNA" and "seqPro".
 #' # "positive.class" should be one of the classes in argument "label" or can be set as "NULL".
 #' # In the latter case, the first label in "label" will be used as the positive class.
-#' # Parameters of random forest, such as "mtry", can be passed using "..." argument.
+#' # Parameters of random forest, such as "nodesize", can be passed using "..." argument.
 #'
 #' LncADeep_model <- run_LncADeep(seqRNA = seqRNA, seqPro = seqPro, mode = "retrain",
 #'                                label = rep(c("Interact", "Non.Interact"), each = 10),
-#'                                positive.class = NULL, folds.num = 5,
-#'                                ntree.range = c(300, 500), seed = 1,
-#'                                parallel.cores = 2)
+#'                                positive.class = NULL, folds.num = 5, ntree = 100,
+#'                                seed = 1, parallel.cores = 2, nodesize = 2)
 #'
 #' # Predicting using new built model by setting "retrained.model = LncADeep_model":
 #'
@@ -905,7 +908,7 @@ run_rpiCOOL <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "featu
 
 run_LncADeep <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "feature"),
                         retrained.model = NULL, label = NULL, positive.class = NULL,
-                        folds.num = 10, ntree.range = c(200, 500, 1000, 1500, 2000),
+                        folds.num = 10, ntree = 3000, mtry.ratios = c(0.1, 0.2, 0.4, 0.6, 0.8),
                         seed = 1, parallel.cores = 2, cl = NULL, ...) {
 
         mode <- match.arg(mode, choices = c("prediction", "retrain", "feature"))
@@ -996,7 +999,8 @@ run_LncADeep <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "feat
                 message("\n", "+ Retraining model...  ", Sys.time())
                 retrained.model <- Internal.randomForest_tune(datasets = list(featureSet), label.col = 1,
                                                               positive.class = positive.class, folds.num = folds.num,
-                                                              ntree.range = ntree.range,
+                                                              ntree = ntree,
+                                                              mtry.ratios = mtry.ratios,
                                                               seed = seed, return.model = TRUE,
                                                               parallel.cores = parallel.cores, ...)
                 message("\n", "+ Completed.  ", Sys.time())
@@ -1033,9 +1037,10 @@ run_LncADeep <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "feat
 #' as the positive class. Default: \code{NULL}.
 #' @param folds.num (only when \code{mode = "retrain"}) an integer indicates the number of folds for cross validation.
 #' Default: \code{10} for 10-fold cross validation.
-#' @param ntree.range (only when \code{mode = "retrain"}) used to indicate the range of \code{ntree}
-#' when tuning the random forest classifier.
-#' Default: \code{c(200, 500, 1000, 1500, 2000)}.
+#' @param ntree integer, number of trees to grow. See \code{\link[randomForest]{randomForest}}.
+#' Default: \code{3000}.
+#' @param mtry.ratios (only when \code{mode = "retrain"}) used to indicate the ratios of \code{mtry} when tuning the random forest classifier.
+#' \code{mtry} = ratio of mtry * number of features Default: \code{c(0.1, 0.2, 0.4, 0.6, 0.8)}.
 #' @param seed (only when \code{mode = "retrain"}) an integer indicates the random seed for data splitting.
 #' @param parallel.cores an integer that indicates the number of cores for parallel computation.
 #' Default: \code{2}. Set \code{parallel.cores = -1} to run with all the cores. \code{parallel.cores} should be == -1 or >= 1.
@@ -1092,13 +1097,12 @@ run_LncADeep <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "feat
 #' # "label" should correspond to the classes of "seqRNA" and "seqPro".
 #' # "positive.class" should be one of the classes in argument "label" or can be set as "NULL".
 #' # In the latter case, the first label in "label" will be used as the positive class.
-#' # Parameters of random forest, such as "mtry", can be passed using "..." argument.
+#' # Parameters of random forest, such as "replace", can be passed using "..." argument.
 #'
 #' LION_model <- run_LION(seqRNA = seqRNA, seqPro = seqPro, mode = "retrain",
 #'                        label = rep(c("Interact", "Non.Interact"), each = 10),
-#'                        positive.class = NULL, folds.num = 5,
-#'                        ntree.range = c(300, 500), seed = 1,
-#'                        parallel.cores = 2, mtry = 20)
+#'                        positive.class = NULL, folds.num = 5, ntree = 100,
+#'                        seed = 1, parallel.cores = 2, replace = FALSE)
 #'
 #' # Predicting using new built model by setting "retrained.model = LION_model":
 #'
@@ -1119,7 +1123,7 @@ run_LncADeep <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "feat
 
 run_LION <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "feature"),
                        retrained.model = NULL, label = NULL,  positive.class = NULL,
-                       folds.num = 10, ntree.range = c(200, 500, 1000, 1500, 2000),
+                       folds.num = 10, ntree = 3000, mtry.ratios = c(0.1, 0.2, 0.4, 0.6, 0.8),
                        seed = 1, parallel.cores = 2, cl = NULL, ...) {
 
         mode <- match.arg(mode, choices = c("prediction", "retrain", "feature"))
@@ -1223,7 +1227,8 @@ run_LION <- function(seqRNA, seqPro, mode = c("prediction", "retrain", "feature"
                 message("\n", "+ Retraining model...  ", Sys.time())
                 retrained.model <- Internal.randomForest_tune(datasets = list(featureSet), label.col = 1,
                                                               positive.class = positive.class, folds.num = folds.num,
-                                                              ntree.range = ntree.range,
+                                                              ntree = ntree,
+                                                              mtry.ratios = mtry.ratios,
                                                               seed = seed, return.model = TRUE,
                                                               parallel.cores = parallel.cores, ...)
                 message("\n", "+ Completed.  ", Sys.time())

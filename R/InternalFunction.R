@@ -996,7 +996,8 @@ Internal.randomForest_CV <- function(datasets = list(), all_folds, label.col = 1
 
 Internal.randomForest_tune <- function(datasets = list(), label.col = 1,
                                        positive.class = NULL, folds.num = 10,
-                                       ntree.range = c(200, 500, 1000, 1500, 2000),
+                                       ntree = 3000,
+                                       mtry.ratios = c(0.1, 0.2, 0.4, 0.6, 0.8),
                                        seed = 1, return.model = TRUE,
                                        parallel.cores = 2, ...) {
 
@@ -1014,7 +1015,7 @@ Internal.randomForest_tune <- function(datasets = list(), label.col = 1,
                 positive.class <- as.character(datasets[[1]]$label[[1]])
         }
 
-        ntree.range <- sort(unique(ntree.range))
+        mtry.ratios <- sort(unique(mtry.ratios))
         perf_tune <- data.frame()
 
         parallel.cores <- ifelse(parallel.cores == -1, parallel::detectCores(), parallel.cores)
@@ -1022,31 +1023,32 @@ Internal.randomForest_tune <- function(datasets = list(), label.col = 1,
 
         cl <- parallel::makeCluster(parallel.cores)
 
-        for (ntree in ntree.range) {
-                message("- ntree - ", ntree, "   ", Sys.time())
+        for (mtry.ratio in mtry.ratios) {
+                mtry <- floor((ncol(datasets[[1]]) - 1) * mtry.ratio)
+                message("- mtryRatio: ", mtry.ratio, " (mtry: ", mtry, ")", "   ", Sys.time())
 
-                ntree_res <- Internal.randomForest_CV(datasets = datasets, label.col = label.col,
-                                                      positive.class = positive.class, ntree = ntree,
-                                                      folds.num = folds.num, all_folds = all_folds,
-                                                      cl = cl, ...)
-                ntree_perf <- t(ntree_res[folds.num + 1])
-                row.names(ntree_perf) <- paste0("ntree_", ntree)
-                perf_tune <- rbind(perf_tune, ntree_perf)
-                # print(ntree_perf)
-                print(round(ntree_perf, digits = 4)[,-c(1:4)])
+                mtry_res <- Internal.randomForest_CV(datasets = datasets, label.col = label.col,
+                                                     positive.class = positive.class, mtry = mtry,
+                                                     folds.num = folds.num, all_folds = all_folds,
+                                                     ntree = ntree, cl = cl, ...)
+                mtry_perf <- t(mtry_res[folds.num + 1])
+                row.names(mtry_perf) <- paste0("mtryRatio_", mtry.ratio)
+                perf_tune <- rbind(perf_tune, mtry_perf)
+                # print(mtry_perf)
+                print(round(mtry_perf, digits = 4)[,-c(1:4)])
         }
         parallel::stopCluster(cl)
 
-        output <- ntree.range[which.max(perf_tune$Accuracy)]
-        message("- Optimal ntree: ", output)
+        output <- mtry.ratios[which.max(perf_tune$Accuracy)]
+        message("- Optimal mtryRatio: ", output)
 
         if (return.model) {
                 message("\n+ Training the model...   ", Sys.time())
                 trainSet <- do.call("rbind", datasets)
                 output <- randomForest::randomForest(label ~ ., data = trainSet,
-                                                     ntree = output, ...)
+                                                     ntree = ntree, mtry = mtry, ...)
         } else {
-                output = list(ntree = output, performance = perf_tune)
+                output = list(mtry = output, performance = perf_tune)
         }
         output
 }
