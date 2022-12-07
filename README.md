@@ -2,7 +2,8 @@
 
 Understanding ncRNA-protein interaction is of critical importance to unveil ncRNAs' functions. Now many computational tools have been developed to facilitate the research on ncRNA-protein interaction. Nonetheless, the majority of these tools show unstable results and lack the flexibility required by dataset-specific prediction. Here we propose an integrated package LION which comprises a new method for predicting ncRNA/lncRNA-protein interaction as well as a comprehensive strategy to meet the requirement of customisable prediction. As an integrated tool for predicting ncRNA-protein interaction, LION can be used to build adaptable models for species and tissue-specific prediction and considerably enhance the performance of several widely-used tools. Experimental results also demonstrate our method outperforms its competitors on multiple benchmark datasets. We expect LION will be a powerful and efficient tool for the prediction and analysis of ncRNA- and lncRNA-protein interaction.
 
-***Try our [LncFinder](https://academic.oup.com/bib/article/20/6/2009/5062950) if you want to identify lncRNAs!
+***Try our [LncFinder](https://academic.oup.com/bib/article/20/6/2009/5062950) if you want to identify lncRNAs!***
+
 ***Any questions regarding LION please drop an email to siyu.han@tum.de or post it to [issue](https://github.com/HAN-Siyu/LION/issues).***
 
 ## Install LION
