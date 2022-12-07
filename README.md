@@ -4,7 +4,7 @@ Understanding ncRNA-protein interaction is of critical importance to unveil ncRN
 
 ***Try our [LncFinder](https://academic.oup.com/bib/article/20/6/2009/5062950) if you want to identify lncRNAs!***
 
-***Any questions regarding LION please drop an email to siyu.han@tum.de or post it to [issue](https://github.com/HAN-Siyu/LION/issues).***
+***Any questions regarding LION please drop an email to siyu.han@tum.de or post it to [issues](https://github.com/HAN-Siyu/LION/issues).***
 
 ## Install LION
 
