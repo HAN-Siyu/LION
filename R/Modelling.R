@@ -610,7 +610,7 @@ randomForest_RFE <- function(datasets = list(), label.col = 1, positive.class = 
 #' as the positive class if leave \code{positive.class = NULL}.
 #'
 #' @return A dataframe that reports TP, TN, FP, FN, Sensitivity, Specificity, Accuracy,
-#' F-Measure (F1-Score), MCC (Matthews Correlation Coefficient) and Cohen's Kappa.
+#' F-Measure (F1-Score), MCC (Matthews Correlation Coefficient), Cohen's Kappa, etc.
 #'
 #' @details \code{reference} and \code{prediction} should have exactly the same classes.
 #' More information please refer to \code{\link[caret]{confusionMatrix}}.
@@ -662,10 +662,17 @@ evaluatePrediction <- function(reference, prediction, positive.class = NULL) {
                                                 reference,
                                                 positive = positive.class,
                                                 mode = "everything")
-        TP <- confusion.res$table[1]
-        FN <- confusion.res$table[2]
-        FP <- confusion.res$table[3]
-        TN <- confusion.res$table[4]
+        confusion.tab <- confusion.res$table
+        TP <- confusion.tab[row.names(confusion.tab) == positive.class,
+                            colnames(confusion.tab) == positive.class]
+        TN <- confusion.tab[row.names(confusion.tab) != positive.class,
+                            colnames(confusion.tab) != positive.class]
+
+        FN <- confusion.tab[row.names(confusion.tab) != positive.class,
+                            colnames(confusion.tab) == positive.class]
+        FP <- confusion.tab[row.names(confusion.tab) == positive.class,
+                            colnames(confusion.tab) != positive.class]
+
         N  <- sum(confusion.res$table)
         S  <- (TP + FN) / N
         P  <- (TP + FP) / N
@@ -676,7 +683,9 @@ evaluatePrediction <- function(reference, prediction, positive.class = NULL) {
         performance.res <- data.frame(TP = TP, TN = TN, FP = FP, FN = FN,
                                       Sensitivity = confusion.res$byClass[1],
                                       Specificity = confusion.res$byClass[2],
+                                      Precision   = confusion.res$byClass['Precision'],
                                       Accuracy    = confusion.res$overall[1],
+                                      BalancedAccuracy = confusion.res$byClass['Balanced Accuracy'],
                                       HarmonicMean = Hm,
                                       F.Measure   = confusion.res$byClass[7],
                                       MCC         = MCC,
