@@ -225,10 +225,16 @@ randomForest_CV <- function(datasets = list(), label.col = 1,
                 confusion.res <- caret::confusionMatrix(data.frame(res)[,1], testSet$label,
                                                         positive = positive.class,
                                                         mode = "everything")
-                TP <- confusion.res$table[1]
-                FN <- confusion.res$table[2]
-                FP <- confusion.res$table[3]
-                TN <- confusion.res$table[4]
+                confusion.tab <- confusion.res$table
+                TP <- confusion.tab[row.names(confusion.tab) == positive.class,
+                                    colnames(confusion.tab) == positive.class]
+                TN <- confusion.tab[row.names(confusion.tab) != positive.class,
+                                    colnames(confusion.tab) != positive.class]
+
+                FN <- confusion.tab[row.names(confusion.tab) != positive.class,
+                                    colnames(confusion.tab) == positive.class]
+                FP <- confusion.tab[row.names(confusion.tab) == positive.class,
+                                    colnames(confusion.tab) != positive.class]
                 N  <- sum(confusion.res$table)
                 S  <- (TP + FN) / N
                 P  <- (TP + FP) / N
@@ -548,10 +554,16 @@ randomForest_RFE <- function(datasets = list(), label.col = 1, positive.class = 
                         confusion.res <- caret::confusionMatrix(data.frame(res)[,1], testSet$label,
                                                                 positive = positive.class,
                                                                 mode = "everything")
-                        TP <- confusion.res$table[1]
-                        FN <- confusion.res$table[2]
-                        FP <- confusion.res$table[3]
-                        TN <- confusion.res$table[4]
+                        confusion.tab <- confusion.res$table
+                        TP <- confusion.tab[row.names(confusion.tab) == positive.class,
+                                            colnames(confusion.tab) == positive.class]
+                        TN <- confusion.tab[row.names(confusion.tab) != positive.class,
+                                            colnames(confusion.tab) != positive.class]
+
+                        FN <- confusion.tab[row.names(confusion.tab) != positive.class,
+                                            colnames(confusion.tab) == positive.class]
+                        FP <- confusion.tab[row.names(confusion.tab) == positive.class,
+                                            colnames(confusion.tab) != positive.class]
                         N  <- sum(confusion.res$table)
                         S  <- (TP + FN) / N
                         P  <- (TP + FP) / N
