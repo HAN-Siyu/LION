@@ -1,3 +1,6 @@
+# 0.2.9
+Fix bug in `evaluatePrediction()`
+
 # LION 0.2.8
 mtry can be tuned.
 
