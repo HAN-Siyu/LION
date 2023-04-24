@@ -18,12 +18,12 @@ if (!library("devtools", logical.return = T)) install.packages("devtools")
 devtools::install_github("HAN-Siyu/LION")
 ```
 
-**Or Download Source Package [Here](https://github.com/HAN-Siyu/LION_Supplementary/raw/master/LION_0.2.8.tar.gz) and Install Manually.**
+<!---**Or Download Source Package [Here](https://github.com/HAN-Siyu/LION_Supplementary/raw/master/LION_0.2.8.tar.gz) and Install Manually.**--->
 
 
 ## Supporting Files
 
-[[PDF Manual](https://github.com/HAN-Siyu/LION_Supplementary/blob/master/LION_0.2.8.pdf)]
+<!---[[PDF Manual](https://github.com/HAN-Siyu/LION_Supplementary/blob/master/LION_0.2.8.pdf)]--->
 [[Datasets and Raw Results](https://github.com/HAN-Siyu/LION_Supplementary)]
 
 ## Dependencies
