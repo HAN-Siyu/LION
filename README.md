@@ -2,10 +2,6 @@
 
 Understanding ncRNA-protein interaction is of critical importance to unveil ncRNAs' functions. Now many computational tools have been developed to facilitate the research on ncRNA-protein interaction. Nonetheless, the majority of these tools show unstable results and lack the flexibility required by dataset-specific prediction. Here we propose an integrated package LION which comprises a new method for predicting ncRNA/lncRNA-protein interaction as well as a comprehensive strategy to meet the requirement of customisable prediction. As an integrated tool for predicting ncRNA-protein interaction, LION can be used to build adaptable models for species and tissue-specific prediction and considerably enhance the performance of several widely-used tools. Experimental results also demonstrate our method outperforms its competitors on multiple benchmark datasets. We expect LION will be a powerful and efficient tool for the prediction and analysis of ncRNA- and lncRNA-protein interaction.
 
-***Try our [LncFinder](https://academic.oup.com/bib/article/20/6/2009/5062950) if you want to identify lncRNAs!***
-
-***Any questions regarding LION please drop an email to siyu.han@tum.de or post it to [issues](https://github.com/HAN-Siyu/LION/issues).***
-
 ## Install LION
 
 **Using devtools**
@@ -18,12 +14,13 @@ if (!library("devtools", logical.return = T)) install.packages("devtools")
 devtools::install_github("HAN-Siyu/LION")
 ```
 
-**Or Download Source Package [Here](https://github.com/HAN-Siyu/LION_Supplementary/raw/master/LION_0.2.9.tar.gz) and Install Manually.**
+**Or Download Source Package [Here](https://github.com/HAN-Siyu/LION_Supplementary/raw/master/LION_0.2.9.1.tar.gz) and Install Manually.**
 
+Versions below v0.2.9.1 has a issue in calculating metrics. The issue did not affect the results reported in our paper. We recommend using the latest version. Update details can be found in NEWS.
 
 ## Supporting Files
 
-[[PDF Manual](https://github.com/HAN-Siyu/LION_Supplementary/blob/master/LION_0.2.9.pdf)]
+[[PDF Manual](https://github.com/HAN-Siyu/LION_Supplementary/blob/master/LION_0.2.9.1.pdf)]
 [[Datasets and Raw Results](https://github.com/HAN-Siyu/LION_Supplementary)]
 
 ## Dependencies
@@ -75,7 +72,7 @@ sequences using [ViennaRNA](https://www.tbi.univie.ac.at/RNA/index.html)/[Predat
 
 To cite LION in publications, please use:
 
-Han, Siyu, et al. "LION: an integrated R package for effective prediction of ncRNA–protein interaction." Briefings in Bioinformatics 23.6 (2022): bbac420.
+Siyu Han, Xiao Yang, Hang Sun, Yang Hu, Qi Zhang, Cheng Peng, Wensi Fang, Ying Li. LION: an integrated R package for effective ncRNA-protein interaction prediction. (submitted)
 
 
 The authors would be glad to hear how LION is used in your study. You are kindly encouraged to notify us (siyu.han@tum.de) about any work you publish!

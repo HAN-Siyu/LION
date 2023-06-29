@@ -1,7 +1,7 @@
 Package: LION
 Type: Package
 Title: Predicting Long non-coding RNA-Protein Interaction
-Version: 0.2.9
+Version: 0.2.9.1
 Authors@R: c(
     person(family = "HAN", given = "Siyu", email = "siyu.han@tum.de", role = c("aut", "cre")),
     person(family = "LI", given = "Ying", email = "liying@jlu.edu.cn", role = "aut"),

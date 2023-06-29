@@ -1,11 +1,19 @@
-# 0.2.9
-Fix bug in `evaluatePrediction()`
+# LION 0.2.9.1
+
+* Fix the remaining issue in metric calculation (see explanation in v0.2.9) during the retraining of LION.
+Thanks to @Ci-TJ (Qin Lin) for pointing this out.
+
+# LION 0.2.9
+
+* Fix bug in `evaluatePrediction()`: This bug makes the function always take the first level as positive label, yielding wrong values for some metrics (such as sensitivity, specificity, etc) when the first level is negative. This issue made no effect on the results reported in LION's paper. 
 
 # LION 0.2.8
-mtry can be tuned.
+
+* mtry can be tuned.
 
 # LION 0.2.7
-Update models.
+
+* Update models.
 
 # LION 0.2.6
 
