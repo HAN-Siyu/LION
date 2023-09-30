@@ -17,7 +17,7 @@ as the positive class if leave \code{positive.class = NULL}.}
 }
 \value{
 A dataframe that reports TP, TN, FP, FN, Sensitivity, Specificity, Accuracy,
-F-Measure (F1-Score), MCC (Matthews Correlation Coefficient) and Cohen's Kappa.
+F-Measure (F1-Score), MCC (Matthews Correlation Coefficient), Cohen's Kappa, etc.
 }
 \description{
 This function can evaluate prediction based on reference labels and predicted results.

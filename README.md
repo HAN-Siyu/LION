@@ -14,13 +14,13 @@ if (!library("devtools", logical.return = T)) install.packages("devtools")
 devtools::install_github("HAN-Siyu/LION")
 ```
 
-**Or Download Source Package [Here](https://github.com/HAN-Siyu/LION_Supplementary/raw/master/LION_0.2.9.1.tar.gz) and Install Manually.**
+**Or Download Source Package [Here](https://github.com/HAN-Siyu/LION_Supplementary/raw/master/LION_0.3.0.0.tar.gz) and Install Manually.**
 
 Versions below v0.2.9.1 has a issue in calculating metrics. The issue did not affect the results reported in our paper. We recommend using the latest version. Update details can be found in NEWS.
 
 ## Supporting Files
 
-[[PDF Manual](https://github.com/HAN-Siyu/LION_Supplementary/blob/master/LION_0.2.9.1.pdf)]
+[[PDF Manual](https://github.com/HAN-Siyu/LION_Supplementary/blob/master/LION_0.3.0.0.pdf)]
 [[Datasets and Raw Results](https://github.com/HAN-Siyu/LION_Supplementary)]
 
 ## Dependencies
@@ -32,13 +32,13 @@ Almost all dependencies have been installed when installing LION. However, secon
 
 ## Basic Guideline
 
-We expect LION could be a powerful package for predicting RNA-protein interaction in a uniform R environment. The functions of LION can be categorized into several groups to facilitate feature extraction, interaction prediction and model tuning. We here provide a basic summary for LION's function. Detailed examples and parameters explanations can be found in our [manual](https://github.com/HAN-Siyu/LION_Supplementary/blob/master/LION_0.2.8.pdf).
+We expect LION could be a powerful package for predicting RNA-protein interaction in a uniform R environment. The functions of LION can be categorized into several groups to facilitate feature extraction, interaction prediction and model tuning. We here provide a basic summary for LION's function. Detailed examples and parameters explanations can be found in our manual.
 
 **Functions for feature extraction**
 - `computeFreq()`: compute *k*-mer frequencies of RNA/protein sequences. Support three amino acids reprentations, entripy density profile (EDP) computation and data normalization.
 - `computeMLC()`: compute the most-like coding region of RNA sequences. Support two strategies: longest open reading frame (ORF) and maximum subarray sum (MSS).
 - `computeMotifs()`: compute number of motifs in RNA/protein sequences. User-defined motifs are also supported.
-- `computePhysChem()`: compute physicochemical features of RNA/protein sequences. See the [manual](https://github.com/HAN-Siyu/LION_Supplementary/blob/master/LION_0.2.8.pdf) for details.
+- `computePhysChem()`: compute physicochemical features of RNA/protein sequences.
 - `computePhysChem_AAindex()`: compute various physicochemical features of protein sequences using [AAindex](https://www.genome.jp/aaindex/aaindex_help.html).
 - `computeStructure()`: computes the secondary structural features of RNA/protein
 sequences using [ViennaRNA](https://www.tbi.univie.ac.at/RNA/index.html)/[Predator](https://bioweb.pasteur.fr/packages/pack@predator@2.1.2) packages (the packages are required).
@@ -55,7 +55,7 @@ sequences using [ViennaRNA](https://www.tbi.univie.ac.at/RNA/index.html)/[Predat
 - `randomForest_tune()`: tuning `mtry` of random forest model.
  
 **Functions for RNA-protein prediction with different methods**
-- `run_LION()`: predict interaction or construct feature set or retrain models using LION method (this work).
+- `run_LION()`: predict interaction or construct feature set or retrain models using [LION](https://doi.org/10.1093/bib/bbac420) method (this work).
 - `run_LncADeep()`: predict interaction (retrained random forest model) or construct feature set or retrain models using [LncADeep](https://academic.oup.com/bioinformatics/article/34/22/3825/5021677) method. If you would like to use original deep neural network-based model, please refer to the original [repository](https://github.com/cyang235/LncADeep).  
 - `run_lncPro()`: predict interaction (support original algorithm and retrained random forest model) or construct feature set or retrain models using [lncPro](https://bmcgenomics.biomedcentral.com/articles/10.1186/1471-2164-14-651) method. [Original repository](http://cmbi.bjmu.edu.cn/lncpro) is not available when publishing this readme document.
 - `run_rpiCOOL()`: predict interaction (retrained random forest model) or construct feature set or retrain models using [rpiCOOL](https://www.sciencedirect.com/science/article/abs/pii/S0022519316300534) method. [Original repository](http://biocool.ir/rpicool.html) is not available when publishing this readme document.
@@ -72,7 +72,7 @@ sequences using [ViennaRNA](https://www.tbi.univie.ac.at/RNA/index.html)/[Predat
 
 To cite LION in publications, please use:
 
-Siyu Han, Xiao Yang, Hang Sun, Yang Hu, Qi Zhang, Cheng Peng, Wensi Fang, Ying Li. LION: an integrated R package for effective ncRNA-protein interaction prediction. (submitted)
+Siyu Han, Xiao Yang, Hang Sun, Yang Hu, Qi Zhang, Cheng Peng, Wensi Fang, Ying Li. LION: an integrated R package for effective prediction of ncRNA–protein interaction. Briefings in Bioinformatics. 2022; 23(6):bbac420
 
 
 The authors would be glad to hear how LION is used in your study. You are kindly encouraged to notify us (siyu.han@tum.de) about any work you publish!

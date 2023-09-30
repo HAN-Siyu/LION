@@ -7,6 +7,8 @@
 computeStructure(
   seqs,
   seqType = c("RNA", "Pro"),
+  args.RNAsubopt = NULL,
+  args.Predator = NULL,
   structureRNA.num = 6,
   structurePro = c("ChouFasman", "DeleageRoux", "Levitt"),
   Fourier.len = 10,
@@ -27,8 +29,11 @@ protein sequences will be converted into upper case letters, and non-AA letters 
 Each sequence should be a vector of single characters.}
 
 \item{seqType}{a string that specifies the nature of the sequence: \code{"RNA"} or \code{"Pro"} (protein).
-If the input is DNA sequence and \code{seqType = "RNA"}, the DNA sequence will be converted to RNA sequence automatically.
-Default: \code{"RNA"}.}
+If the input is DNA sequence and \code{seqType = "RNA"}, the DNA sequence will be converted to RNA sequence automatically. Default: \code{"RNA"}.}
+
+\item{args.RNAsubopt}{string (in format such as "-N -z -S 1.07") specifying additional arguments (except "-p" which is already determined by \emph{structureRNA.num}) for RNAsubopt. This is used when you want to control the behaviour of RNAsubopt. Arguments for RNAsubopt please refer to its manual. Default: \code{NULL}.}
+
+\item{args.Predator}{string specifying additional arguments (except "-a" and "-b") for Predator. This is used when you want to control the behaviour of Predator. Arguments for Predator please refer to its manual. Default: \code{NULL}.}
 
 \item{structureRNA.num}{integer. The number of random samples of suboptimal structures. Default: \code{6}.}
 
@@ -89,9 +94,9 @@ Program "Predator" is only available on UNIX/Linux and 32-bit Windows OS.
 }
 \section{References}{
 
-[1] Han S, \emph{et al}.
-LION: an integrated R package for effective ncRNA-protein interaction prediction.
-(\emph{Submitted})
+[1] Han S, Yang X, Sun H, \emph{et al}.
+LION: an integrated R package for effective prediction of ncRNA–protein interaction.
+Briefings in Bioinformatics. 2022; 23(6):bbac420
 
 [2] Chou PY, Fasman GD.
 Prediction of the secondary structure of proteins from their amino acid sequence.
@@ -119,7 +124,8 @@ BMC Genomics 2013; 14:651
 }
 
 \examples{
-\dontrun{
+
+\donttest{
 data(demoPositiveSeq)
 seqsRNA <- demoPositiveSeq$RNA.positive
 seqsPro <- demoPositiveSeq$Pro.positive

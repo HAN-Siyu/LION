@@ -93,9 +93,9 @@ In [2], normalization is computed by row (each sequence).
 }
 \section{References}{
 
-[1] Han S, \emph{et al}.
-LION: an integrated R package for effective ncRNA-protein interaction prediction.
-(\emph{Submitted})
+[1] Han S, Yang X, Sun H, \emph{et al}.
+LION: an integrated R package for effective prediction of ncRNA–protein interaction.
+Briefings in Bioinformatics. 2022; 23(6):bbac420
 
 [2] Shen J, Zhang J, Luo X, \emph{et al}.
 Predicting protein-protein interactions based only on sequences information.

@@ -1,7 +1,7 @@
 Package: LION
 Type: Package
 Title: Predicting Long non-coding RNA-Protein Interaction
-Version: 0.2.9.1
+Version: 0.3.0.0
 Authors@R: c(
     person(family = "HAN", given = "Siyu", email = "siyu.han@tum.de", role = c("aut", "cre")),
     person(family = "LI", given = "Ying", email = "liying@jlu.edu.cn", role = "aut"),
@@ -21,5 +21,5 @@ URL: https://github.com/HAN-Siyu/LION
 RelevantData: https://github.com/HAN-Siyu/LION_Supplementary
 BugReports: https://github.com/HAN-Siyu/LION/issues
 LazyData: true
-RoxygenNote: 7.1.1
 Encoding: UTF-8
+RoxygenNote: 7.2.3

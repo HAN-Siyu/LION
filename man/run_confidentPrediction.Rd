@@ -35,7 +35,7 @@ Can be: \code{"RPISeq_web"}, \code{"RPISeq_retrain"}, \code{"lncPro_original"},
 \code{"lncPro_retrain"}, \code{"rpiCOOL_retrain"}, \code{"LncADeep_retrain"} and \code{"LION"}.}
 
 \item{RPISeq.mod, lncPro.mod, rpiCOOL.mod, LncADeep.mod, LION.mod}{use default retrained model (if \code{NULL}) or assign a new retrained model?
-New retrained model can be generated with \code{\link{run_RPISeq}}, \code{\link{run_lncPro}}, \code{\link{run_rpiCOOL}}, \code{\link{run_LncADeep}} and \code{\link{LION}}.}
+New retrained model can be generated with \code{\link{run_RPISeq}}, \code{\link{run_lncPro}}, \code{\link{run_rpiCOOL}}, \code{\link{run_LncADeep}} and \code{\link{run_LION}}.}
 
 \item{parallel.cores}{an integer that indicates the number of cores for parallel computation.
 Default: \code{2}. Set \code{parallel.cores = -1} to run with all the cores. \code{parallel.cores} should be == -1 or >= 1.}
@@ -50,14 +50,14 @@ This function can predict lncRNA/RNA-protein interactions using all supported me
 }
 \section{References}{
 
-Han S, \emph{et al}.
-LION: an integrated R package for effective ncRNA-protein interaction prediction.
-(\emph{Submitted})
+Han S, Yang X, Sun H, \emph{et al}.
+LION: an integrated R package for effective prediction of ncRNA–protein interaction.
+Briefings in Bioinformatics. 2022; 23(6):bbac420
 }
 
 \examples{
 
-#' # Following codes only show how to use this function
+# Following codes only show how to use this function
 # and cannot reflect the genuine performance of tools or classifiers.
 
 data(demoPositiveSeq)
@@ -67,7 +67,8 @@ seqPro <- demoPositiveSeq$Pro.positive
 # Using methods RPISeq (retrained model) and rpiCOOL (retrained model):
 
 Res_confidence <- run_confidentPrediction(seqRNA = seqRNA, seqPro = seqPro,
-                                          methods = c("RPISeq_retrain", "rpiCOOL_retrain", "LION"),
+                                          methods = c("RPISeq_retrain",
+                                          "rpiCOOL_retrain", "LION"),
                                           label = "Interact", # label is optional
                                           parallel.cores = 2)
 # Convert to data frame:

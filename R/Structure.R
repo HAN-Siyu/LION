@@ -8,6 +8,7 @@
 #' RNA sequences will be converted into lower case letters.
 #' Each sequence should be a vector of single characters.
 #' @param structureRNA.num integer. Number of random samples of suboptimal structures. Default: \code{6}.
+#' @param args.RNAsubopt string (in format such as "-N --pfScale 1.07") specifying additional arguments (except "-p" which is already determined by \emph{structureRNA.num}) for RNAsubopt. This is used when you want to control the behaviour of RNAsubopt. Arguments for RNAsubopt please refer to its manual. Default: \code{NULL}.
 #' @param path.RNAsubopt string specifying the location of RNAsubopt program.
 #' @param returnSum logical. If \code{FALSE}, the raw output of RNAsubopt (Dot-Bracket Notation of RNA structure) will be returned.
 #' If \code{TRUE}, the results of RNAsubopt will be converted into numeric sequence:
@@ -54,7 +55,8 @@
 #'
 #' @seealso \code{\link{runPredator}}
 #' @examples
-#' \dontrun{
+#'
+#' \donttest{
 #' data(demoPositiveSeq)
 #' seqsRNA <- demoPositiveSeq$RNA.positive
 #'
@@ -65,13 +67,14 @@
 #'                             returnSum = FALSE, verbose = TRUE,
 #'                             parallel.cores = 2)
 #'
-#' RNAsubopt_2 <- runRNAsubopt(seqs = seqsRNA, structureRNA.num = 6,
+#' RNAsubopt_2 <- runRNAsubopt(seqs = seqsRNA, args.RNAsubopt = "--pfScale 1.07",
+#'                             structureRNA.num = 6,
 #'                             path.RNAsubopt = path.RNAsubopt,
 #'                             returnSum = TRUE, parallel.cores = 2)
 #' }
 #' @export
 
-runRNAsubopt <- function(seqs, structureRNA.num = 6, path.RNAsubopt = "RNAsubopt",
+runRNAsubopt <- function(seqs, structureRNA.num = 6, args.RNAsubopt = NULL, path.RNAsubopt = "RNAsubopt",
                          returnSum = FALSE, verbose = FALSE, parallel.cores = 2, cl = NULL) {
 
         message("+ Initializing...  ", Sys.time())
@@ -107,6 +110,7 @@ runRNAsubopt <- function(seqs, structureRNA.num = 6, path.RNAsubopt = "RNAsubopt
         parallel::clusterExport(cl, varlist = c("index"), envir = environment())
 
         RNAsubopt.seq <- parallel::parLapply(cl, seq.string, Internal.runRNAsubopt, info = info,
+                                             args.RNAsubopt = args.RNAsubopt,
                                              structureRNA.num = structureRNA.num, verbose = verbose,
                                              path.RNAsubopt = path.RNAsubopt, outputNum = returnSum)
 
@@ -129,6 +133,7 @@ runRNAsubopt <- function(seqs, structureRNA.num = 6, path.RNAsubopt = "RNAsubopt
 #' @param seqs RNA sequences loaded by function \code{\link[seqinr]{read.fasta}} from \code{\link[seqinr]{seqinr-package}}. Or a list of RNA/protein sequences.
 #' RNA sequences will be converted into lower case letters.
 #' Each sequence should be a vector of single characters. (Non-AA letters will be ignored.)
+#' @param args.Predator string specifying additional arguments (except "-a" and "-b") for Predator. This is used when you want to control the behaviour of Predator. Arguments for Predator please refer to its manual. Default: \code{NULL}.
 #' @param path.Predator string specifying the location of Predator program.
 #' @param path.stride string specifying the location of file "stride.dat" required by program Predator.
 #' @param workDir string specifying the directory for temporary files.
@@ -171,7 +176,8 @@ runRNAsubopt <- function(seqs, structureRNA.num = 6, path.RNAsubopt = "RNAsubopt
 #'
 #' @seealso \code{\link{runRNAsubopt}}
 #' @examples
-#' \dontrun{
+#'
+#' \donttest{
 #' data(demoPositiveSeq)
 #' seqsPro <- demoPositiveSeq$Pro.positive
 #'
@@ -187,7 +193,8 @@ runRNAsubopt <- function(seqs, structureRNA.num = 6, path.RNAsubopt = "RNAsubopt
 #' }
 #' @export
 
-runPredator <- function(seqs, path.Predator, path.stride, workDir = getwd(),
+runPredator <- function(seqs, args.Predator = NULL, path.Predator = "Predator/predator",
+                        path.stride = "Predator/stride.dat", workDir = getwd(),
                         verbose = FALSE, parallel.cores = 2, cl = NULL) {
 
         if (!file.exists(path.stride)) stop("The path of stride.dat is not correct! Please check parameter path.stride.")
@@ -231,6 +238,7 @@ runPredator <- function(seqs, path.Predator, path.stride, workDir = getwd(),
         }
 
         predator.seq <- parallel::parSapply(cl, seqs, Internal.runPredator, info = info,
+                                            args.Predator = args.Predator,
                                             workDir = workDir, path.Predator = path.Predator,
                                             path.stride = path.stride, as.string = TRUE,
                                             outputRaw = TRUE, verbose = verbose)
@@ -253,8 +261,9 @@ runPredator <- function(seqs, path.Predator, path.stride, workDir = getwd(),
 #' protein sequences will be converted into upper case letters, and non-AA letters will be ignored.
 #' Each sequence should be a vector of single characters.
 #' @param seqType a string that specifies the nature of the sequence: \code{"RNA"} or \code{"Pro"} (protein).
-#' If the input is DNA sequence and \code{seqType = "RNA"}, the DNA sequence will be converted to RNA sequence automatically.
-#' Default: \code{"RNA"}.
+#' If the input is DNA sequence and \code{seqType = "RNA"}, the DNA sequence will be converted to RNA sequence automatically. Default: \code{"RNA"}.
+#' @param args.RNAsubopt string (in format such as "-N -z -S 1.07") specifying additional arguments (except "-p" which is already determined by \emph{structureRNA.num}) for RNAsubopt. This is used when you want to control the behaviour of RNAsubopt. Arguments for RNAsubopt please refer to its manual. Default: \code{NULL}.
+#' @param args.Predator string specifying additional arguments (except "-a" and "-b") for Predator. This is used when you want to control the behaviour of Predator. Arguments for Predator please refer to its manual. Default: \code{NULL}.
 #' @param structureRNA.num integer. The number of random samples of suboptimal structures. Default: \code{6}.
 #' @param structurePro strings specifying the secondary structural information that are extracted from protein sequences.
 #' Ignored if \code{seqType = "RNA"}.
@@ -298,9 +307,9 @@ runPredator <- function(seqs, path.Predator, path.stride, workDir = getwd(),
 #' Program "Predator" is only available on UNIX/Linux and 32-bit Windows OS.
 #'
 #' @section References:
-#' [1] Han S, \emph{et al}.
-#' LION: an integrated R package for effective ncRNA-protein interaction prediction.
-#' (\emph{Submitted})
+#' [1] Han S, Yang X, Sun H, \emph{et al}.
+#' LION: an integrated R package for effective prediction of ncRNA–protein interaction.
+#' Briefings in Bioinformatics. 2022; 23(6):bbac420
 #'
 #' [2] Chou PY, Fasman GD.
 #' Prediction of the secondary structure of proteins from their amino acid sequence.
@@ -340,7 +349,8 @@ runPredator <- function(seqs, path.Predator, path.stride, workDir = getwd(),
 #'
 #' @seealso \code{\link{runRNAsubopt}}, \code{\link{runPredator}}, \code{\link{featureStructure}}
 #' @examples
-#' \dontrun{
+#'
+#' \donttest{
 #' data(demoPositiveSeq)
 #' seqsRNA <- demoPositiveSeq$RNA.positive
 #' seqsPro <- demoPositiveSeq$Pro.positive
@@ -363,7 +373,9 @@ runPredator <- function(seqs, path.Predator, path.stride, workDir = getwd(),
 #' }
 #' @export
 
-computeStructure <- function(seqs, seqType = c("RNA", "Pro"), structureRNA.num = 6,
+computeStructure <- function(seqs, seqType = c("RNA", "Pro"),
+                             args.RNAsubopt = NULL, args.Predator = NULL,
+                             structureRNA.num = 6,
                              structurePro = c("ChouFasman", "DeleageRoux", "Levitt"),
                              Fourier.len = 10, workDir.Pro = getwd(), as.list = TRUE,
                              path.RNAsubopt = "RNAsubopt", path.Predator = "Predator/predator",
@@ -410,10 +422,15 @@ computeStructure <- function(seqs, seqType = c("RNA", "Pro"), structureRNA.num =
                 info <- paste(ceiling(length(seqs) / parallel.cores), ",", sep = "")
 
                 parallel::clusterExport(cl, varlist = c("index"), envir = environment())
-                RNAsubopt.seq <- parallel::parLapply(cl, seq.string, Internal.runRNAsubopt, info = info,
-                                                     structureRNA.num = structureRNA.num, verbose = verbose,
-                                                     path.RNAsubopt = path.RNAsubopt, outputNum = TRUE)
-                out.seq <- parallel::parLapply(cl, RNAsubopt.seq, Internal.FourierSeries, profile.length = Fourier.len)
+                RNAsubopt.seq <- parallel::parLapply(cl, seq.string, Internal.runRNAsubopt,
+                                                     info = info,
+                                                     args.RNAsubopt = args.RNAsubopt,
+                                                     structureRNA.num = structureRNA.num,
+                                                     verbose = verbose,
+                                                     path.RNAsubopt = path.RNAsubopt,
+                                                     outputNum = TRUE)
+                out.seq <- parallel::parLapply(cl, RNAsubopt.seq, Internal.FourierSeries,
+                                               profile.length = Fourier.len)
 
                 if (close_cl) parallel::stopCluster(cl)
 
@@ -463,7 +480,8 @@ computeStructure <- function(seqs, seqType = c("RNA", "Pro"), structureRNA.num =
                 }
 
                 out.seq <- parallel::parLapply(cl, seqs, Internal.convertPro_Struct,
-                                               info = info, path.Predator = path.Predator,
+                                               info = info, args.Predator = args.Predator,
+                                               path.Predator = path.Predator,
                                                path.stride = path.stride, workDir = workDir.Pro,
                                                structurePro = structurePro, as.list = as.list,
                                                Fourier.len = Fourier.len, verbose = verbose, aaindex)
@@ -479,7 +497,6 @@ computeStructure <- function(seqs, seqType = c("RNA", "Pro"), structureRNA.num =
                 }
         }
         # message("\n", "+ Completed.  ", Sys.time(), "\n")
-
         out.seq
 }
 
@@ -508,9 +525,9 @@ computeStructure <- function(seqs, seqType = c("RNA", "Pro"), structureRNA.num =
 #'
 #' @details see \code{\link{computeStructure}}.
 #' @section References:
-#' [1] Han S, \emph{et al}.
-#' LION: an integrated R package for effective ncRNA-protein interaction prediction.
-#' (\emph{Submitted})
+#' [1] Han S, Yang X, Sun H, \emph{et al}.
+#' LION: an integrated R package for effective prediction of ncRNA–protein interaction.
+#' Briefings in Bioinformatics. 2022; 23(6):bbac420
 #'
 #' [2] Chou PY, Fasman GD.
 #' Prediction of the secondary structure of proteins from their amino acid sequence.
@@ -550,7 +567,8 @@ computeStructure <- function(seqs, seqType = c("RNA", "Pro"), structureRNA.num =
 #'
 #' @seealso \code{\link{runRNAsubopt}}, \code{\link{runPredator}}, \code{\link{computeStructure}}
 #' @examples
-#' \dontrun{
+#'
+#' \donttest{
 #' data(demoNegativeSeq)
 #' seqsRNA <- demoNegativeSeq$RNA.negative
 #' seqsPro <- demoNegativeSeq$Pro.negative

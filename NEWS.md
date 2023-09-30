@@ -1,3 +1,7 @@
+# LION 0.3.0.0
+
+* Support assigning additional arguments for RNAsubopt and Predator.
+
 # LION 0.2.9.1
 
 * Fix the remaining issue in metric calculation (see explanation in v0.2.9) during the retraining of LION.

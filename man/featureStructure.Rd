@@ -49,9 +49,9 @@ see \code{\link{computeStructure}}.
 }
 \section{References}{
 
-[1] Han S, \emph{et al}.
-LION: an integrated R package for effective ncRNA-protein interaction prediction.
-(\emph{Submitted})
+[1] Han S, Yang X, Sun H, \emph{et al}.
+LION: an integrated R package for effective prediction of ncRNA–protein interaction.
+Briefings in Bioinformatics. 2022; 23(6):bbac420
 
 [2] Chou PY, Fasman GD.
 Prediction of the secondary structure of proteins from their amino acid sequence.
@@ -79,7 +79,8 @@ BMC Genomics 2013; 14:651
 }
 
 \examples{
-\dontrun{
+
+\donttest{
 data(demoNegativeSeq)
 seqsRNA <- demoNegativeSeq$RNA.negative
 seqsPro <- demoNegativeSeq$Pro.negative

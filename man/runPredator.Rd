@@ -6,8 +6,9 @@
 \usage{
 runPredator(
   seqs,
-  path.Predator,
-  path.stride,
+  args.Predator = NULL,
+  path.Predator = "Predator/predator",
+  path.stride = "Predator/stride.dat",
   workDir = getwd(),
   verbose = FALSE,
   parallel.cores = 2,
@@ -18,6 +19,8 @@ runPredator(
 \item{seqs}{RNA sequences loaded by function \code{\link[seqinr]{read.fasta}} from \code{\link[seqinr]{seqinr-package}}. Or a list of RNA/protein sequences.
 RNA sequences will be converted into lower case letters.
 Each sequence should be a vector of single characters. (Non-AA letters will be ignored.)}
+
+\item{args.Predator}{string specifying additional arguments (except "-a" and "-b") for Predator. This is used when you want to control the behaviour of Predator. Arguments for Predator please refer to its manual. Default: \code{NULL}.}
 
 \item{path.Predator}{string specifying the location of Predator program.}
 
@@ -64,7 +67,8 @@ Protein Eng. 1996; 9:133-42
 }
 
 \examples{
-\dontrun{
+
+\donttest{
 data(demoPositiveSeq)
 seqsPro <- demoPositiveSeq$Pro.positive
 

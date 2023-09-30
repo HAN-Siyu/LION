@@ -79,9 +79,9 @@ See arguments \code{motifRNA} and \code{motifPro} in \code{\link{computeMotifs}}
 }
 \section{References}{
 
-[1] Han S, \emph{et al}.
-LION: an integrated R package for effective ncRNA-protein interaction prediction.
-(\emph{Submitted})
+[1] Han S, Yang X, Sun H, \emph{et al}.
+LION: an integrated R package for effective prediction of ncRNA–protein interaction.
+Briefings in Bioinformatics. 2022; 23(6):bbac420
 
 [2] Akbaripour-Elahabad M, Zahiri J, Rafeh R, \emph{et al}.
 rpiCOOL: A tool for In Silico RNA-protein interaction detection using random forest.

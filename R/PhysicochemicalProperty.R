@@ -152,9 +152,9 @@ computePhysChem_AAindex <- function(seqPro, entry.index = NULL, Fourier.len = 10
 #' }}
 #'
 #' @section References:
-#' [1] Han S, \emph{et al}.
-#' LION: an integrated R package for effective ncRNA-protein interaction prediction.
-#' (\emph{Submitted})
+#' [1] Han S, Yang X, Sun H, \emph{et al}.
+#' LION: an integrated R package for effective prediction of ncRNA–protein interaction.
+#' Briefings in Bioinformatics. 2022; 23(6):bbac420
 #'
 #' [2] Morozova N, Allers J, Myers J, \emph{et al}.
 #' Protein-RNA interactions: exploring binding patterns with a three-dimensional superposition analysis of high resolution structures.
@@ -297,9 +297,9 @@ computePhysChem <- function(seqs, seqType = c("RNA", "Pro"), Fourier.len = 10,
 #'
 #' @details see \code{\link{computePhysChem}}.
 #' @section References:
-#' [1] Han S, \emph{et al}.
-#' LION: an integrated R package for effective ncRNA-protein interaction prediction.
-#' (\emph{Submitted})
+#' [1] Han S, Yang X, Sun H, \emph{et al}.
+#' LION: an integrated R package for effective prediction of ncRNA–protein interaction.
+#' Briefings in Bioinformatics. 2022; 23(6):bbac420
 #'
 #' [2] Morozova N, Allers J, Myers J, \emph{et al}.
 #' Protein-RNA interactions: exploring binding patterns with a three-dimensional superposition analysis of high resolution structures.

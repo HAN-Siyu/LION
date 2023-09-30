@@ -1,17 +1,15 @@
 citHeader("To cite LION in publications, please use:")
 
 citEntry(entry="Article",
-         title = "LION: an integrated R package for effective ncRNA-protein interaction prediction.",
+         title = "LION: an integrated R package for effective prediction of ncRNA–protein interaction",
          author = personList(as.person("Siyu Han"), as.person("Xiao Yang"), as.person("Hang Sun"), as.person("Yang Hu"), as.person("Qi Zhang"), as.person("Cheng Peng"), as.person("Wensi Fang"), as.person("Ying Li")),
          year = "2022",
          journal = "Briefings in Bioinformatics",
-         issue = "",
-         volume = "",
-         number = "",
-         pages = "",
-         doi = "",
-         eprint = "",
-         textVersion = "Siyu Han, Xiao Yang, Hang Sun, Yang Hu, Qi Zhang, Cheng Peng, Wensi Fang, Ying Li. LION: an integrated R package for effective ncRNA-protein interaction prediction. Briefings in Bioinformatics, 2022."
+         volume = "23",
+         issue = "6",
+         number = "bbac420",
+         doi = "10.1093/bib/bbac420",
+         textVersion = "Siyu Han, Xiao Yang, Hang Sun, Yang Hu, Qi Zhang, Cheng Peng, Wensi Fang, Ying Li. LION: an integrated R package for effective prediction of ncRNA–protein interaction. Briefings in Bioinformatics, 2022."
          )
 
 citFooter(sprintf("The authors would be glad to hear how LION is used in your study. You are kindly encouraged to notify %s about any work you publish!", meta$Maintainer))

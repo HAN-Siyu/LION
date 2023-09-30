@@ -7,6 +7,7 @@
 runRNAsubopt(
   seqs,
   structureRNA.num = 6,
+  args.RNAsubopt = NULL,
   path.RNAsubopt = "RNAsubopt",
   returnSum = FALSE,
   verbose = FALSE,
@@ -20,6 +21,8 @@ RNA sequences will be converted into lower case letters.
 Each sequence should be a vector of single characters.}
 
 \item{structureRNA.num}{integer. Number of random samples of suboptimal structures. Default: \code{6}.}
+
+\item{args.RNAsubopt}{string (in format such as "-N --pfScale 1.07") specifying additional arguments (except "-p" which is already determined by \emph{structureRNA.num}) for RNAsubopt. This is used when you want to control the behaviour of RNAsubopt. Arguments for RNAsubopt please refer to its manual. Default: \code{NULL}.}
 
 \item{path.RNAsubopt}{string specifying the location of RNAsubopt program.}
 
@@ -71,7 +74,8 @@ Algorithms Mol. Biol. 2011; 6:26
 }
 
 \examples{
-\dontrun{
+
+\donttest{
 data(demoPositiveSeq)
 seqsRNA <- demoPositiveSeq$RNA.positive
 
@@ -82,7 +86,8 @@ RNAsubopt_1 <- runRNAsubopt(seqs = seqsRNA, path.RNAsubopt = path.RNAsubopt,
                             returnSum = FALSE, verbose = TRUE,
                             parallel.cores = 2)
 
-RNAsubopt_2 <- runRNAsubopt(seqs = seqsRNA, structureRNA.num = 6,
+RNAsubopt_2 <- runRNAsubopt(seqs = seqsRNA, args.RNAsubopt = "--pfScale 1.07",
+                            structureRNA.num = 6,
                             path.RNAsubopt = path.RNAsubopt,
                             returnSum = TRUE, parallel.cores = 2)
 }

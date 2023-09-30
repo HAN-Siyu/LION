@@ -250,7 +250,8 @@ Internal.convertSeq_customize <- function(oneSeq, indexVal) {
         num.seq
 }
 
-Internal.convertPro_Struct <- function(oneSeq, info, path.Predator, path.stride,
+Internal.convertPro_Struct <- function(oneSeq, info, args.Predator = NULL,
+                                       path.Predator, path.stride,
                                        workDir, structurePro.mode, as.list,
                                        Fourier.len, aaindex, verbose,
                                        AA.LETTERS = c("G", "V", "L", "F", "P", "I", "A", "M", "T", "S",
@@ -271,7 +272,7 @@ Internal.convertPro_Struct <- function(oneSeq, info, path.Predator, path.stride,
 
         randomName <- Internal.randomName(digit = 15, "/", ".fa")
         path.tmpFile <- paste0(workDir, randomName)
-        predator.command <- paste0(path.Predator, " -a ", path.tmpFile, " -b", path.stride)
+        predator.command <- paste(path.Predator, "-a", path.tmpFile, "-b", path.stride, args.Predator)
 
         oneSeq <- oneSeq[oneSeq %in% AA.LETTERS]
 
@@ -533,6 +534,7 @@ Internal.computePhysChem <- function(oneSeq, seqType = c("RNA", "Pro"), Fourier.
 }
 
 Internal.runRNAsubopt <- function(oneSeq, info = NULL, structureRNA.num = 6,
+                                  args.RNAsubopt = NULL,
                                   path.RNAsubopt, outputNum = FALSE, verbose = FALSE){
         index <- get("index")
 
@@ -541,7 +543,7 @@ Internal.runRNAsubopt <- function(oneSeq, info = NULL, structureRNA.num = 6,
                 cat(outinfo)
         }
 
-        RNAsubopt.cmd <- paste(path.RNAsubopt, "-p ", structureRNA.num)
+        RNAsubopt.cmd <- paste(path.RNAsubopt, "-p", structureRNA.num, args.RNAsubopt)
         RNAsubopt.seq <- system(RNAsubopt.cmd, intern = TRUE, input = oneSeq)
         index <<- index + 1
         if (outputNum) {
@@ -558,7 +560,8 @@ Internal.runRNAsubopt <- function(oneSeq, info = NULL, structureRNA.num = 6,
         } else  return(RNAsubopt.seq)
 }
 
-Internal.runPredator <- function(oneSeq, info = NULL, path.Predator, path.stride, workDir = getwd(),
+Internal.runPredator <- function(oneSeq, info = NULL, args.Predator = NULL,
+                                 path.Predator, path.stride, workDir = getwd(),
                                  as.string = FALSE, outputRaw = FALSE, verbose = FALSE,
                                  AA.LETTERS = c("G", "V", "L", "F", "P", "I", "A", "M", "T", "S",
                                                 "Y", "N", "Q", "W", "H", "K", "R", "E", "D", "C")) {
@@ -578,7 +581,7 @@ Internal.runPredator <- function(oneSeq, info = NULL, path.Predator, path.stride
 
         randomName <- Internal.randomName(digit = 15, "/", ".fa")
         path.tmpFile <- paste0(workDir, randomName)
-        predator.command <- paste0(path.Predator, " -a ", path.tmpFile, " -b", path.stride)
+        predator.command <- paste(path.Predator, "-a", path.tmpFile, "-b", path.stride, args.Predator)
 
         oneSeq <- oneSeq[oneSeq %in% AA.LETTERS]
 
@@ -612,7 +615,7 @@ Internal.runPredator <- function(oneSeq, info = NULL, path.Predator, path.stride
         SS.Seq
 }
 
-Internal.convertPro_Struct.lncPro <- function(oneSeq, info, path.Predator, path.stride,
+Internal.convertPro_Struct.lncPro <- function(oneSeq, info, args.Predator = NULL, path.Predator, path.stride,
                                               workDir, Fourier.len, aaindex,
                                               AA.LETTERS = c("G", "V", "L", "F", "P", "I", "A", "M", "T", "S",
                                                              "Y", "N", "Q", "W", "H", "K", "R", "E", "D", "C")) {
@@ -621,7 +624,7 @@ Internal.convertPro_Struct.lncPro <- function(oneSeq, info, path.Predator, path.
 
         randomName <- Internal.randomName(digit = 15, "/", ".fa")
         path.tmpFile <- paste0(workDir, randomName)
-        predator.command <- paste0(path.Predator, " -a ", path.tmpFile, " -b", path.stride)
+        predator.command <- paste(path.Predator, "-a", path.tmpFile, "-b", path.stride, args.Predator)
 
         oneSeq <- oneSeq[oneSeq %in% AA.LETTERS]
 
@@ -756,6 +759,7 @@ Internal.computePhysChem <- function(oneSeq, seqType = c("RNA", "Pro"), Fourier.
 }
 
 Internal.lncPro_SS <- function(cl, seqs, seqType = c("RNA", "AA"), aaindex = NULL,
+                               args.RNAsubopt = NULL, args.Predator = NULL,
                                path.RNAsubopt = NULL, path.Predator = NULL,
                                path.stride = NULL, workDir.Pro = NULL) {
         if (seqType == "RNA") {
@@ -766,6 +770,7 @@ Internal.lncPro_SS <- function(cl, seqs, seqType = c("RNA", "AA"), aaindex = NUL
                 parallel::clusterExport(cl, varlist = c("index"), envir = environment())
 
                 RNAsubopt.seq <- parallel::parLapply(cl, seq.string, Internal.runRNAsubopt,
+                                                     args.RNAsubopt = args.RNAsubopt,
                                                      structureRNA.num = 6, verbose = FALSE,
                                                      path.RNAsubopt = path.RNAsubopt, outputNum = TRUE)
 
@@ -787,6 +792,7 @@ Internal.lncPro_SS <- function(cl, seqs, seqType = c("RNA", "AA"), aaindex = NUL
                 }
 
                 Predator.seq <- parallel::parLapply(cl, seqs, Internal.convertPro_Struct.lncPro,
+                                                    args.Predator = args.Predator,
                                                     path.Predator = path.Predator,
                                                     path.stride = path.stride, workDir = workDir.Pro,
                                                     Fourier.len = 10, aaindex = aaindex)
@@ -798,7 +804,9 @@ Internal.lncPro_SS <- function(cl, seqs, seqType = c("RNA", "AA"), aaindex = NUL
         out.seq
 }
 
-Internal.lncPro_extractFeatures <- function(cl, seqs, seqType = c("RNA", "Pro"), path.RNAsubopt = NULL,
+Internal.lncPro_extractFeatures <- function(cl, seqs, seqType = c("RNA", "Pro"),
+                                            args.RNAsubopt = NULL, args.Predator = NULL,
+                                            path.RNAsubopt = NULL,
                                             path.Predator = NULL, path.stride = NULL,
                                             workDir.Pro = NULL, aaindex = NULL) {
 
@@ -820,7 +828,9 @@ Internal.lncPro_extractFeatures <- function(cl, seqs, seqType = c("RNA", "Pro"),
 
                 message("- Extracting structural features...")
 
-                output.RNA_Structure <- Internal.lncPro_SS(cl = cl, seqs = seqs, seqType = "RNA", aaindex = aaindex,
+                output.RNA_Structure <- Internal.lncPro_SS(cl = cl, seqs = seqs, seqType = "RNA",
+                                                           aaindex = aaindex,
+                                                           args.RNAsubopt = args.RNAsubopt,
                                                            path.RNAsubopt = path.RNAsubopt)
 
                 message("- Extracting physicochemical features...")
@@ -848,6 +858,7 @@ Internal.lncPro_extractFeatures <- function(cl, seqs, seqType = c("RNA", "Pro"),
                 message("- Extracting structural features...")
 
                 output.Pro_Structure <- Internal.lncPro_SS(cl = cl, seqs = seqs, seqType = "Pro", aaindex = aaindex,
+                                                           args.Predator = args.Predator,
                                                            path.Predator = path.Predator, path.stride = path.stride,
                                                            workDir.Pro = workDir.Pro)
 
