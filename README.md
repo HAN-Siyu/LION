@@ -82,7 +82,7 @@ sequences using [ViennaRNA](https://www.tbi.univie.ac.at/RNA/index.html)/[Predat
 
 To cite LION in publications, please use:
 
-Siyu Han, Xiao Yang, Hang Sun, Yang Hu, Qi Zhang, Cheng Peng, Wensi Fang, Ying Li. LION: an integrated R package for effective prediction of ncRNA–protein interaction. Briefings in Bioinformatics. 2022; 23(6):bbac420
+Siyu Han, Xiao Yang, Hang Sun, Yang Hu, Qi Zhang, Cheng Peng, Wensi Fang, Ying Li. LION: an integrated R package for effective prediction of ncRNA–protein interaction. Briefings in bioinformatics. 2022; 23(6):bbac420. (doi: https://doi.org/10.1093/bib/bbac420)
 
 
 ## Our BigCatZoo：
