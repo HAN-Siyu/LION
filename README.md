@@ -25,12 +25,6 @@ devtools::install_github("HAN-Siyu/LION")
 Versions below v0.2.9.1 has a issue in calculating metrics. The issue did not affect the results reported in our paper. We recommend using the latest version. Update details can be found in NEWS.
 
 
-## Supporting Files
-
-[[PDF Manual](https://github.com/HAN-Siyu/LION_Supplementary/blob/master/LION_0.3.0.0.pdf)]
-[[Datasets and Raw Results](https://github.com/HAN-Siyu/LION_Supplementary)]
-
-
 ## Habitat
 
 Almost all dependencies have been installed when installing LION. However, secondary strucutre features are computed using standalone software, RNAsubopt (from ViennaRNA package) and Predator. You need to download these two programmes if you would like to use method lncPro or extract structural features.
@@ -39,7 +33,13 @@ Almost all dependencies have been installed when installing LION. However, secon
 * Predator: https://bioweb.pasteur.fr/packages/pack@predator@2.1.2
 
 
-## Basic Guideline
+## Supporting Files
+
+[[PDF Manual](https://github.com/HAN-Siyu/LION_Supplementary/blob/master/LION_0.3.0.0.pdf)]
+[[Datasets and Raw Results](https://github.com/HAN-Siyu/LION_Supplementary)]
+
+
+## How to Train Your LION
 
 We expect LION could be a powerful package for predicting RNA-protein interaction in a uniform R environment. The functions of LION can be categorized into several groups to facilitate feature extraction, interaction prediction and model tuning. We here provide a basic summary for LION's function. Detailed examples and parameters explanations can be found in our manual.
 
@@ -78,7 +78,7 @@ sequences using [ViennaRNA](https://www.tbi.univie.ac.at/RNA/index.html)/[Predat
 - `runRNAsubopt()`: call RNAsubopt to process protein sequences ([ViennaRNA package](https://www.tbi.univie.ac.at/RNA/index.html) is required).
 
 
-## Citation
+## Cite This Work
 
 To cite LION in publications, please use:
 
