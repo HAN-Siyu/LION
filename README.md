@@ -1,11 +1,17 @@
-# LION: An Integrated R Package for Effective Prediction of <ins>L</ins>ncRNA- and ncRNA-Prote<ins>I</ins>n Interacti<ins>ON</ins>
+# LION
+
+**An integrated R package for effective prediction of <ins>l</ins>ncRNA- and ncRNA-prote<ins>i</ins>n interacti<ins>on</ins>**
 
 Understanding ncRNA-protein interaction is of critical importance to unveil ncRNAs' functions. Now many computational tools have been developed to facilitate the research on ncRNA-protein interaction. Nonetheless, the majority of these tools show unstable results and lack the flexibility required by dataset-specific prediction. Here we propose an integrated package LION which comprises a new method for predicting ncRNA/lncRNA-protein interaction as well as a comprehensive strategy to meet the requirement of customisable prediction. As an integrated tool for predicting ncRNA-protein interaction, LION can be used to build adaptable models for species and tissue-specific prediction and considerably enhance the performance of several widely-used tools. Experimental results also demonstrate our method outperforms its competitors on multiple benchmark datasets. We expect LION will be a powerful and efficient tool for the prediction and analysis of ncRNA- and lncRNA-protein interaction.
+
+***Thank you for checking our LION @BigCatZoo!***
+
+***Any questions regarding LION please drop an email to the zookeeper Siyu Han (siyu.han@tum.de) or post it to [issues](https://github.com/HAN-Siyu/LION/issues).***
+
 
 ## Install LION
 
 **Using devtools**
-
 
 ```
 # Enter the following command in R:
@@ -18,17 +24,20 @@ devtools::install_github("HAN-Siyu/LION")
 
 Versions below v0.2.9.1 has a issue in calculating metrics. The issue did not affect the results reported in our paper. We recommend using the latest version. Update details can be found in NEWS.
 
+
 ## Supporting Files
 
 [[PDF Manual](https://github.com/HAN-Siyu/LION_Supplementary/blob/master/LION_0.3.0.0.pdf)]
 [[Datasets and Raw Results](https://github.com/HAN-Siyu/LION_Supplementary)]
 
-## Dependencies
+
+## Habitat
 
 Almost all dependencies have been installed when installing LION. However, secondary strucutre features are computed using standalone software, RNAsubopt (from ViennaRNA package) and Predator. You need to download these two programmes if you would like to use method lncPro or extract structural features.
 
 * ViennaRNA Package: https://www.tbi.univie.ac.at/RNA/
 * Predator: https://bioweb.pasteur.fr/packages/pack@predator@2.1.2
+
 
 ## Basic Guideline
 
@@ -68,6 +77,7 @@ sequences using [ViennaRNA](https://www.tbi.univie.ac.at/RNA/index.html)/[Predat
 - `runPredator()`: call Predator to process protein sequences ([Predator](https://bioweb.pasteur.fr/packages/pack@predator@2.1.2) is required).
 - `runRNAsubopt()`: call RNAsubopt to process protein sequences ([ViennaRNA package](https://www.tbi.univie.ac.at/RNA/index.html) is required).
 
+
 ## Citation
 
 To cite LION in publications, please use:
@@ -75,4 +85,8 @@ To cite LION in publications, please use:
 Siyu Han, Xiao Yang, Hang Sun, Yang Hu, Qi Zhang, Cheng Peng, Wensi Fang, Ying Li. LION: an integrated R package for effective prediction of ncRNA–protein interaction. Briefings in Bioinformatics. 2022; 23(6):bbac420
 
 
-The authors would be glad to hear how LION is used in your study. You are kindly encouraged to notify us (siyu.han@tum.de) about any work you publish!
+## Our BigCatZoo：
+
+- [LION](this work): an integrated R package for effective prediction of lncRNA/ncRNA–protein interaction
+- [TIGER](https://github.com/HAN-Siyu/TIGER): technical variation elimination for metabolomics data using ensemble learning architecture
+- [LEOPARD](https://github.com/HAN-Siyu/LEOPARD): missing view completion for multi-timepoint omics data via representation disentanglement and temporal knowledge transfer
