@@ -27,7 +27,7 @@ Versions below v0.2.9.1 has a issue in calculating metrics. The issue did not af
 
 ## Habitat
 
-Almost all dependencies have been installed when installing LION. However, secondary strucutre features are computed using standalone software, RNAsubopt (from ViennaRNA package) and Predator. You need to download these two programmes if you would like to use method lncPro or extract structural features.
+Almost all dependencies will be installed when installing LION in R. However, secondary strucutre features are computed using standalone software, RNAsubopt (from ViennaRNA package) and Predator. You need to download these two programmes if you would like to use method lncPro or extract structural features.
 
 * ViennaRNA Package: https://www.tbi.univie.ac.at/RNA/
 * Predator: https://bioweb.pasteur.fr/packages/pack@predator@2.1.2
