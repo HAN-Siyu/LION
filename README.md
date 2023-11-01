@@ -87,6 +87,6 @@ Siyu Han, Xiao Yang, Hang Sun, Yang Hu, Qi Zhang, Cheng Peng, Wensi Fang, Ying L
 
 ## Our BigCatZoo：
 
-- [LION](this work): an integrated R package for effective prediction of lncRNA/ncRNA–protein interaction
+- LION (this work): an integrated R package for effective prediction of lncRNA/ncRNA–protein interaction
 - [TIGER](https://github.com/HAN-Siyu/TIGER): technical variation elimination for metabolomics data using ensemble learning architecture
 - [LEOPARD](https://github.com/HAN-Siyu/LEOPARD): missing view completion for multi-timepoint omics data via representation disentanglement and temporal knowledge transfer
